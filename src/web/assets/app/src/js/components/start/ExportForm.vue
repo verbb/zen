@@ -76,12 +76,15 @@
                     </div>
                 </div>
             </div>
+
+            <p v-if="error" class="error" v-html="errorMessage"></p>
         </template>
     </start-form>
 </template>
 
 <script>
 import { getId } from '@utils/string';
+import { getErrorMessage } from '@utils/forms';
 
 import StartForm from '@components/start/StartForm.vue';
 import Markdown from '@components/Markdown.vue';
@@ -97,6 +100,8 @@ export default {
     data() {
         return {
             loading: false,
+            error: false,
+            errorMessage: '',
             fromDate: new Date((new Date()).setMonth((new Date()).getMonth() - 1)),
             toDate: new Date(),
             timezone: Craft.timezone,
@@ -157,10 +162,17 @@ export default {
             };
 
             this.loading = true;
+            this.error = false;
 
             Craft.sendActionRequest('POST', 'zen/export/get-element-options', { data })
                 .then((response) => {
                     this.elementOptions = response.data.options;
+                })
+                .catch((error) => {
+                    this.error = true;
+
+                    const info = getErrorMessage(error);
+                    this.errorMessage = `${info.text}<br><small>${info.trace}</small>`;
                 })
                 .finally(() => {
                     this.loading = false;
