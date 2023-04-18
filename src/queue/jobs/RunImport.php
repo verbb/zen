@@ -3,10 +3,8 @@ namespace verbb\zen\queue\jobs;
 
 use verbb\zen\Zen;
 
-use Craft;
 use craft\i18n\Translation;
 use craft\queue\BaseJob;
-use craft\queue\QueueInterface;
 
 use Exception;
 

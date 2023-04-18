@@ -1,9 +1,6 @@
 <?php
 namespace verbb\zen\migrations;
 
-use verbb\zen\Zen;
-
-use Craft;
 use craft\db\Migration;
 
 class Install extends Migration

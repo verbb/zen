@@ -2,30 +2,20 @@
 namespace verbb\zen\services;
 
 use verbb\zen\Zen;
-use verbb\zen\elements;
 use verbb\zen\helpers\ArrayHelper;
-use verbb\zen\helpers\DiffHelper;
 use verbb\zen\models\ElementImportAction;
-use verbb\zen\queue\jobs\RunImport;
 
 use Craft;
 use craft\base\Component;
-use craft\base\ElementInterface;
-use craft\events\RegisterComponentTypesEvent;
-use craft\helpers\Db;
 use craft\helpers\FileHelper;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
-use craft\i18n\Translation;
 
-use DateTime;
 use Exception;
 
 use Diff\Differ\MapDiffer;
 use Diff\DiffOp\Diff\Diff;
 use Diff\Patcher\MapPatcher;
-
-use Wa72\HtmlPageDom\HtmlPageCrawler;
 
 class Import extends Component
 {
@@ -40,7 +30,6 @@ class Import extends Component
 
     public function getImportConfiguration(array $data, bool $returnElementData = false): array
     {
-        $rawElementData = [];
         $config = [];
 
         $summary = [
@@ -73,8 +62,8 @@ class Import extends Component
             ksort($sourceItems);
             $elementIdentifiers = array_keys($sourceItems);
 
-            // Do an element query to fetch all the items provided in the import for _this_ install. It's more performant to do all at once
-            // and we also want to get any trashed elements in case we're restoring.
+            // Do an element query to fetch all the items provided in the import for _this_ install. It's more performant to do
+            // all at once, and we also want to get any trashed elements in case we're restoring.
             $elements = $elementType::elementType()::find()
                 ->$elementIdentifier($elementIdentifiers)
                 ->indexBy($elementIdentifier)
@@ -180,6 +169,9 @@ class Import extends Component
                     $currentElement = null;
                     $elementToAction = $elementType::getNormalizedElement($sourceItem);
                     $newElement = $elementToAction;
+                } else {
+                    $elementToAction = null;
+                    $newElement = null;
                 }
 
                 if ($returnElementData) {
@@ -198,7 +190,7 @@ class Import extends Component
                         $elementData[] = $tableData;
                 
                         // Increment our summary for a nice look. Added here to ensure there are no errors for the row
-                        $summary[$summaryState] = $summary[$summaryState] + 1;
+                        $summary[$summaryState] += 1;
                     }
                 }
             }
@@ -258,7 +250,7 @@ class Import extends Component
     public function runImport(string $filename, array $elementsToExclude = []): void
     {
         foreach ($this->getElementsToImport($filename) as $elementImportAction) {
-            $success = $this->runElementAction($elementImportAction, $elementsToExclude);
+            $success = $this->runElementAction($elementImportAction);
 
             if (!$success) {
                 throw new Exception(Craft::t('zen', 'Failed: {type}:{error}', [

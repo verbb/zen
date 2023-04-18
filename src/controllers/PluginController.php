@@ -8,7 +8,6 @@ use verbb\zen\models\Settings;
 use Craft;
 use craft\helpers\FileHelper;
 use craft\helpers\Json;
-use craft\helpers\UrlHelper;
 use craft\web\Controller;
 
 use yii\web\Response;

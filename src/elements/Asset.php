@@ -12,17 +12,11 @@ use craft\db\Table;
 use craft\elements\Asset as AssetElement;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\ArrayHelper;
-use craft\helpers\Assets as AssetsHelper;
 use craft\helpers\Cp;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
-use craft\helpers\Image;
-use craft\helpers\FileHelper;
 use craft\helpers\Html;
 use craft\helpers\UrlHelper;
-use craft\models\FieldLayoutFormTab;
-use craft\models\FieldLayoutTab;
-use craft\models\FolderCriteria;
 
 use craft\events\DefineAssetThumbUrlEvent;
 use craft\services\Assets;

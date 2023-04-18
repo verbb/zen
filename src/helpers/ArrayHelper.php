@@ -39,7 +39,7 @@ class ArrayHelper extends CraftArrayHelper
         return $hash;
     }
 
-    public static function recursiveFilter(array $array)
+    public static function recursiveFilter(array $array): array
     {
         // We only want to filter true empty values
         $array = array_filter($array, function($val) {

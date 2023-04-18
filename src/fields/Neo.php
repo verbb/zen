@@ -1,10 +1,8 @@
 <?php
 namespace verbb\zen\fields;
 
-use verbb\zen\Zen;
 use verbb\zen\base\Field as ZenField;
 
-use Craft;
 use craft\base\ElementInterface;
 use craft\base\FieldInterface;
 

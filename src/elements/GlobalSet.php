@@ -6,13 +6,9 @@ use verbb\zen\models\ImportFieldTab;
 
 use Craft;
 use craft\base\ElementInterface;
-use craft\db\Table;
 use craft\elements\GlobalSet as GlobalSetElement;
-use craft\elements\User;
 use craft\elements\db\ElementQueryInterface;
-use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
-use craft\helpers\Db;
 
 class GlobalSet extends ZenElement
 {

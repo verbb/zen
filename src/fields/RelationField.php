@@ -6,15 +6,8 @@ use verbb\zen\base\Field as ZenField;
 use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\TempQuery;
 
-use Craft;
 use craft\base\ElementInterface;
 use craft\base\FieldInterface;
-use craft\elements\Asset;
-use craft\elements\User;
-use craft\events\DefineAssetThumbUrlEvent;
-use craft\services\Assets;
-
-use yii\base\Event;
 
 class RelationField extends ZenField
 {
@@ -60,7 +53,7 @@ class RelationField extends ZenField
                         $elements[] = $foundElement->id;
 
                         // Store all found and new elements in a cache for this field. This allows us to create the new ones
-                        // at later stages, but we record existing ones so we retain the order of elements in the field.
+                        // at later stages, but we record existing ones, so we retain the order of elements in the field.
                         self::$_cachedElements[$element->uid][$field->handle][$elementUid] = $foundElement;
                     } else {
                         self::$_cachedElements[$element->uid][$field->handle][$elementUid] = $el;

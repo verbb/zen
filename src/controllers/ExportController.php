@@ -2,14 +2,11 @@
 namespace verbb\zen\controllers;
 
 use verbb\zen\Zen;
-use verbb\zen\models\Settings;
 
 use Craft;
-use craft\helpers\App;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
-use craft\helpers\UrlHelper;
 use craft\web\Controller;
 
 use yii\web\Response;

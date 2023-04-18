@@ -2,22 +2,13 @@
 namespace verbb\zen\services;
 
 use verbb\zen\Zen;
-use verbb\zen\elements;
 use verbb\zen\helpers\ArrayHelper;
-use verbb\zen\helpers\DiffHelper;
 
-use Craft;
 use craft\base\Component;
-use craft\base\ElementInterface;
-use craft\events\RegisterComponentTypesEvent;
 use craft\helpers\Db;
 use craft\helpers\Json;
 
 use DateTime;
-
-use Diff\Differ\MapDiffer;
-use Diff\DiffOp\Diff\Diff;
-use Diff\Patcher\MapPatcher;
 
 class Export extends Component
 {
@@ -128,7 +119,7 @@ class Export extends Component
 
     private function _decorateOptions(&$options, $depth = 1): void
     {
-        foreach ($options as $key => &$option) {
+        foreach ($options as &$option) {
             $option['level'] = $depth;
 
             if (isset($option['children'])) {

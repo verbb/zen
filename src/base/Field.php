@@ -4,7 +4,6 @@ namespace verbb\zen\base;
 use verbb\zen\base\FieldInterface as ZenFieldInterface;
 use verbb\zen\events\ElementFieldImportEvent;
 
-use Craft;
 use craft\base\ElementInterface;
 use craft\base\FieldInterface;
 
@@ -34,7 +33,6 @@ abstract class Field implements ZenFieldInterface
 
     public static function getFieldForPreview(FieldInterface $field, ElementInterface $element): void
     {
-        return;
     }
 
     public static function beforeElementImport(FieldInterface $field, ElementInterface $element): bool

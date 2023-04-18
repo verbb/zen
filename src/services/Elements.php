@@ -3,8 +3,6 @@ namespace verbb\zen\services;
 
 use verbb\zen\Zen;
 use verbb\zen\elements as elementTypes;
-use verbb\zen\helpers\ArrayHelper;
-use verbb\zen\helpers\DiffHelper;
 use verbb\zen\helpers\Plugin;
 use verbb\zen\records\ElementAction;
 
@@ -16,15 +14,9 @@ use craft\db\Query;
 use craft\events\DraftEvent;
 use craft\events\ElementEvent;
 use craft\events\RegisterComponentTypesEvent;
-use craft\helpers\Db;
 use craft\helpers\Json;
 
-use DateTime;
 use Throwable;
-
-use Diff\Differ\MapDiffer;
-use Diff\DiffOp\Diff\Diff;
-use Diff\Patcher\MapPatcher;
 
 class Elements extends Component
 {
@@ -165,7 +157,7 @@ class Elements extends Component
         $processed = [];
         $data = [];
 
-        // To ensure that we check if one action is cancelling out a previous one (deleted then restored, etc)
+        // To ensure that we check if one action is cancelling out a previous one (deleted then restored, etc.)
         // we process each item, only caring about the latest action.
         foreach ($actions as $action) {
             $previousAction = $processed[$action['elementId']] ?? [];
@@ -180,7 +172,7 @@ class Elements extends Component
             $processed[$action['elementId']] = $action;
         }
 
-        foreach ($processed as $key => $action) {
+        foreach ($processed as $action) {
             if ($action['type'] === $type) {
                 $data[] = Json::decode($action['data']);
             }

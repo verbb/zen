@@ -55,7 +55,7 @@ class DiffHelper
     {
         $newArray = [];
 
-        foreach ($array as $attribute => $value) {
+        foreach ($array as $value) {
             if ($value instanceof DiffOpAdd) {
                 $newArray['add'] = ($newArray['add'] ?? 0) + 1;
             } else if ($value instanceof DiffOpChange) {
@@ -95,7 +95,7 @@ class DiffHelper
                     
                     // If the index is numeric, assume we just want to know about the top-level field
                     // Otherwise, it's something more complicated like Matrix
-                    if (!is_integer($subAttribute)) {
+                    if (!is_int($subAttribute)) {
                         $newArray[$attribute . '-' . $subAttribute] = $action;
                     }
                 }

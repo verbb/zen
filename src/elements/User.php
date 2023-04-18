@@ -1,10 +1,7 @@
 <?php
 namespace verbb\zen\elements;
 
-use verbb\zen\Zen;
 use verbb\zen\base\Element as ZenElement;
-use verbb\zen\elements\Asset as ZenAsset;
-use verbb\zen\fields\RelationField;
 use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\ImportFieldTab;
 
@@ -14,13 +11,9 @@ use craft\db\Table;
 use craft\elements\Asset as AssetElement;
 use craft\elements\User as UserElement;
 use craft\elements\db\ElementQueryInterface;
-use craft\fields\Assets;
-use craft\helpers\Assets as AssetsHelper;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
 use craft\helpers\Db;
-
-use Throwable;
 
 class User extends ZenElement
 {
@@ -157,9 +150,6 @@ class User extends ZenElement
         }
 
         // Values will be different depending on existing or new content
-        $groups = [];
-        $permissions = [];
-
         if ($type === 'new') {
             $groups = $element->groups;
             $permissions = self::$_permissions[$element->email] ?? [];
@@ -188,12 +178,6 @@ class User extends ZenElement
                         'label' => Craft::t('app', 'Full Name'),
                         'id' => 'name',
                         'value' => $element->name,
-                        'disabled' => true,
-                    ]),
-                    'email' => Cp::textFieldHtml([
-                        'label' => Craft::t('app', 'Email'),
-                        'id' => 'email',
-                        'value' => $element->email,
                         'disabled' => true,
                     ]),
                     'photo' => Cp::elementSelectFieldHtml([
@@ -250,7 +234,7 @@ class User extends ZenElement
             Craft::$app->getUsers()->assignUserToGroups($importAction->element->id, $importAction->element->groups);
 
             if ($photo = $importAction->element->photo) {
-                // Because the photo might've already been taken care of (included in the payload as as asset) we need to check if already
+                // Because the photo might've already been taken care of (included in the payload as an asset) we need to check if already
                 // uploaded and moved from the temp directory.
                 if ($existingPhoto = AssetElement::find()->uid($photo->uid)->one()) {
                     $importAction->element->setPhoto($existingPhoto);

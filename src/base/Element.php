@@ -26,9 +26,9 @@ use craft\helpers\StringHelper;
 use craft\models\FieldLayoutFormTab;
 use craft\models\FieldLayoutTab;
 
-use yii\base\Event;
-
 use Throwable;
+
+use yii\base\Event;
 
 use Wa72\HtmlPageDom\HtmlPageCrawler;
 
@@ -134,10 +134,6 @@ abstract class Element implements ZenElementInterface
     {
         $element = $newElement ?? $currentElement ?? null;
         $elementHtml = static::getElementHtml($element);
-        $elementColumns = [];
-        $suffixColumns = [];
-        $oldHtml = '';
-        $newHtml = '';
 
         $prefixColumns = [
             'element' => $elementHtml,
@@ -151,7 +147,7 @@ abstract class Element implements ZenElementInterface
             // Generate the old/new summary of attributes and fields
             $oldHtml = static::generateCompareHtml($currentElement, $diffs, 'old');
             $newHtml = static::generateCompareHtml($newElement, $diffs, 'new');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return [
                 'error' => true,
                 'errorMessage' => $e->getMessage(),
@@ -225,7 +221,7 @@ abstract class Element implements ZenElementInterface
         Event::trigger(static::class, self::EVENT_MODIFY_SERIALIZED_DATA, $event);
 
         // Convert to any extra objects to an array easily (without calling `toArray()`)
-        // We also want to filter out any empty values so we can get the right "remove" diff rather than change
+        // We also want to filter out any empty values, so we can get the right "remove" diff rather than change
         return ArrayHelper::recursiveFilter(Json::decode(Json::encode($event->values)));
     }
 
@@ -353,7 +349,6 @@ abstract class Element implements ZenElementInterface
 
     public static function getFieldForPreview(FieldInterface $field, ElementInterface $element): void
     {
-        return;
     }
 
     public static function beforeImport(ElementImportAction $importAction): bool
@@ -389,6 +384,8 @@ abstract class Element implements ZenElementInterface
 
     /**
      * Return the actual Element Type class used by Craft.
+     * 
+     * @return class-string<ElementInterface> The Element class name
      */
     abstract public static function elementType(): string;
 
@@ -491,8 +488,8 @@ abstract class Element implements ZenElementInterface
 
         // Add our change status indicator to each field for the "new" element
         if ($type === 'new') {
-            foreach (DiffHelper::convertDiffToFieldIndicators($diffs) as $selector => $type) {
-                $addStatusIndicator($crawler, $selector, $type);
+            foreach (DiffHelper::convertDiffToFieldIndicators($diffs) as $selector => $diffType) {
+                $addStatusIndicator($crawler, $selector, $diffType);
             }
         }
 

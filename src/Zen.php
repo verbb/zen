@@ -2,14 +2,11 @@
 namespace verbb\zen;
 
 use verbb\zen\base\PluginTrait;
-use verbb\zen\behaviors\ZenElementChangedBehavior;
 use verbb\zen\models\Settings;
 use verbb\zen\variables\ZenVariable;
 
 use Craft;
 use craft\base\Plugin;
-use craft\events\BatchElementActionEvent;
-use craft\events\ElementEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\UrlHelper;
 use craft\services\Drafts;

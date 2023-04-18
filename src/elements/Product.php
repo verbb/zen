@@ -2,14 +2,11 @@
 namespace verbb\zen\elements;
 
 use verbb\zen\base\Element as ZenElement;
-use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\ImportFieldTab;
 
 use Craft;
 use craft\base\ElementInterface;
 use craft\db\Query;
-use craft\db\Table;
-use craft\elements\User;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;

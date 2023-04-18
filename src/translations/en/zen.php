@@ -1,5 +1,37 @@
 <?php
 
 return [
-
+    'Element does not exist.' => 'Element does not exist.',
+    'Meta' => 'Meta',
+    'You must select a "From Date" and "To Date".' => 'You must select a "From Date" and "To Date".',
+    'Group' => 'Group',
+    'Zen' => 'Zen',
+    'Email' => 'Email',
+    'Section / Type' => 'Section / Type',
+    'Full Name' => 'Full Name',
+    'Importing content via Zen.' => 'Importing content via Zen.',
+    'Unable to import {type}:{errors}' => 'Unable to import {type}:{errors}',
+    'Unable to fetch job info: “{message}” {file}:{line}' => 'Unable to fetch job info: “{message}” {file}:{line}',
+    'This content has been changed.' => 'This content has been changed.',
+    'Unable to record element action: “{message}” {file}:{line}' => 'Unable to record element action: “{message}” {file}:{line}',
+    'Permissions' => 'Permissions',
+    'Failed: {type}:{error}' => 'Failed: {type}:{error}',
+    'Settings' => 'Settings',
+    'You must select some elements to export.' => 'You must select some elements to export.',
+    'No data available to export.' => 'No data available to export.',
+    'This content has been removed.' => 'This content has been removed.',
+    'Preview' => 'Preview',
+    'Filename' => 'Filename',
+    'Invalid file.' => 'Invalid file.',
+    'Global Set' => 'Global Set',
+    'This content has been added.' => 'This content has been added.',
+    'Unable to open the zip file at $path.' => 'Unable to open the zip file at $path.',
+    'Ungrouped' => 'Ungrouped',
+    'Username' => 'Username',
+    'Volume' => 'Volume',
+    'Product Type' => 'Product Type',
+    'State' => 'State',
+    'General Settings' => 'General Settings',
+    'Summary' => 'Summary',
+    'You must upload a file.' => 'You must upload a file.'
 ];

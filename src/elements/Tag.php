@@ -8,7 +8,6 @@ use Craft;
 use craft\base\ElementInterface;
 use craft\db\Table;
 use craft\elements\Tag as TagElement;
-use craft\elements\User;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
