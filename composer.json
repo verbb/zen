@@ -1,0 +1,46 @@
+{
+    "name": "verbb/zen",
+    "description": "",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "zen"
+    ],
+    "support": {
+        "email": "support@verbb.io",
+        "issues": "https://github.com/verbb/zen/issues?state=open",
+        "source": "https://github.com/verbb/zen",
+        "docs": "https://github.com/verbb/zen",
+        "rss": "https://github.com/verbb/zen/commits/v2.atom"
+    },
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Verbb",
+            "homepage": "https://verbb.io"
+        }
+    ],
+    "require": {
+        "php": "^8.0.2",
+        "craftcms/cms": "^4.0.0",
+        "diff/diff": "^3.3",
+        "nystudio107/craft-plugin-vite": "^4.0.0",
+        "verbb/base": "^2.0.0",
+        "wa72/htmlpagedom": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "verbb\\zen\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Zen",
+        "handle": "zen",
+        "changelogUrl": "https://raw.githubusercontent.com/verbb/zen/craft-4/CHANGELOG.md",
+        "class": "verbb\\zen\\Zen"
+    }
+}

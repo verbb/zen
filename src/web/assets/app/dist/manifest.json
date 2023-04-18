@@ -1,0 +1,64 @@
+{
+  "app/src/js/zen.css": {
+    "file": "assets/zen-45e729c1.css",
+    "src": "app/src/js/zen.css"
+  },
+  "app/src/js/svg/chevron-right.svg?raw": {
+    "file": "assets/chevron-right-5695932b.js",
+    "src": "app/src/js/svg/chevron-right.svg?raw",
+    "isDynamicEntry": true
+  },
+  "app/src/js/svg/arrow-circle.svg?raw": {
+    "file": "assets/arrow-circle-afeab343.js",
+    "src": "app/src/js/svg/arrow-circle.svg?raw",
+    "isDynamicEntry": true
+  },
+  "app/src/js/svg/import.svg?raw": {
+    "file": "assets/import-08550f2b.js",
+    "src": "app/src/js/svg/import.svg?raw",
+    "isDynamicEntry": true
+  },
+  "app/src/js/svg/success-large.svg?raw": {
+    "file": "assets/success-large-9c1960a9.js",
+    "src": "app/src/js/svg/success-large.svg?raw",
+    "isDynamicEntry": true
+  },
+  "app/src/js/svg/export.svg?raw": {
+    "file": "assets/export-286e8042.js",
+    "src": "app/src/js/svg/export.svg?raw",
+    "isDynamicEntry": true
+  },
+  "app/src/js/svg/error-large.svg?raw": {
+    "file": "assets/error-large-8d98bc34.js",
+    "src": "app/src/js/svg/error-large.svg?raw",
+    "isDynamicEntry": true
+  },
+  "app/src/js/svg/koi.svg?raw": {
+    "file": "assets/koi-a426d3b2.js",
+    "src": "app/src/js/svg/koi.svg?raw",
+    "isDynamicEntry": true
+  },
+  "app/src/js/svg/icon-bg.svg?raw": {
+    "file": "assets/icon-bg-ea6a9226.js",
+    "src": "app/src/js/svg/icon-bg.svg?raw",
+    "isDynamicEntry": true
+  },
+  "app/src/js/zen.js": {
+    "file": "assets/zen-3b5d54a3.js",
+    "src": "app/src/js/zen.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "app/src/js/svg/arrow-circle.svg?raw",
+      "app/src/js/svg/chevron-right.svg?raw",
+      "app/src/js/svg/error-large.svg?raw",
+      "app/src/js/svg/export.svg?raw",
+      "app/src/js/svg/icon-bg.svg?raw",
+      "app/src/js/svg/import.svg?raw",
+      "app/src/js/svg/koi.svg?raw",
+      "app/src/js/svg/success-large.svg?raw"
+    ],
+    "css": [
+      "assets/zen-45e729c1.css"
+    ]
+  }
+}

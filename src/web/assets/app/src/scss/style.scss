@@ -1,0 +1,74 @@
+// ==========================================================================
+
+// Zen for Craft CMS
+// Author: Verbb - https://verbb.io/
+
+// ==========================================================================
+
+.sr-only {
+    clip: rect(0,0,0,0);
+    border-width: 0;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+
+// ==========================================================================
+// Loading
+// ==========================================================================
+
+@keyframes loading {
+    0% {
+        transform: rotate(0)
+    } 100% {
+        transform: rotate(360deg)
+    }
+}
+
+.zui-loading {
+    position: relative;
+    pointer-events: none;
+    color: transparent !important;
+    min-height: 1rem;
+
+    &::after {
+        position: absolute;
+        display: block;
+        height: 1rem;
+        width: 1rem;
+        margin-top: -0.65rem;
+        margin-left: -0.65rem;
+        border-width: 2px;
+        border-style: solid;
+        border-radius: 9999px;
+        border-color: #0a9ea5;
+        animation: loading 0.5s infinite linear;
+        border-right-color: transparent;
+        border-top-color: transparent;
+        content: "";
+        left: 50%;
+        top: 50%;
+        z-index: 1;
+    }
+}
+
+.zui-loading.zui-loading-lg {
+    min-height: 2rem;
+
+    &::after {
+        height: 2rem;
+        width: 2rem;
+        margin-top: -1rem;
+        margin-left: -1rem;
+    }
+}
+
+button.zui-loading::after {
+    margin-top: -0.5rem;
+    margin-left: -0.5rem;
+}

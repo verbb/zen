@@ -1,0 +1,20 @@
+{% extends 'zen/_layouts/settings' %}
+
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% set fullPageForm = true %}
+{% set selectedNavItem = 'general' %}
+
+{% block blockContent %}
+
+<input type="hidden" name="action" value="plugins/save-plugin-settings">
+<input type="hidden" name="pluginHandle" value="zen">
+
+{% namespace 'settings' %}
+
+
+
+{% endnamespace %}
+
+{% endblock %}
