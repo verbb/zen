@@ -206,6 +206,11 @@ abstract class Element implements ZenElementInterface
             'dateCreated' => Db::prepareDateForDb($element->dateCreated),
         ];
 
+        if ($parent = $element->getParent()) {
+            $data['level'] = $element->level;
+            $data['parent'] = static::getSerializedElement($parent);
+        }
+
         // Swap some IDs to their UIDs
         $data['siteUid'] = $element->getSite()->uid;
         $data['fields'] = static::getSerializedElementFields($element);
@@ -264,6 +269,11 @@ abstract class Element implements ZenElementInterface
 
         // Allow element type classes to modify the data before being turned into an element
         $data = static::defineNormalizedElement($data);
+
+        // Handle parent items (after classes can handle them)
+        if ($parent = ArrayHelper::remove($data, 'parent')) {
+            $data['parent'] = static::getNormalizedElement($parent);
+        }
 
         // Allow plugins to modify the data
         $event = new ModifyElementNormalizedDataEvent([
