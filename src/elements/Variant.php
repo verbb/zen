@@ -53,7 +53,8 @@ class Variant extends ZenElement
 
     public static function defineNormalizedElement(array $data): array
     {
-        $data['productId'] = Db::idByUid('{{%commerce_products}}',  ArrayHelper::remove($data, 'productUid'));
+        // Discard it, we don't need it with a new or existing product this is attached to
+        ArrayHelper::remove($data, 'productUid');
 
         return $data;
     }

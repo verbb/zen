@@ -2,6 +2,7 @@
 namespace verbb\zen\elements;
 
 use verbb\zen\base\Element as ZenElement;
+use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\ImportFieldTab;
 
 use Craft;
@@ -173,6 +174,41 @@ class Product extends ZenElement
                 ],
             ]),
         ];
+    }
+
+    public static function beforeImport(ElementImportAction $importAction): bool
+    {
+        // We need to do a little extra handling here for repeated imports, or multi-site imports.
+        // Zen will check for the product ID for an already-imported product, but needs to do the same
+        // variant-id check to ensure that variants aren't imported as duplicates.
+        $element = $importAction->element;
+        $elementType = $importAction->elementType;
+        $elementIdentifier = $elementType::elementUniqueIdentifier();
+
+        if (!$element->id && $element->$elementIdentifier) {
+            $importedElement = $elementType::elementType()::find()
+                ->$elementIdentifier($element->$elementIdentifier)
+                ->siteId($element->siteId)
+                ->status(null)
+                ->trashed(null)
+                ->one();
+
+            if ($importedElement) {
+                $element->id = $importedElement->id;
+
+                $variants = $element->variants;
+
+                foreach ($importedElement->variants as $key => $value) {
+                    $variants[$key]->id = $value->id;
+                }
+
+                $element->variants = $variants;
+            }
+        }
+
+        $importAction->element = $element;
+
+        return parent::beforeImport($importAction);
     }
 
 
