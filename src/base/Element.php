@@ -389,6 +389,24 @@ abstract class Element implements ZenElementInterface
         ]));
     }
 
+    public static function checkExistingImportedElement(ElementImportAction $importAction): void
+    {
+        // Before importing, check if the element we're about to import already has, and add the ID so we don't get duplicates.
+        // There are a few scenarios where this might happen:
+        // 1. Multi-site imports, where the "Site A" element has already been imported, but the "Site B" element needs to import
+        // (but use the same imported element, just site-specific).
+        // 2. Elements containing element fields. Importing "Entry 1" with a categories field with "Category 1", which is also
+        // being imported at the same time as an element.
+        // 3. Parent elements, for the same reasons above, as the parent will have been imported first, but the child won't
+        // know about it.
+        //
+        // So, to address everything here, we query for an existing element, and apply the ID if found.
+        static::populateExistingImportedElement($importAction->element);
+
+        // Do the same for any parent
+        static::populateExistingImportedElement($importAction->element->parent);
+    }
+
 
     // Abstract Methods
     // =========================================================================
@@ -421,6 +439,38 @@ abstract class Element implements ZenElementInterface
 
     // Protected Methods
     // =========================================================================
+
+    protected static function populateExistingImportedElement(?ElementInterface $element): void
+    {
+        $elementIdentifier = static::elementUniqueIdentifier();
+
+        // We only care if the element doesn't have an ID, and there's data to match with the identifier
+        if ($element && !$element->id && $element->$elementIdentifier) {
+            if ($importedElement = static::getExistingImportedElement($element)) {
+                $element->id = $importedElement->id;
+
+                // Allow some elements to handle populating the new element from the existing one (Products)
+                static::defineExistingImportedElement($element, $importedElement);
+            }
+        }
+    }
+
+    protected static function defineExistingImportedElement(ElementInterface $newElement, ElementInterface $currentElement): void
+    {
+        return;
+    }
+
+    protected static function getExistingImportedElement(ElementInterface $element): ?ElementInterface
+    {
+        $elementIdentifier = static::elementUniqueIdentifier();
+
+        return static::find()
+            ->$elementIdentifier($element->$elementIdentifier)
+            ->siteId($element->siteId)
+            ->status(null)
+            ->trashed(null)
+            ->one();
+    }
 
     protected static function generateCompareHtml(?ElementInterface $element, array $diffs, string $type): string
     {

@@ -280,22 +280,8 @@ class Import extends Component
             return false;
         }
 
-        // Because we can have both elements being imported and relation fields that create elements if they don't exist, 
-        // processing can fall over itself. For example, importing "Entry 1" with a categories field with "Category 1", which is also
-        // being imported at the same time as an element (maybe before, maybe after) will cause a ruckus. Instead, do a final check here
-        // if this is a new element (no ID), and if an existing element is already found (check the UID) and patch in that ID.
-        if (!$element->id && $element->$elementIdentifier) {
-            $importedElement = $elementType::elementType()::find()
-                ->$elementIdentifier($element->$elementIdentifier)
-                ->siteId($element->siteId)
-                ->status(null)
-                ->trashed(null)
-                ->one();
-
-            if ($importedElement) {
-                $element->id = $importedElement->id;
-            }
-        }
+        // Do a final check to see if the element has already been imported by something else in the import.
+        $elementType::checkExistingImportedElement($importAction);
 
         if ($importAction->action === ElementImportAction::ACTION_SAVE) {
             $result = Craft::$app->getElements()->saveElement($element);
