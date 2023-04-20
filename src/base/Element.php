@@ -25,6 +25,7 @@ use craft\helpers\Json;
 use craft\helpers\StringHelper;
 use craft\models\FieldLayoutFormTab;
 use craft\models\FieldLayoutTab;
+use craft\web\View;
 
 use Throwable;
 
@@ -414,6 +415,9 @@ abstract class Element implements ZenElementInterface
     protected static function generateCompareHtml(?ElementInterface $element, array $diffs, string $type): string
     {
         $html = '';
+
+        // Required when testing outside of the CP (using the URLs directly)
+        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
 
         if ($element) {
             if ($fieldLayout = $element->getFieldLayout()) {
