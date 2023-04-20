@@ -30,7 +30,8 @@ class Export extends Component
             $toDate->setTime(23, 59, 59);
 
             $query = $elementType::find()
-                ->dateUpdated(['and', '>= ' . Db::prepareDateForDb($fromDate), '< ' . Db::prepareDateForDb($toDate)]);
+                ->dateUpdated(['and', '>= ' . Db::prepareDateForDb($fromDate), '< ' . Db::prepareDateForDb($toDate)])
+                ->siteId('*');
 
             $elements = $elementType::getExportOptions($query);
 
@@ -86,7 +87,9 @@ class Export extends Component
                 // Prepare an element query with the date range populated
                 $dateRange = [Db::prepareDateForDb($fromDate), Db::prepareDateForDb($toDate)];
 
-                $query = $elementType::find()->dateUpdated(['and', '>= ' . $dateRange[0], '< ' . $dateRange[1]]);
+                $query = $elementType::find()
+                    ->dateUpdated(['and', '>= ' . $dateRange[0], '< ' . $dateRange[1]])
+                    ->siteId('*');
 
                 // Get the raw elements for the type. Element classes will determine how to fetch the elements from the params
                 foreach ($elementType::getExportData($query, $params) as $element) {

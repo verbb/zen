@@ -7,6 +7,7 @@ use verbb\zen\models\ElementImportAction;
 
 use Craft;
 use craft\base\Component;
+use craft\base\ElementInterface;
 use craft\helpers\FileHelper;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
@@ -58,31 +59,37 @@ class Import extends Component
             // Get all the UIDs in the provided import to query in one go for performance
             // But, not all elements use UID for their unique identifier (Users use email)
             $elementIdentifier = $elementType::elementUniqueIdentifier();
-            $sourceItems = ArrayHelper::index($sourceItems, $elementIdentifier);
-            ksort($sourceItems);
-            $elementIdentifiers = array_keys($sourceItems);
+            $elementIdentifiers = array_keys(ArrayHelper::index($sourceItems, $elementIdentifier));
+
+            // Re-index the soure items with their unique UID + siteUID key
+            $sourceItems = ArrayHelper::index($sourceItems, function($item) use ($elementIdentifier) {
+                return $item[$elementIdentifier] . ':' . $item['siteUid'];
+            });
 
             // Do an element query to fetch all the items provided in the import for _this_ install. It's more performant to do
             // all at once, and we also want to get any trashed elements in case we're restoring.
             $elements = $elementType::elementType()::find()
                 ->$elementIdentifier($elementIdentifiers)
-                ->indexBy($elementIdentifier)
                 ->status(null)
                 ->trashed(null)
+                ->siteId('*')
                 ->all();
+
+            // Re-index the elements with their unique UID + siteUID key
+            $elements = ArrayHelper::index($elements, function($element) use ($elementIdentifier) {
+                return $element->$elementIdentifier . ':' . $element->site->uid;
+            });
 
             $destItems = [];
 
-            foreach ($elements as $element) {
+            foreach ($elements as $elementKey => $element) {
                 // Ensure we serialize the destination element the same way we serialize the source exported element for accurate compare
-                $destItems[$element->$elementIdentifier] = $elementType::getSerializedElement($element);
+                $destItems[$elementKey] = $elementType::getSerializedElement($element);
             }
-
-            ksort($destItems);
 
             $elementData = [];
 
-            foreach ($sourceItems as $sourceItem) {
+            foreach ($sourceItems as $sourceKeyItem => $sourceItem) {
                 $diffs = [];
 
                 // Store the state for what action needs to be done when importing (save/delete/restore the element)
@@ -99,7 +106,7 @@ class Import extends Component
                 // If modified (add or change), run diff checks
                 if ($sourceItemState === 'modified') {
                     // Find the same element on this install. If not found, it's new
-                    $destItem = $destItems[$sourceItem[$elementIdentifier]] ?? [];
+                    $destItem = $destItems[$sourceKeyItem] ?? [];
 
                     // If a destination element is found, do a diff check. Otherwise, it's treated as a new element.
                     if ($destItem) {
@@ -145,7 +152,7 @@ class Import extends Component
 
                 // Now that we're done comparing, turn the imported data into a proper element. 
                 // This will have any changes already patched in - if there's an existing element on this install.
-                $currentElement = $elements[$sourceItem[$elementIdentifier]] ?? null;
+                $currentElement = $elements[$sourceKeyItem] ?? null;
 
                 // Add the ID into the source item from the destination item - if it exists. After we compare.
                 if ($currentElement) {
