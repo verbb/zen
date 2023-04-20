@@ -134,7 +134,7 @@ abstract class Element implements ZenElementInterface
     public static function getImportTableValues(array $diffs, ?ElementInterface $newElement, ?ElementInterface $currentElement, ?string $state): array
     {
         $element = $newElement ?? $currentElement ?? null;
-        $elementHtml = static::getElementHtml($element);
+        $elementHtml = $element ? static::getElementHtml($element) : '';
 
         $prefixColumns = [
             'element' => $elementHtml,

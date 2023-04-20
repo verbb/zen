@@ -87,6 +87,11 @@ class Elements extends Component
             return;
         }
 
+        // We also don't care if discarding a provisional draft
+        if ($event->element->isProvisionalDraft) {
+            return;
+        }
+
         $this->_onElementAction($record, $event->element);
     }
 
