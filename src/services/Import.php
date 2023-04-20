@@ -287,6 +287,7 @@ class Import extends Component
         if (!$element->id && $element->$elementIdentifier) {
             $importedElement = $elementType::elementType()::find()
                 ->$elementIdentifier($element->$elementIdentifier)
+                ->siteId($element->siteId)
                 ->status(null)
                 ->trashed(null)
                 ->one();
