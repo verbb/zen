@@ -2,6 +2,7 @@
 namespace verbb\zen;
 
 use verbb\zen\base\PluginTrait;
+use verbb\zen\base\ProcessingLogTrait;
 use verbb\zen\models\Settings;
 use verbb\zen\variables\ZenVariable;
 
@@ -30,6 +31,7 @@ class Zen extends Plugin
     // =========================================================================
 
     use PluginTrait;
+    use ProcessingLogTrait;
 
 
     // Public Methods

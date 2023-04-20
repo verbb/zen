@@ -5,6 +5,7 @@ use verbb\zen\Zen;
 use verbb\zen\queue\jobs\RunImport;
 
 use Craft;
+use craft\helpers\Json;
 use craft\web\Controller;
 
 use yii\web\Response;
@@ -61,7 +62,11 @@ class QueueController extends Controller
                 $job = $jobInfo['job'] ?? null;
 
                 if ($job instanceof RunImport && $job->taskId === $taskId) {
-                    $zenJob = $jobInfo;
+                    // Using `toArray()` isn't good enough here, but we want to add our own attributes
+                    $zenJob = Json::decode(Json::encode($jobInfo));
+
+                    // Add in custom properties
+                    $zenJob['processingLog'] = Zen::getProcessingLog($taskId);
 
                     break;
                 }

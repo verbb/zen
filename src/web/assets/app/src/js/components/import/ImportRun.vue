@@ -23,6 +23,7 @@
 
                         <div v-else-if="completed" class="zui-status-intro">
                             <h1 class="h1-complete">{{ t('zen', 'Import complete!') }}</h1>
+                            <span v-html="successMessage"></span><br>
                         </div>
 
                         <div v-else class="zui-status-intro">
@@ -57,11 +58,13 @@ export default {
         return {
             error: false,
             errorMessage: '',
+            successMessage: '',
             stepMessage: 'Preparing to import elements...',
             progressBar: null,
             completed: false,
             cancelled: false,
             taskId: Craft.randomString(10),
+            processingLog: [],
         };
     },
 
@@ -84,6 +87,11 @@ export default {
     methods: {
         updateProgressBar() {
             new Craft.Zen.TaskProgress(this.taskId, (({ status, taskInfo }) => {
+                // Store the process log at the component level, as it will be gone when completed
+                if (taskInfo && taskInfo.processingLog && taskInfo.processingLog.length) {
+                    this.processingLog = taskInfo.processingLog;
+                }
+
                 if (status === 'step') {
                     this.progressBar.setProgressPercentage(taskInfo.progress);
 
@@ -92,6 +100,11 @@ export default {
                     }
                 } else if (status === 'complete') {
                     this.progressBar.setProgressPercentage(100);
+
+                    // // Check if there are any logs specific to processing each item
+                    if (this.processingLog && this.processingLog.length) {
+                        this.successMessage = `<div class="zui-log-table">${this.getLogInfo()}</div>`;
+                    }
 
                     setTimeout(() => {
                         this.completed = true;
@@ -105,9 +118,41 @@ export default {
                     }
 
                     const info = getErrorMessage(taskInfo);
+
+                    // Check if there are any logs specific to processing each item
+                    if (this.processingLog && this.processingLog.length) {
+                        info.text = `<div class="zui-log-table">${this.getLogInfo()}</div>`;
+                    }
+
                     this.errorMessage = `<h1>${info.heading}</h1><br>${info.text}<br>${info.trace}`;
                 }
             }));
+        },
+
+        getLogInfo() {
+            let errorDetail = [];
+
+            this.processingLog.forEach((log) => {
+                const line = [];
+
+                line.push(`${log.element.type}: “${log.element.label}”`);
+
+                if (!log.success) {
+                    line.push(`<span class="error">  > ${log.error}</span>`);
+
+                    if (log.trace) {
+                        line.push(`<span class="error">  > <small>${log.trace}</small></span>`);
+                    }
+                } else {
+                    line.push(`<span class="success">  > ${this.t('zen', 'Successfullly imported.')}</span>`);
+                }
+
+                errorDetail.push(line.join('<br>'));
+            });
+
+            errorDetail = errorDetail.join('<br><br>');
+
+            return errorDetail;
         },
 
         runImport() {
@@ -224,6 +269,17 @@ export default {
 
     .loading-bar {
         padding-bottom: 2rem;
+    }
+}
+
+.zui-log-table {
+    text-align: left;
+    color: #404d5b;
+    white-space: pre-wrap;
+    padding: 1rem 0;
+
+    .success {
+        color: #0a9ea5 !important;
     }
 }
 
