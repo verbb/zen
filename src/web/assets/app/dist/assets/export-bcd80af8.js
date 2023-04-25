@@ -1,4 +1,5 @@
-const t=`<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+const t=`<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+	 y="0px"
 	 viewBox="0 0 702.9 480.9" style="enable-background:new 0 0 702.9 480.9;" xml:space="preserve">
 <g>
 	<path style="fill:none;" d="M393.7,99.8C393.7,99.8,393.7,99.8,393.7,99.8L393.7,99.8C393.7,99.8,393.7,99.8,393.7,99.8
@@ -43,9 +44,9 @@ const t=`<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmln
 		c19.2,0,38.4,0,56,0c4.1,0,8.1,0,12,0c6.9,0,13.5,0,19.5,0c3.7,0,4.8,1.1,4.8,4.8c-0.2,15-0.1,30-0.1,45c0,1.7,0.2,3.4,0.4,6.2
 		c40.5-32.7,80.1-64.7,120.1-97.1C662.7,255.5,623.3,223.6,582.8,190.9z"/>
 </g>
-<rect x="87" y="200" width="284.5" height="29"/>
-<rect x="87" y="275.3" width="254.5" height="29"/>
-<rect x="87" y="350.6" width="284.5" height="29"/>
+	<rect x="87" y="200" width="284.5" height="29"/>
+	<rect x="87" y="275.3" width="254.5" height="29"/>
+	<rect x="87" y="350.6" width="284.5" height="29"/>
 </svg>
 `;export{t as default};
-//# sourceMappingURL=export-286e8042.js.map
+//# sourceMappingURL=export-bcd80af8.js.map
