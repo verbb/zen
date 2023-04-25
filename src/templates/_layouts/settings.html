@@ -6,7 +6,7 @@
 {% requireAdmin %}
 
 {% set crumbs = [
-    { label: 'Zen' | t('zen'), url: url('zen') },
+    { label: craft.zen.getPluginName() | t('zen'), url: url('zen') },
     { label: 'Settings' | t('app'), url: url('zen/settings') },
 ] %}
 

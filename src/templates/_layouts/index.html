@@ -3,7 +3,7 @@
 {% do view.registerAssetBundle('verbb\\zen\\assetbundles\\ZenAsset') %}
 
 {% if title is not defined %}
-    {% set title = 'Zen' | t('zen') %}
+    {% set title = craft.zen.getPluginName() | t('zen') %}
 {% endif %}
 
 {% block content %}

@@ -12,5 +12,10 @@ class ZenVariable
     {
         return Zen::$plugin;
     }
+
+    public function getPluginName(): string
+    {
+        return Zen::$plugin->getPluginName();
+    }
     
 }

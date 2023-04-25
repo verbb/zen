@@ -53,6 +53,11 @@ class Zen extends Plugin
         }
     }
 
+    public function getPluginName(): string
+    {
+        return Craft::t('zen', $this->getSettings()->pluginName);
+    }
+
     public function getSettingsResponse(): mixed
     {
         return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('zen/settings'));

@@ -13,7 +13,16 @@
 
 {% namespace 'settings' %}
 
-
+{{ forms.textField({
+    label: 'Plugin Name' | t('app'),
+    instructions: 'Plugin name for the end user.' | t('zen'),
+    id: 'pluginName',
+    name: 'pluginName',
+    value: settings.pluginName,
+    first: true,
+    autofocus: true,
+    warning: macros.configWarning('pluginName', 'zen'),
+}) }}
 
 {% endnamespace %}
 
