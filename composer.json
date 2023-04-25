@@ -1,6 +1,6 @@
 {
     "name": "verbb/zen",
-    "description": "",
+    "description": "Manage content across multiple environments with ease.",
     "type": "craft-plugin",
     "version": "1.0.0",
     "keywords": [
