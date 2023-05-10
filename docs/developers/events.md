@@ -1,7 +1,6 @@
 # Events
 Zen provides a collection of events for extending its functionality. Modules and plugins can register event listeners, typically in their `init()` methods, to modify Zen’s behavior.
 
-
 ## Element Events
 The below events are examples using the `Entry` class, but any class that inherits from the `verbb\zen\base\Element` class can use these events.
 
