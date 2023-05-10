@@ -17,8 +17,8 @@ use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
 use craft\helpers\Html;
 use craft\helpers\UrlHelper;
-
 use craft\events\DefineAssetThumbUrlEvent;
+use craft\fs\Local;
 use craft\services\Assets;
 
 use yii\base\Event;
@@ -82,10 +82,13 @@ class Asset extends ZenElement
         ];
 
         // If serializing for an export, record any additional files (the actual asset) to be stored in the zip
-        Zen::$plugin->getExport()->storeExportFile([
-            'filename' => $element->filename,
-            'content' => $element->getContents(),
-        ]);
+        // But only for local storage. If a remote filesystem, no need to process
+        if ($element->getVolume()->getFs() instanceof Local) {
+            Zen::$plugin->getExport()->storeExportFile([
+                'filename' => $element->filename,
+                'content' => $element->getContents(),
+            ]);
+        }
 
         return $data;
     }
@@ -109,7 +112,7 @@ class Asset extends ZenElement
         }
 
         // For asset fields, we want to generate the thumbnail, but because it's not publicly available and still in temp
-        // we need to do a little more work to get it working. Using this event, we can hijack thing across the entire
+        // we need to do a little more work to get it working. Using this event, we can hijack things across the entire
         // import process, when turning into an Asset element.
         Event::on(Assets::class, Assets::EVENT_DEFINE_THUMB_URL, function(DefineAssetThumbUrlEvent $event) {
             $path = $event->asset->tempFilePath;
