@@ -62,7 +62,7 @@ class Entry extends ZenElement
         $data['expiryDate'] = Db::prepareDateForDb($element->expiryDate);
         $data['sectionUid'] = $element->getSection()->uid;
         $data['typeUid'] = $element->getType()->uid;
-        $data['authorEmail'] = $element->getAuthor()->email;
+        $data['authorEmail'] = $element->getAuthor()->email ?? null;
 
         return $data;
     }
