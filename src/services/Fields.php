@@ -210,10 +210,6 @@ class Fields extends Component
             }
         }
 
-        // if (Plugin::isPluginInstalledAndEnabled('neo')) {
-        //     $fieldTypes[] = fieldTypes\Neo::class;
-        // }
-
         if ($field instanceof BaseRelationField) {
             $keys[] = $prefix . $field->handle;
         }
