@@ -58,10 +58,6 @@ class ImportController extends Controller
         $zip->extractTo($tempDir);
         $zip->close();
 
-        // if (!file_exists($contentPath)) {
-        //     return $this->asFailure(Craft::t('zen', 'Unable to find content in uploaded file.'));
-        // }
-
         // Fetch the content from the uploaded file (storing any extra files in cache)
         $json = Zen::$plugin->getImport()->getImportPayload($filename);
 
