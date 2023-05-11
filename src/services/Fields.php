@@ -4,11 +4,15 @@ namespace verbb\zen\services;
 use verbb\zen\fields as fieldTypes;
 use verbb\zen\helpers\Plugin;
 
+use Craft;
 use craft\base\Component;
 use craft\base\ElementInterface;
 use craft\base\FieldInterface;
 use craft\events\RegisterComponentTypesEvent;
 use craft\fields\BaseRelationField;
+use craft\fields\Matrix;
+
+use verbb\supertable\fields\SuperTableField;
 
 class Fields extends Component
 {
@@ -56,56 +60,43 @@ class Fields extends Component
 
     public function serializeValue(FieldInterface $field, ElementInterface $element, mixed $value): mixed
     {
-        $serializedValue = $field->serializeValue($value, $element);
-
-        // Some handlers are generic
-        if ($field instanceof BaseRelationField) {
-            // Always use the value from the RelationField class to override
-            $serializedValue = fieldTypes\RelationField::serializeValue($field, $element, $value);
-        }
-
         // Cheek if any registered field types match this field
         if ($fieldType = $this->getFieldByType(get_class($field))) {
             if ($customValue = $fieldType::serializeValue($field, $element, $value)) {
-                $serializedValue = $customValue;
+                return $customValue;
             }
+        } else if ($field instanceof BaseRelationField) {
+            // Always use the value from the RelationField class to override
+            return fieldTypes\RelationField::serializeValue($field, $element, $value);
         }
 
-        return $serializedValue;
+        return $field->serializeValue($value, $element);
     }
 
     public function normalizeValue(FieldInterface $field, ElementInterface $element, mixed $value): mixed
     {
-        // We don't need to normalize here, as the element will do that, when calling `setFieldValues()`
-        $normalizedValue = $value;
-
-        // Some handlers are generic
-        if ($field instanceof BaseRelationField) {
-            // Always use the value from the RelationField class to override
-            $normalizedValue = fieldTypes\RelationField::normalizeValue($field, $element, $value);
-        }
-
         // Cheek if any registered field types match this field
         if ($fieldType = $this->getFieldByType(get_class($field))) {
             if ($customValue = $fieldType::normalizeValue($field, $element, $value)) {
-                $normalizedValue = $customValue;
+                return $customValue;
             }
+        } else if ($field instanceof BaseRelationField) {
+            // Always use the value from the RelationField class to override
+            return fieldTypes\RelationField::normalizeValue($field, $element, $value);
         }
 
-        return $normalizedValue;
+        // We don't need to normalize here, as the element will do that, when calling `setFieldValues()`
+        return $value;
     }
 
     public function getFieldForPreview(FieldInterface $field, ElementInterface $element): void
     {
-        // Some handlers are generic
-        if ($field instanceof BaseRelationField) {
-            // Always use the value from the RelationField class to override
-            fieldTypes\RelationField::getFieldForPreview($field, $element);
-        }
-
         // Cheek if any registered field types match this field
         if ($fieldType = $this->getFieldByType(get_class($field))) {
             $fieldType::getFieldForPreview($field, $element);
+        } else if ($field instanceof BaseRelationField) {
+            // Always use the value from the RelationField class to override
+            fieldTypes\RelationField::getFieldForPreview($field, $element);
         }
     }
 
@@ -149,6 +140,60 @@ class Fields extends Component
                 }
             }
         }
+    }
+
+    public function getEagerLoadingMap(): array
+    {
+        $mapKey = [];
+
+        foreach (Craft::$app->getFields()->getAllFields() as $field) {
+            if ($keys = $this->_getEagerLoadingMapForField($field)) {
+                $mapKey = array_merge($mapKey, $keys);
+            }
+        }
+
+        return $mapKey;
+    }
+
+
+    // Private Methods
+    // =========================================================================
+
+    private function _getEagerLoadingMapForField(FieldInterface $field, ?string $prefix = null): array
+    {
+        $keys = [];
+
+        if ($field instanceof Matrix) {
+            foreach ($field->getBlockTypes() as $blocktype) {
+                foreach ($blocktype->getCustomFields() as $subField) {
+                    $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.' . $blocktype->handle . ':');
+
+                    if ($nestedKeys) {
+                        $keys = array_merge($keys, $nestedKeys);
+                    }
+                }
+            }
+        }
+
+        if (Plugin::isPluginInstalledAndEnabled('super-table')) {
+            if ($field instanceof SuperTableField) {
+                foreach ($field->getBlockTypes() as $blocktype) {
+                    foreach ($blocktype->getCustomFields() as $subField) {
+                        $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.');
+
+                        if ($nestedKeys) {
+                            $keys = array_merge($keys, $nestedKeys);
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($field instanceof BaseRelationField) {
+            $keys[] = $prefix . $field->handle;
+        }
+
+        return $keys;
     }
 
 }

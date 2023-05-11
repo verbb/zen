@@ -197,6 +197,12 @@ abstract class Element implements ZenElementInterface
      */
     public static function getSerializedElement(ElementInterface $element): array
     {
+        // Check if this element has already been serialized. Helpful for parent-resolution
+        // which can happen multiple times for the same element.
+        if ($cachedSerializedElement = Zen::$plugin->getElements()->getCachedSerializedElement($element->uid)) {
+            return $cachedSerializedElement;
+        }
+
         $data = [
             'type' => $element::class,
             'title' => $element->title,
@@ -206,9 +212,12 @@ abstract class Element implements ZenElementInterface
             'dateCreated' => Db::prepareDateForDb($element->dateCreated),
         ];
 
-        if ($parent = $element->getParent()) {
-            $data['level'] = $element->level;
-            $data['parent'] = static::getSerializedElement($parent);
+        // Check for `parentId` first for performance
+        if ($element->parentId) {
+            if ($parent = $element->getParent()) {
+                $data['level'] = $element->level;
+                $data['parent'] = static::getSerializedElement($parent);
+            }
         }
 
         // Swap some IDs to their UIDs
@@ -228,7 +237,12 @@ abstract class Element implements ZenElementInterface
 
         // Convert to any extra objects to an array easily (without calling `toArray()`)
         // We also want to filter out any empty values, so we can get the right "remove" diff rather than change
-        return ArrayHelper::recursiveFilter(Json::decode(Json::encode($event->values)));
+        $data = ArrayHelper::recursiveFilter(Json::decode(Json::encode($event->values)));
+
+        // Cache it in case we call the same element
+        Zen::$plugin->getElements()->setCachedSerializedElement($element->uid, $data);
+
+        return $data;
     }
 
     /**
@@ -247,12 +261,14 @@ abstract class Element implements ZenElementInterface
     {
         $values = [];
 
+        $fieldsService = Zen::$plugin->getFields();
+
         if ($fieldLayout = $element->getFieldLayout()) {
             foreach ($fieldLayout->getCustomFields() as $field) {
                 $value = $element->getFieldValue($field->handle);
 
                 // Allow registered fields with Zen to handle the serialization
-                $values[$field->handle] = Zen::$plugin->getFields()->serializeValue($field, $element, $value);
+                $values[$field->handle] = $fieldsService->serializeValue($field, $element, $value);
             }
         }
 
@@ -405,6 +421,18 @@ abstract class Element implements ZenElementInterface
 
         // Do the same for any parent
         static::populateExistingImportedElement($importAction->element->parent);
+    }
+
+    public static function getEagerLoadingMap(array $params): array
+    {
+        $attributes = ['parent', 'ancestors'];
+
+        return array_merge($attributes, static::defineEagerLoadingMap($params));
+    }
+
+    public static function defineEagerLoadingMap(array $params): array
+    {
+        return [];
     }
 
 

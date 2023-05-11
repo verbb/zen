@@ -53,6 +53,12 @@ class Asset extends ZenElement
         return $options;
     }
 
+    public static function defineEagerLoadingMap(array $params): array
+    {
+        // Eager-load the uploader to speed up serialization for export
+        return ['uploader'];
+    }
+
     public static function defineSerializedElement(ElementInterface $element, array $data): array
     {
         // Serialize any additional attributes. Be sure to switch out IDs for UIDs.

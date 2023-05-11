@@ -55,6 +55,12 @@ class Entry extends ZenElement
         return $options;
     }
 
+    public static function defineEagerLoadingMap(array $params): array
+    {
+        // Eager-load the author to speed up serialization for export
+        return ['author'];
+    }
+
     public static function defineSerializedElement(ElementInterface $element, array $data): array
     {
         // Serialize any additional attributes. Be sure to switch out IDs for UIDs.

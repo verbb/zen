@@ -65,6 +65,8 @@ class Export extends Component
     {
         $json = [];
 
+        $elementsService = Zen::$plugin->getElements();
+
         $fromDate->setTime(0, 0, 0);
         $toDate->setTime(23, 59, 59);
 
@@ -74,6 +76,9 @@ class Export extends Component
         foreach (Zen::$plugin->getElements()->getAllElementTypes() as $elementType) {
             $registeredElementTypes[$elementType::exportKey()] = $elementType;
         }
+
+        // Eager-load any fields automatically. Called here outside of the loop for performance
+        $eagerLoadingFieldsMap = Zen::$plugin->getFields()->getEagerLoadingMap();
 
         foreach ($elements as $elementCriteria) {
             $elementCriteria = Json::decode($elementCriteria);
@@ -87,8 +92,12 @@ class Export extends Component
                 // Prepare an element query with the date range populated
                 $dateRange = [Db::prepareDateForDb($fromDate), Db::prepareDateForDb($toDate)];
 
+                // Elements will define any eager-loaded attributes, along with us eager-loading fields automatically
+                $eagerLoadingMap = array_merge($elementType::getEagerLoadingMap($params), $eagerLoadingFieldsMap);
+
                 $query = $elementType::find()
                     ->dateUpdated(['and', '>= ' . $dateRange[0], '< ' . $dateRange[1]])
+                    ->with($eagerLoadingMap)
                     ->siteId('*');
 
                 // Get the raw elements for the type. Element classes will determine how to fetch the elements from the params
@@ -98,8 +107,8 @@ class Export extends Component
                 }
 
                 // Also need to do a separate call for deleted/restored elements and store separately
-                $json[$elementType]['deleted'] = Zen::$plugin->getElements()->getDeletedElementsForExport($elementType::elementType(), $dateRange, $elementCriteria);
-                $json[$elementType]['restored'] = Zen::$plugin->getElements()->getRestoredElementsForExport($elementType::elementType(), $dateRange, $elementCriteria);
+                $json[$elementType]['deleted'] = $elementsService->getDeletedElementsForExport($elementType::elementType(), $dateRange, $elementCriteria);
+                $json[$elementType]['restored'] = $elementsService->getRestoredElementsForExport($elementType::elementType(), $dateRange, $elementCriteria);
             }
         }
 

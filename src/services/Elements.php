@@ -30,6 +30,8 @@ class Elements extends Component
     // =========================================================================
 
     private ?string $_excludedElement = null;
+    private array $_cachedSerializedElements = [];
+    private array $_cachedNormalizedElements = [];
 
 
     // Public Methods
@@ -114,6 +116,26 @@ class Elements extends Component
     {
         // In order to get the correct restored elements that haven't since been deleted (again), we need to do extra work
         return $this->_getConsolidatedActions($elementType, $dateRange, $criteria, 'restore');
+    }
+
+    public function setCachedSerializedElement(string $uid, array $data): void
+    {
+        $this->_cachedSerializedElements[$uid] = $data;
+    }
+
+    public function getCachedSerializedElement(string $uid): array
+    {
+        return $this->_cachedSerializedElements[$uid] ?? [];
+    }
+
+    public function setCachedNormalizedElement(string $uid, array $data): void
+    {
+        $this->_cachedNormalizedElements[$uid] = $data;
+    }
+
+    public function getCachedNormalizedElement(string $uid): array
+    {
+        return $this->_cachedNormalizedElements[$uid] ?? [];
     }
 
 
