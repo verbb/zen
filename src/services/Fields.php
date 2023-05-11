@@ -13,6 +13,7 @@ use craft\fields\BaseRelationField;
 use craft\fields\Matrix;
 
 use verbb\supertable\fields\SuperTableField;
+use benf\neo\Field as NeoField;
 
 class Fields extends Component
 {
@@ -164,6 +165,8 @@ class Fields extends Component
         $keys = [];
 
         if ($field instanceof Matrix) {
+            $keys[] = $prefix . $field->handle;
+
             foreach ($field->getBlockTypes() as $blocktype) {
                 foreach ($blocktype->getCustomFields() as $subField) {
                     $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.' . $blocktype->handle . ':');
@@ -177,6 +180,8 @@ class Fields extends Component
 
         if (Plugin::isPluginInstalledAndEnabled('super-table')) {
             if ($field instanceof SuperTableField) {
+                $keys[] = $prefix . $field->handle;
+                
                 foreach ($field->getBlockTypes() as $blocktype) {
                     foreach ($blocktype->getCustomFields() as $subField) {
                         $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.');
@@ -188,6 +193,26 @@ class Fields extends Component
                 }
             }
         }
+
+        if (Plugin::isPluginInstalledAndEnabled('neo')) {
+            if ($field instanceof NeoField) {
+                $keys[] = $prefix . $field->handle;
+                
+                foreach ($field->getBlockTypes() as $blocktype) {
+                    foreach ($blocktype->getCustomFields() as $subField) {
+                        $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.');
+
+                        if ($nestedKeys) {
+                            $keys = array_merge($keys, $nestedKeys);
+                        }
+                    }
+                }
+            }
+        }
+
+        // if (Plugin::isPluginInstalledAndEnabled('neo')) {
+        //     $fieldTypes[] = fieldTypes\Neo::class;
+        // }
 
         if ($field instanceof BaseRelationField) {
             $keys[] = $prefix . $field->handle;
