@@ -199,7 +199,9 @@ abstract class Element implements ZenElementInterface
     {
         // Check if this element has already been serialized. Helpful for parent-resolution
         // which can happen multiple times for the same element.
-        if ($cachedSerializedElement = Zen::$plugin->getElements()->getCachedSerializedElement($element->uid)) {
+        $cacheKey = $element->uid . ':' . $element->getSite()->uid;
+
+        if ($cachedSerializedElement = Zen::$plugin->getElements()->getCachedSerializedElement($cacheKey)) {
             return $cachedSerializedElement;
         }
 
@@ -240,7 +242,7 @@ abstract class Element implements ZenElementInterface
         $data = ArrayHelper::recursiveFilter(Json::decode(Json::encode($event->values)));
 
         // Cache it in case we call the same element
-        Zen::$plugin->getElements()->setCachedSerializedElement($element->uid, $data);
+        Zen::$plugin->getElements()->setCachedSerializedElement($cacheKey, $data);
 
         return $data;
     }
@@ -279,7 +281,9 @@ abstract class Element implements ZenElementInterface
     {
         // Check if this element has already been normalized. Helpful for parent-resolution
         // which can happen multiple times for the same element.
-        if ($cachedNormalizedElement = Zen::$plugin->getElements()->getCachedNormalizedElement($data['uid'])) {
+        $cacheKey = ($data['uid'] ?? '') . ':' . ($data['siteUid'] ?? '');
+
+        if ($cachedNormalizedElement = Zen::$plugin->getElements()->getCachedNormalizedElement($cacheKey)) {
             return $cachedNormalizedElement;
         }
 
@@ -314,7 +318,7 @@ abstract class Element implements ZenElementInterface
         }
 
         // Cache it in case we call the same element
-        Zen::$plugin->getElements()->setCachedNormalizedElement($element->uid, $element);
+        Zen::$plugin->getElements()->setCachedNormalizedElement($cacheKey, $element);
 
         return $element;
     }
