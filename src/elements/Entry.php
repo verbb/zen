@@ -55,7 +55,7 @@ class Entry extends ZenElement
         return $options;
     }
 
-    public static function defineEagerLoadingMap(array $params): array
+    public static function defineEagerLoadingMap(): array
     {
         // Eager-load the author to speed up serialization for export
         return ['author'];

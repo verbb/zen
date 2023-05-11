@@ -423,14 +423,14 @@ abstract class Element implements ZenElementInterface
         static::populateExistingImportedElement($importAction->element->parent);
     }
 
-    public static function getEagerLoadingMap(array $params): array
+    public static function getEagerLoadingMap(): array
     {
         $attributes = ['parent', 'ancestors'];
 
-        return array_merge($attributes, static::defineEagerLoadingMap($params));
+        return array_merge($attributes, static::defineEagerLoadingMap());
     }
 
-    public static function defineEagerLoadingMap(array $params): array
+    public static function defineEagerLoadingMap(): array
     {
         return [];
     }

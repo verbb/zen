@@ -128,14 +128,14 @@ class Elements extends Component
         return $this->_cachedSerializedElements[$uid] ?? [];
     }
 
-    public function setCachedNormalizedElement(string $uid, array $data): void
+    public function setCachedNormalizedElement(string $uid, ElementInterface $data): void
     {
         $this->_cachedNormalizedElements[$uid] = $data;
     }
 
-    public function getCachedNormalizedElement(string $uid): array
+    public function getCachedNormalizedElement(string $uid): ?ElementInterface
     {
-        return $this->_cachedNormalizedElements[$uid] ?? [];
+        return $this->_cachedNormalizedElements[$uid] ?? null;
     }
 
 

@@ -53,7 +53,7 @@ class Asset extends ZenElement
         return $options;
     }
 
-    public static function defineEagerLoadingMap(array $params): array
+    public static function defineEagerLoadingMap(): array
     {
         // Eager-load the uploader to speed up serialization for export
         return ['uploader'];

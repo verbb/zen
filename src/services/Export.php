@@ -93,7 +93,7 @@ class Export extends Component
                 $dateRange = [Db::prepareDateForDb($fromDate), Db::prepareDateForDb($toDate)];
 
                 // Elements will define any eager-loaded attributes, along with us eager-loading fields automatically
-                $eagerLoadingMap = array_merge($elementType::getEagerLoadingMap($params), $eagerLoadingFieldsMap);
+                $eagerLoadingMap = array_merge($elementType::getEagerLoadingMap(), $eagerLoadingFieldsMap);
 
                 $query = $elementType::find()
                     ->dateUpdated(['and', '>= ' . $dateRange[0], '< ' . $dateRange[1]])
