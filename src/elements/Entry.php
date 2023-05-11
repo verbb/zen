@@ -66,8 +66,8 @@ class Entry extends ZenElement
         // Serialize any additional attributes. Be sure to switch out IDs for UIDs.
         $data['postDate'] = Db::prepareDateForDb($element->postDate);
         $data['expiryDate'] = Db::prepareDateForDb($element->expiryDate);
-        $data['sectionId'] = Db::uidById(Table::SECTIONS, $element->sectionId);
-        $data['typeId'] = Db::uidById(Table::ENTRYTYPES, $element->typeId);
+        $data['sectionUid'] = Db::uidById(Table::SECTIONS, $element->sectionId);
+        $data['typeUid'] = Db::uidById(Table::ENTRYTYPES, $element->typeId);
 
         if ($element->authorId) {
             $data['authorEmail'] = Db::emailById($element->authorId);
