@@ -10,6 +10,4 @@ class ModifyElementImportTableValuesEvent extends Event
 
     public string $elementType;
     public array $values = [];
-    public array $diffs = [];
-    public array $compare = [];
 }

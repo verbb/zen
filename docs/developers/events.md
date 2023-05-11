@@ -45,9 +45,6 @@ use yii\base\Event;
 Event::on(Entry::class, Entry::EVENT_MODIFY_IMPORT_TABLE_VALUES, function(ModifyElementImportTableValuesEvent $event) {
     $elementType = $event->elementType;
     $values = $event->values;
-    $diffs = $event->diffs;
-    $old = $event->compare['old'];
-    $new = $event->compare['new'];
     // ...
 });
 ```

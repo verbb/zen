@@ -130,30 +130,6 @@ class Import extends Component
                         }
                     } else {
                         $summaryState = 'add';
-
-                        // This is just for show more than anything. Because this is all new info, there will be a bunch
-                        // of attributes to add, but not all are shown visually to the user. If we used the diff data, 
-                        // this would show more new items to apply that you can see, which is confusing. Instead, 
-                        // construct "fake" diffs (all add) just for the fields and meta fields for the element.
-                        $elementToAction = $elementType::getNormalizedElement($sourceItem);
-                        $newElement = $elementToAction;
-
-                        if ($tempDiffs = $differ->doDiff($destItem, $sourceItem)) {
-                            $attrs = [
-                                'title',
-                                'fields',
-                            ];
-
-                            foreach ($elementType::defineImportFieldTabs($elementToAction, 'new') as $tab) {
-                                $attrs = array_merge($attrs, array_keys($tab->fields));
-                            }
-
-                            foreach ($attrs as $attr) {
-                                if ($diffData = ($tempDiffs[$attr] ?? null)) {
-                                    $diffs[$attr] = $diffData;
-                                }
-                            }
-                        }
                     }
                 }
 
@@ -226,6 +202,110 @@ class Import extends Component
         return [
             'summary' => $summary,
             'elementData' => $config,
+        ];
+    }
+
+    public function getImportPreview(string $id, array $data): array
+    {
+        $oldHtml = '';
+        $newHtml = '';
+
+        $differ = new MapDiffer(true);
+        $patcher = new MapPatcher();
+
+        $elementType = null;
+        $sourceItemState = null;
+        $sourceItem = [];
+
+        // Find just the source data we need for this element/site
+        foreach ($data as $type => $dataItems) {
+            $elementIdentifier = $type::elementUniqueIdentifier();
+
+            foreach ($dataItems as $stateKey => $dataElements) {
+                foreach ($dataElements as $dataItem) {
+                    $elementId = $dataItem[$elementIdentifier] . ':' . $dataItem['siteUid'];
+
+                    if ($elementId === $id) {
+                        $elementType = $type;
+                        $sourceItemState = $stateKey;
+                        $sourceItem = $dataItem;
+
+                        break 3;
+                    }
+                }
+            }
+        }
+
+        if ($sourceItem) {
+            $elementIdentifier = $elementType::elementUniqueIdentifier();
+            $elementIdentifiers = $sourceItem[$elementIdentifier] ?? null;
+
+            // Fetch the element on this site
+            $currentElement = $elementType::find()
+                ->$elementIdentifier($elementIdentifiers)
+                ->status(null)
+                ->trashed(null)
+                ->siteId('*')
+                ->one();
+
+            // Create a serialized version to compare with
+            $destItem = $currentElement ? $elementType::getSerializedElement($currentElement) : [];
+
+            $diffs = [];
+
+            // If modified (add or change), run diff checks
+            if ($sourceItemState === 'modified') {
+                if ($destItem) {
+                    $diffs = $differ->doDiff($destItem, $sourceItem);
+
+                    if ($diffs) {
+                        // Apply the patch of the diff to the origin element
+                        $sourceItem = $patcher->patch($destItem, new Diff($diffs));
+                    }
+                } else {
+                    // This is just for show more than anything. Because this is all new info, there will be a bunch
+                    // of attributes to add, but not all are shown visually to the user. If we used the diff data, 
+                    // this would show more new items to apply that you can see, which is confusing. Instead, 
+                    // construct "fake" diffs (all add) just for the fields and meta fields for the element.
+                    $elementToAction = $elementType::getNormalizedElement($sourceItem, true);
+
+                    if ($tempDiffs = $differ->doDiff($destItem, $sourceItem)) {
+                        $attrs = [
+                            'title',
+                            'fields',
+                        ];
+
+                        foreach ($elementType::defineImportFieldTabs($elementToAction, 'new') as $tab) {
+                            $attrs = array_merge($attrs, array_keys($tab->fields));
+                        }
+
+                        foreach ($attrs as $attr) {
+                            if ($diffData = ($tempDiffs[$attr] ?? null)) {
+                                $diffs[$attr] = $diffData;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($sourceItemState === 'modified') {
+                $newElement = $elementType::getNormalizedElement($sourceItem, true);
+            } else if ($sourceItemState === 'deleted') {
+                $newElement = $currentElement;
+            } else if ($sourceItemState === 'restored') {
+                $newElement = $elementType::getNormalizedElement($sourceItem, true);
+            } else {
+                $newElement = null;
+            }
+
+            // Generate the old/new summary of attributes and fields
+            $oldHtml = $elementType::generateCompareHtml($currentElement, $diffs, 'old');
+            $newHtml = $elementType::generateCompareHtml($newElement, $diffs, 'new');
+        }
+
+        return [
+            'old' => $oldHtml,
+            'new' => $newHtml,
         ];
     }
 

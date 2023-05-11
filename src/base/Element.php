@@ -135,8 +135,14 @@ abstract class Element implements ZenElementInterface
     {
         $element = $newElement ?? $currentElement ?? null;
         $elementHtml = $element ? static::getElementHtml($element) : '';
+        $elementColumns = [];
+
+        // Create a unique ID for this row, so we can lookup the preview later
+        $elementIdentifier = static::elementUniqueIdentifier();
+        $elementId = ($element) ? $element->$elementIdentifier . ':' . $element->site->uid : null;
 
         $prefixColumns = [
+            'id' => $elementId,
             'element' => $elementHtml,
             'site' => $element->site->name ?? '',
         ];
@@ -144,10 +150,6 @@ abstract class Element implements ZenElementInterface
         try {
             // Important to catch any errors related to the element (invalid field handles, invalid PC updates)
             $elementColumns = static::defineImportTableValues($diffs, $newElement, $currentElement, $state);
-
-            // Generate the old/new summary of attributes and fields
-            $oldHtml = static::generateCompareHtml($currentElement, $diffs, 'old');
-            $newHtml = static::generateCompareHtml($newElement, $diffs, 'new');
         } catch (Throwable $e) {
             return [
                 'error' => true,
@@ -155,29 +157,22 @@ abstract class Element implements ZenElementInterface
                 'errorDetail' => nl2br($e->getTraceAsString()),
             ];
         }
-
-        $suffixColumns = [
+        
+        $suffixColumns = array_filter([
             'state' => $state,
             'summary' => DiffHelper::convertDiffToCount($diffs),
-        ];
+        ]);
 
         // Give plugins a chance to modify them
         $event = new ModifyElementImportTableValuesEvent([
             'elementType' => static::class,
             'values' => array_merge($prefixColumns, $elementColumns, $suffixColumns),
-            'diffs' => DiffHelper::convertDiffToArray($diffs),
-            'compare' => [
-                'old' => $oldHtml,
-                'new' => $newHtml,
-            ],
         ]);
         Event::trigger(static::class, self::EVENT_MODIFY_IMPORT_TABLE_VALUES, $event);
 
-        return [
+        return array_filter([
             'data' => $event->values,
-            'diffs' => $event->diffs,
-            'compare' => $event->compare,
-        ];
+        ]);
     }
 
     public static function defineImportTableValues(array $diffs, ?ElementInterface $newElement, ?ElementInterface $currentElement, ?string $state): array
@@ -450,72 +445,7 @@ abstract class Element implements ZenElementInterface
         return [];
     }
 
-
-    // Abstract Methods
-    // =========================================================================
-
-    /**
-     * Return the actual Element Type class used by Craft.
-     * 
-     * @return class-string<ElementInterface> The Element class name
-     */
-    abstract public static function elementType(): string;
-
-    /**
-     * Return a collection of options for what groups of elements the user can pick to export.
-     * The `value` of each item should reflect the corresponding ElementQueryInterface param for that element.
-     * For example, providing `section:mySectionHandle` will be transformed into `['section': ['mySectionHandle']]`
-     * which can then be used later in [[getExportData()]] to apply the query param.
-     * 
-     * This should follow the format:
-     * [
-     *     'label' => 'My Section',
-     *     'criteria' => ['section' => 'mySectionHandle'],
-     *     'count' => 123,
-     *     'children' => [
-     *         // optional, as required
-     *     ],
-     * ]
-     */
-    abstract public static function getExportOptions(ElementQueryInterface $query): array|bool;
-
-
-    // Protected Methods
-    // =========================================================================
-
-    protected static function populateExistingImportedElement(?ElementInterface $element): void
-    {
-        $elementIdentifier = static::elementUniqueIdentifier();
-
-        // We only care if the element doesn't have an ID, and there's data to match with the identifier
-        if ($element && !$element->id && $element->$elementIdentifier) {
-            if ($importedElement = static::getExistingImportedElement($element)) {
-                $element->id = $importedElement->id;
-
-                // Allow some elements to handle populating the new element from the existing one (Products)
-                static::defineExistingImportedElement($element, $importedElement);
-            }
-        }
-    }
-
-    protected static function defineExistingImportedElement(ElementInterface $newElement, ElementInterface $currentElement): void
-    {
-        return;
-    }
-
-    protected static function getExistingImportedElement(ElementInterface $element): ?ElementInterface
-    {
-        $elementIdentifier = static::elementUniqueIdentifier();
-
-        return static::find()
-            ->$elementIdentifier($element->$elementIdentifier)
-            ->siteId($element->siteId)
-            ->status(null)
-            ->trashed(null)
-            ->one();
-    }
-
-    protected static function generateCompareHtml(?ElementInterface $element, array $diffs, string $type): string
+    public static function generateCompareHtml(?ElementInterface $element, array $diffs, string $type): string
     {
         $html = '';
 
@@ -613,6 +543,71 @@ abstract class Element implements ZenElementInterface
         $crawler->filter('input[type="checkbox"]')->setAttribute('disabled', true);
 
         return $crawler->saveHTML();
+    }
+
+
+    // Abstract Methods
+    // =========================================================================
+
+    /**
+     * Return the actual Element Type class used by Craft.
+     * 
+     * @return class-string<ElementInterface> The Element class name
+     */
+    abstract public static function elementType(): string;
+
+    /**
+     * Return a collection of options for what groups of elements the user can pick to export.
+     * The `value` of each item should reflect the corresponding ElementQueryInterface param for that element.
+     * For example, providing `section:mySectionHandle` will be transformed into `['section': ['mySectionHandle']]`
+     * which can then be used later in [[getExportData()]] to apply the query param.
+     * 
+     * This should follow the format:
+     * [
+     *     'label' => 'My Section',
+     *     'criteria' => ['section' => 'mySectionHandle'],
+     *     'count' => 123,
+     *     'children' => [
+     *         // optional, as required
+     *     ],
+     * ]
+     */
+    abstract public static function getExportOptions(ElementQueryInterface $query): array|bool;
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected static function populateExistingImportedElement(?ElementInterface $element): void
+    {
+        $elementIdentifier = static::elementUniqueIdentifier();
+
+        // We only care if the element doesn't have an ID, and there's data to match with the identifier
+        if ($element && !$element->id && $element->$elementIdentifier) {
+            if ($importedElement = static::getExistingImportedElement($element)) {
+                $element->id = $importedElement->id;
+
+                // Allow some elements to handle populating the new element from the existing one (Products)
+                static::defineExistingImportedElement($element, $importedElement);
+            }
+        }
+    }
+
+    protected static function defineExistingImportedElement(ElementInterface $newElement, ElementInterface $currentElement): void
+    {
+        return;
+    }
+
+    protected static function getExistingImportedElement(ElementInterface $element): ?ElementInterface
+    {
+        $elementIdentifier = static::elementUniqueIdentifier();
+
+        return static::find()
+            ->$elementIdentifier($element->$elementIdentifier)
+            ->siteId($element->siteId)
+            ->status(null)
+            ->trashed(null)
+            ->one();
     }
 
 }

@@ -67,6 +67,20 @@ class ImportController extends Controller
         return $this->asJson($variables);
     }
 
+    public function actionGetConfigPreview(): ?Response
+    {
+        $filename = $this->request->getRequiredParam('filename');
+        $id = $this->request->getRequiredParam('id');
+
+        // Fetch the content from the uploaded file (storing any extra files in cache)
+        $json = Zen::$plugin->getImport()->getImportPayload($filename);
+
+        $variables = Zen::$plugin->getImport()->getImportPreview($id, $json);
+        $variables['filename'] = $filename;
+
+        return $this->asJson($variables);
+    }
+
     public function actionGetReviewData(): ?Response
     {
         $filename = $this->request->getRequiredParam('filename');

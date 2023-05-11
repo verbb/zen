@@ -109,7 +109,7 @@ class GlobalSet extends ZenElement
         ];
     }
 
-    protected static function generateCompareHtml(?ElementInterface $element, array $diffs, string $type): string
+    public static function generateCompareHtml(?ElementInterface $element, array $diffs, string $type): string
     {
         // Special-case to fetch the same field layout which isn't carried over
         if ($type == 'new') {

@@ -94,29 +94,7 @@
                     <tbody v-if="!readOnly" class="detail-row">
                         <tr>
                             <td :colspan="Object.keys(item.columns).length + 2">
-                                <transition-expand>
-                                    <div v-show="getPreviewState(item.value, rowIndex)" data-zui-import-compare>
-                                        <div class="zui-import-detail">
-                                            <div class="zui-import-detail-content">
-                                                <div class="zui-import-detail-heading">{{ t('zen', 'Current Content') }}</div>
-
-                                                <div v-html="getPreviewHtml(row, 'old')"></div>
-                                            </div>
-
-                                            <div class="zui-import-indicator">
-                                                <div class="zui-import-indicator-icon approved">
-                                                    <icon name="arrow-circle" />
-                                                </div>
-                                            </div>
-
-                                            <div class="zui-import-detail-content">
-                                                <div class="zui-import-detail-heading">{{ t('zen', 'New Content') }}</div>
-
-                                                <div v-html="getPreviewHtml(row, 'new')"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </transition-expand>
+                                <configure-preview :id="row.data.id" :state="getPreviewState(item.value, rowIndex)" />
                             </td>
                         </tr>
                     </tbody>
@@ -128,6 +106,7 @@
 
 <script>
 import TransitionExpand from '@components/TransitionExpand.vue';
+import ConfigurePreview from '@components/import/ConfigurePreview.vue';
 import Icon from '@components/Icon.vue';
 
 import addIcon from '@/js/svg/add.svg?raw';
@@ -140,6 +119,7 @@ export default {
     components: {
         Icon,
         TransitionExpand,
+        ConfigurePreview,
     },
 
     props: {
@@ -184,41 +164,6 @@ export default {
 
             Object.values(item.rows).forEach((row, index) => {
                 this.checkboxes[item.value][index] = true;
-            });
-        });
-    },
-
-    mounted() {
-        this.$nextTick(() => {
-            // Fix element select images not working without jQuery
-            this.$el.querySelectorAll('.elementselect .elements').forEach((elements) => {
-                new Craft.ElementThumbLoader().load($(elements));
-            });
-
-            // Implement a synced tabs behaviour to make it easy to compare things side-by-side
-            this.$el.querySelectorAll('[data-zui-tab-target]').forEach((element) => {
-                element.addEventListener('click', (e) => {
-                    e.preventDefault();
-
-                    const selector = e.target.getAttribute('data-zui-tab-target');
-                    const $container = e.target.closest('.zui-import-detail');
-
-                    $container.querySelectorAll('[data-zui-tab-target]').forEach((el) => {
-                        if (el.getAttribute('data-zui-tab-target') === selector) {
-                            el.classList.add('sel');
-                        } else {
-                            el.classList.remove('sel');
-                        }
-                    });
-
-                    $container.querySelectorAll('[data-zui-tab-pane]').forEach((el) => {
-                        if (el.getAttribute('data-zui-tab-pane') === selector) {
-                            el.classList.remove('hidden');
-                        } else {
-                            el.classList.add('hidden');
-                        }
-                    });
-                });
             });
         });
     },
@@ -302,27 +247,21 @@ export default {
         getSummaryHtml(summary) {
             const html = [];
 
-            if (summary.add) {
-                html.push(`<span class="zui-import-summary add">${addIcon}${summary.add}</span>`);
-            }
+            if (summary) {
+                if (summary.add) {
+                    html.push(`<span class="zui-import-summary add">${addIcon}${summary.add}</span>`);
+                }
 
-            if (summary.change) {
-                html.push(`<span class="zui-import-summary change">${changeIcon}${summary.change}</span>`);
-            }
+                if (summary.change) {
+                    html.push(`<span class="zui-import-summary change">${changeIcon}${summary.change}</span>`);
+                }
 
-            if (summary.remove) {
-                html.push(`<span class="zui-import-summary remove">${removeIcon}${summary.remove}</span>`);
+                if (summary.remove) {
+                    html.push(`<span class="zui-import-summary remove">${removeIcon}${summary.remove}</span>`);
+                }
             }
 
             return html.join('');
-        },
-
-        getPreviewHtml(row, type) {
-            if (type === 'old') {
-                return row.compare?.old;
-            }
-
-            return row.compare?.new;
         },
     },
 };
@@ -437,163 +376,6 @@ export default {
 
     &.active svg {
         transform: rotate(90deg);
-    }
-}
-
-
-//
-// Import Item Detail
-//
-
-.zui-import-table .detail-row td {
-    padding: 0;
-    border: 0;
-}
-
-.zui-import-detail {
-    display: flex;
-    gap: 1rem;
-    padding: 0.75rem;
-    border-bottom: 1px var(--gray-100) solid;
-}
-
-.zui-import-detail-content {
-    word-wrap: break-word;
-    background: #fff;
-    border-radius: var(--large-border-radius);
-    box-shadow: 0 0 0 1px #cdd8e4;
-    box-sizing: border-box;
-    padding: 16px;
-    position: relative;
-    flex: 1;
-}
-
-.zui-import-detail-heading {
-    position: relative;
-    padding: 8px;
-    margin: -16px -16px 16px -16px;
-    background: var(--gray-050);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--gray-350);
-    border-radius: var(--large-border-radius) var(--large-border-radius) 0 0;
-}
-
-.detail-empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--gray-350);
-}
-
-.zui-import-detail-content .field > .status-badge {
-    &.add {
-        background-color: #17a34a;
-    }
-
-    &.change {
-        background-color: #f59e0c;
-    }
-
-    &.remove {
-        background-color: #ed4343;
-    }
-
-    body.ltr & {
-        left: -17px !important;
-    }
-
-    body.rtl & {
-        right: -17px !important;
-    }
-}
-
-
-.zui-import-detail-content .field {
-    div.checkbox.disabled+label,
-    div.checkbox.disabled:before,
-    input.checkbox:disabled+label {
-        opacity: 1;
-    }
-}
-
-.zui-import-indicator {
-    position: relative;
-    width: 2rem;
-}
-
-.zui-import-indicator-icon {
-    width: 30px;
-    height: 30px;
-    display: block;
-    color: var(--gray-200);
-    position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    svg {
-        fill: currentColor;
-        width: 100%;
-        height: 100%;
-    }
-}
-
-.zui-import-detail-tabs {
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-    overflow-x: auto;
-    font-size: 13px;
-    background-color: var(--gray-050);
-    border-radius: var(--large-border-radius) var(--large-border-radius) 0 0;
-    box-shadow: inset 0 -1px 0 0 rgb(154 165 177 / 25%);
-    box-sizing: border-box;
-    margin: -16px -16px 16px -16px;
-    min-height: 38px;
-    padding: 0 16px;
-
-    button {
-        align-items: center;
-        color: var(--tab-label-color);
-        display: flex;
-        flex-direction: row;
-        height: 38px;
-        padding: 0 12px;
-        position: relative;
-        white-space: nowrap;
-        border-radius: 3px 3px 0 0;
-    }
-
-    .sel {
-        --highlight-color: var(--gray-500);
-        --tab-label-color: var(--text-color);
-
-        background-color: var(--white);
-        box-shadow: inset 0 2px 0 var(--highlight-color),0 0 0 1px rgba(51,64,77,.1),0 2px 12px rgba(205,216,228,.5) !important;
-        cursor: default;
-        position: relative;
-        z-index: 1;
-    }
-
-    .has-change {
-        padding-right: 22px;
-    }
-
-    .has-change::after {
-        content: '';
-        position: absolute;
-        width: 7px;
-        height: 7px;
-        top: 50%;
-        right: 5px;
-        background: #4e85ff;
-        border-radius: 10px;
-        transform: translate(-50%, -50%);
     }
 }
 
