@@ -2,6 +2,7 @@
 namespace verbb\zen\elements;
 
 use verbb\zen\base\Element as ZenElement;
+use verbb\zen\helpers\Db;
 use verbb\zen\models\ImportFieldTab;
 
 use Craft;
@@ -11,7 +12,6 @@ use craft\elements\Category as CategoryElement;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
-use craft\helpers\Db;
 
 class Category extends ZenElement
 {
@@ -46,7 +46,7 @@ class Category extends ZenElement
     public static function defineSerializedElement(ElementInterface $element, array $data): array
     {
         // Serialize any additional attributes. Be sure to switch out IDs for UIDs.
-        $data['groupUid'] = $element->getGroup()->uid;
+        $data['groupUid'] = Db::uidById(Table::CATEGORYGROUPS, $element->groupId);
 
         return $data;
     }

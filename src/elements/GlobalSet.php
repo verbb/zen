@@ -2,6 +2,7 @@
 namespace verbb\zen\elements;
 
 use verbb\zen\base\Element as ZenElement;
+use verbb\zen\helpers\Db;
 use verbb\zen\models\ImportFieldTab;
 
 use Craft;

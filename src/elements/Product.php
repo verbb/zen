@@ -2,6 +2,7 @@
 namespace verbb\zen\elements;
 
 use verbb\zen\base\Element as ZenElement;
+use verbb\zen\helpers\Db;
 use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\ImportFieldTab;
 
@@ -11,7 +12,6 @@ use craft\db\Query;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
-use craft\helpers\Db;
 
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\elements\Product as ProductElement;
@@ -61,7 +61,7 @@ class Product extends ZenElement
         $data['defaultWidth'] = $element->defaultWidth;
         $data['defaultWeight'] = $element->defaultWeight;
 
-        $data['typeUid'] = $element->type->uid;
+        $data['typeUid'] = Db::uidById('{{%commerce_producttypes}}', $element->typeId);
         $data['taxCategory'] = $element->getTaxCategory()->handle ?? null;
         $data['shippingCategory'] = $element->getShippingCategory()->handle ?? null;
         $data['defaultVariantUid'] = $element->defaultVariant->uid;

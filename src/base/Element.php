@@ -10,6 +10,7 @@ use verbb\zen\events\ModifyElementImportTableValuesEvent;
 use verbb\zen\events\ModifyElementNormalizedDataEvent;
 use verbb\zen\events\ModifyElementSerializedDataEvent;
 use verbb\zen\helpers\ArrayHelper;
+use verbb\zen\helpers\Db;
 use verbb\zen\helpers\DiffHelper;
 use verbb\zen\models\ElementImportAction;
 
@@ -19,7 +20,6 @@ use craft\base\FieldInterface;
 use craft\db\Table;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Cp;
-use craft\helpers\Db;
 use craft\helpers\Html;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
@@ -275,8 +275,14 @@ abstract class Element implements ZenElementInterface
         return $values;
     }
 
-    public static function getNormalizedElement(array $data): ElementInterface
+    public static function getNormalizedElement(array $data, bool $includeFields = false): ElementInterface
     {
+        // Check if this element has already been normalized. Helpful for parent-resolution
+        // which can happen multiple times for the same element.
+        if ($cachedNormalizedElement = Zen::$plugin->getElements()->getCachedNormalizedElement($data['uid'])) {
+            return $cachedNormalizedElement;
+        }
+
         ArrayHelper::rename($data, 'type', 'class');
         $fields = ArrayHelper::remove($data, 'fields', []);
 
@@ -302,8 +308,13 @@ abstract class Element implements ZenElementInterface
         // Create the element and assign custom fields
         $element = Craft::createObject($event->values);
 
-        $fieldValues = static::getNormalizedElementFields($element, $event->fields);
-        $element->setFieldValues($fieldValues);
+        if ($includeFields) {
+            $fieldValues = static::getNormalizedElementFields($element, $event->fields);
+            $element->setFieldValues($fieldValues);
+        }
+
+        // Cache it in case we call the same element
+        Zen::$plugin->getElements()->setCachedNormalizedElement($element->uid, $element);
 
         return $element;
     }

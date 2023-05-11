@@ -2,6 +2,7 @@
 namespace verbb\zen\elements;
 
 use verbb\zen\base\Element as ZenElement;
+use verbb\zen\helpers\Db;
 use verbb\zen\models\ImportFieldTab;
 
 use Craft;
@@ -12,7 +13,6 @@ use craft\elements\User;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
-use craft\helpers\Db;
 
 class Entry extends ZenElement
 {
@@ -66,9 +66,12 @@ class Entry extends ZenElement
         // Serialize any additional attributes. Be sure to switch out IDs for UIDs.
         $data['postDate'] = Db::prepareDateForDb($element->postDate);
         $data['expiryDate'] = Db::prepareDateForDb($element->expiryDate);
-        $data['sectionUid'] = $element->getSection()->uid;
-        $data['typeUid'] = $element->getType()->uid;
-        $data['authorEmail'] = $element->getAuthor()->email ?? null;
+        $data['sectionId'] = Db::uidById(Table::SECTIONS, $element->sectionId);
+        $data['typeId'] = Db::uidById(Table::ENTRYTYPES, $element->typeId);
+
+        if ($element->authorId) {
+            $data['authorEmail'] = Db::emailById($element->authorId);
+        }
 
         return $data;
     }
@@ -77,7 +80,10 @@ class Entry extends ZenElement
     {
         $data['sectionId'] = Db::idByUid(Table::SECTIONS, ArrayHelper::remove($data, 'sectionUid'));
         $data['typeId'] = Db::idByUid(Table::ENTRYTYPES, ArrayHelper::remove($data, 'typeUid'));
-        $data['authorId'] = User::find()->email(ArrayHelper::remove($data, 'authorEmail'))->one()->id ?? null;
+
+        if ($authorEmail = ArrayHelper::remove($data, 'authorEmail')) {
+            $data['authorId'] = Db::idByEmail($authorEmail);
+        }
 
         return $data;
     }

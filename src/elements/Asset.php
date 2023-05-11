@@ -3,6 +3,7 @@ namespace verbb\zen\elements;
 
 use verbb\zen\Zen;
 use verbb\zen\base\Element as ZenElement;
+use verbb\zen\helpers\Db;
 use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\ImportFieldTab;
 
@@ -14,7 +15,6 @@ use craft\elements\db\ElementQueryInterface;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
 use craft\helpers\DateTimeHelper;
-use craft\helpers\Db;
 use craft\helpers\Html;
 use craft\helpers\UrlHelper;
 use craft\events\DefineAssetThumbUrlEvent;
@@ -72,8 +72,11 @@ class Asset extends ZenElement
         $data['filename'] = $element->filename;
         $data['width'] = $element->width;
         $data['height'] = $element->height;
-        $data['volumeUid'] = $element->getVolume()->uid;
-        $data['uploader'] = $element->getUploader()->email ?? Craft::$app->getUser()->getIdentity()->email ?? null;
+        $data['volumeUid'] = Db::uidById(Table::VOLUMES, $element->volumeId);
+
+        if ($element->uploaderId) {
+            $data['uploader'] = Db::emailById($element->uploaderId);
+        }
 
         // Only store focal point data if it's set. SVGs can throw errors when storing this against the asset
         // (maybe Craft should enforce some proper validation on the SVG asset to prevent focal point being set at all)
@@ -104,7 +107,7 @@ class Asset extends ZenElement
         $data['volumeId'] = Db::idByUid(Table::VOLUMES, ArrayHelper::remove($data, 'volumeUid'));
 
         if ($uploaderEmail = ArrayHelper::remove($data, 'uploader')) {
-            $data['uploaderId'] = User::find()->email($uploaderEmail)->one()->id ?? null;
+            $data['uploaderId'] = Db::idByEmail($uploaderEmail);
         }
 
         // Not needed yet, but removed for validation as it won't populate the model

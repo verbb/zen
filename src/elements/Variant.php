@@ -2,11 +2,11 @@
 namespace verbb\zen\elements;
 
 use verbb\zen\base\Element as ZenElement;
+use verbb\zen\helpers\Db;
 
 use craft\base\ElementInterface;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\ArrayHelper;
-use craft\helpers\Db;
 
 use craft\commerce\elements\Variant as VariantElement;
 

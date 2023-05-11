@@ -43,6 +43,9 @@ class Import extends Component
         $differ = new MapDiffer(true);
         $patcher = new MapPatcher();
 
+        // Eager-load any fields automatically. Called here outside of the loop for performance
+        $eagerLoadingFieldsMap = Zen::$plugin->getFields()->getEagerLoadingMap();
+
         foreach ($data as $elementType => $dataItems) {
             $sourceItems = [];
 
@@ -66,12 +69,16 @@ class Import extends Component
                 return $item[$elementIdentifier] . ':' . $item['siteUid'];
             });
 
+            // Elements will define any eager-loaded attributes, along with us eager-loading fields automatically
+            $eagerLoadingMap = array_merge($elementType::getEagerLoadingMap(), $eagerLoadingFieldsMap);
+
             // Do an element query to fetch all the items provided in the import for _this_ install. It's more performant to do
             // all at once, and we also want to get any trashed elements in case we're restoring.
             $elements = $elementType::elementType()::find()
                 ->$elementIdentifier($elementIdentifiers)
                 ->status(null)
                 ->trashed(null)
+                ->with($eagerLoadingMap)
                 ->siteId('*')
                 ->all();
 
@@ -161,7 +168,7 @@ class Import extends Component
 
                 // Do final setups for the new/current/actioned element
                 if ($sourceItemState === 'modified') {
-                    $elementToAction = $elementType::getNormalizedElement($sourceItem);
+                    $elementToAction = $elementType::getNormalizedElement($sourceItem, $returnElementData);
                     $newElement = $elementToAction;
                 } else if ($sourceItemState === 'deleted') {
                     $summaryState = 'delete';
@@ -174,7 +181,7 @@ class Import extends Component
                     $elementActionState = 'restore';
 
                     $currentElement = null;
-                    $elementToAction = $elementType::getNormalizedElement($sourceItem);
+                    $elementToAction = $elementType::getNormalizedElement($sourceItem, $returnElementData);
                     $newElement = $elementToAction;
                 } else {
                     $elementToAction = null;

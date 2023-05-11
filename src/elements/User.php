@@ -2,6 +2,7 @@
 namespace verbb\zen\elements;
 
 use verbb\zen\base\Element as ZenElement;
+use verbb\zen\helpers\Db;
 use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\ImportFieldTab;
 
@@ -13,7 +14,6 @@ use craft\elements\User as UserElement;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
-use craft\helpers\Db;
 
 class User extends ZenElement
 {
