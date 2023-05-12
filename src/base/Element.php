@@ -448,9 +448,10 @@ abstract class Element implements ZenElementInterface
     public static function generateCompareHtml(?ElementInterface $element, array $diffs, string $type): string
     {
         $html = '';
+        $view = Craft::$app->getView();
 
         // Required when testing outside of the CP (using the URLs directly)
-        Craft::$app->getView()->setTemplateMode(View::TEMPLATE_MODE_CP);
+        $view->setTemplateMode(View::TEMPLATE_MODE_CP);
 
         if ($element) {
             if ($fieldLayout = $element->getFieldLayout()) {
@@ -488,6 +489,21 @@ abstract class Element implements ZenElementInterface
             $html .= Html::tag('div', Craft::t('zen', 'Element does not exist.'), [
                 'class' => 'detail-empty',
             ]);
+        }
+
+        // For some reason, CSS buffers don't seem to catch loaded CSS from third-party fields.
+        // This is a very rough approach, but we go through each asset bundle and load them manually.
+        foreach ($view->assetBundles as $key => $bundle) {
+            if (!str_starts_with($key, 'craft\\web\\') && !str_starts_with($key, 'yii\\web\\')) {
+                foreach ($bundle->css as $cssFile) {
+                    if (is_array($cssFile)) {
+                        $cssFile = $cssFile[array_keys($cssFile)[0]];
+                    }
+
+                    $url = $view->getAssetManager()->getActualAssetUrl($bundle, $cssFile);
+                    $html .= '<link href="' . $url . '" rel="stylesheet">';
+                }
+            }
         }
 
         // Do some extra work to prepare the HTML just the way we need it.
