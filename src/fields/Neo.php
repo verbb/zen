@@ -3,12 +3,15 @@ namespace verbb\zen\fields;
 
 use verbb\zen\Zen;
 use verbb\zen\base\Field as ZenField;
+use verbb\zen\helpers\ArrayHelper;
 
+use Craft;
 use craft\base\ElementInterface;
 use craft\base\FieldInterface;
 
 use benf\neo\elements\Block as NeoBlock;
 use benf\neo\Field as NeoField;
+use benf\neo\Plugin as Neo;
 
 class Neo extends ZenField
 {
@@ -59,14 +62,46 @@ class Neo extends ZenField
         $blocks = [];
         $new = 0;
 
+        $blockTypes = ArrayHelper::index(Neo::$plugin->blockTypes->getAllBlockTypes(), 'handle');
+        $fieldsService = Zen::$plugin->getFields();
+
         foreach ($value as $blockUid => $block) {
             $foundBlock = NeoBlock::find()->uid($blockUid)->status(null)->one();
             $blockId = $foundBlock->id ?? 'new' . ++$new;
+
+            $normalizedFieldValues = [];
+
+            $blockType = $blockTypes[$block['type']] ?? null;
+
+            // Serialize all nested fields properly through Zen
+            if ($blockType) {
+                foreach ($blockType->getCustomFields() as $subField) {
+                    $subValue = $block['fields'][$subField->handle] ?? null;
+
+                    $normalizedFieldValues[$subField->handle] = $fieldsService->normalizeValue($subField, $foundBlock, $subValue);
+                }
+            }
+
+            $block['fields'] = $normalizedFieldValues;
 
             $blocks[$blockId] = $block;
         }
 
         return $blocks;
+    }
+
+    public static function getFieldForPreview(FieldInterface $field, ElementInterface $element, string $type): void
+    {
+        $fieldsService = Zen::$plugin->getFields();
+
+        $value = $element->getFieldValue($field->handle);
+
+        foreach ($value->all() as $block) {
+            // Ensure all sub-fields are prepped for preview
+            foreach ($block->getType()->getCustomFields() as $subField) {
+                $fieldsService->getFieldForPreview($subField, $block, $type);
+            }
+        }
     }
 
 }
