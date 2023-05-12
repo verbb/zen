@@ -358,7 +358,7 @@ abstract class Element implements ZenElementInterface
 
             // Convert to field layout tab elements
             foreach ($tab->fields as $field) {
-                $fieldElements[] = [null, true, $field];
+                $fieldElements[] = [null, false, $field];
             }
 
             $tabs[] = new FieldLayoutFormTab([
