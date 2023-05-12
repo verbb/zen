@@ -1,6 +1,7 @@
 <?php
 namespace verbb\zen\fields;
 
+use verbb\zen\Zen;
 use verbb\zen\base\Field as ZenField;
 
 use craft\base\ElementInterface;
@@ -25,13 +26,24 @@ class SuperTable extends ZenField
         $blocks = [];
         $new = 0;
 
+        $fieldsService = Zen::$plugin->getFields();
+
         foreach ($value->all() as $block) {
             $blockId = $block->uid ?? 'new' . ++$new;
+
+            $serializedFieldValues = [];
+
+            // Serialize all nested fields properly through Zen
+            foreach ($block->getType()->getCustomFields() as $subField) {
+                $subValue = $block->getFieldValue($subField->handle);
+
+                $serializedFieldValues[$subField->handle] = $fieldsService->serializeValue($subField, $block, $subValue);
+            }
 
             $blocks[$blockId] = [
                 'type' => $block->getType()->id,
                 'uid' => $block->uid,
-                'fields' => $block->getSerializedFieldValues(),
+                'fields' => $serializedFieldValues,
             ];
         }
 
