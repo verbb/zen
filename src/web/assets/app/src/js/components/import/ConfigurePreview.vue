@@ -1,38 +1,36 @@
 <template>
-    <transition-expand>
-        <div v-if="state" data-zui-import-compare>
-            <div class="zui-import-detail">
-                <div v-if="loading" class="zui-loading-pane">
-                    <div class="zui-loading"></div>
-                    <span>{{ t('zen', 'Loading preview...') }}</span>
-                </div>
-
-                <div v-else-if="error" class="zui-error-pane error">
-                    <span class="error" v-html="errorMessage"></span>
-                </div>
-
-                <template v-else-if="data">
-                    <div class="zui-import-detail-content">
-                        <div class="zui-import-detail-heading">{{ t('zen', 'Current Content') }}</div>
-
-                        <div v-html="data.old"></div>
-                    </div>
-
-                    <div class="zui-import-indicator">
-                        <div class="zui-import-indicator-icon approved">
-                            <icon name="arrow-circle" />
-                        </div>
-                    </div>
-
-                    <div class="zui-import-detail-content">
-                        <div class="zui-import-detail-heading">{{ t('zen', 'New Content') }}</div>
-
-                        <div v-html="data.new"></div>
-                    </div>
-                </template>
+    <div v-if="state" data-zui-import-compare>
+        <div class="zui-import-detail">
+            <div v-if="loading" class="zui-loading-pane">
+                <div class="zui-loading"></div>
+                <span>{{ t('zen', 'Loading preview...') }}</span>
             </div>
+
+            <div v-else-if="error" class="zui-error-pane error">
+                <span class="error" v-html="errorMessage"></span>
+            </div>
+
+            <template v-else-if="data">
+                <div class="zui-import-detail-content">
+                    <div class="zui-import-detail-heading">{{ t('zen', 'Current Content') }}</div>
+
+                    <div v-html="data.old"></div>
+                </div>
+
+                <div class="zui-import-indicator">
+                    <div class="zui-import-indicator-icon approved">
+                        <icon name="arrow-circle" />
+                    </div>
+                </div>
+
+                <div class="zui-import-detail-content">
+                    <div class="zui-import-detail-heading">{{ t('zen', 'New Content') }}</div>
+
+                    <div v-html="data.new"></div>
+                </div>
+            </template>
         </div>
-    </transition-expand>
+    </div>
 </template>
 
 <script>
