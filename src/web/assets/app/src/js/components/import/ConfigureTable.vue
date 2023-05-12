@@ -76,6 +76,11 @@
                                     <span class="zui-import-summaries" v-html="getSummaryHtml(row.data[colIndex])"></span>
                                 </template>
 
+                                <template v-else-if="colIndex === 'element'">
+                                    <div v-html="row.data.element"></div>
+                                    <div class="element-small" v-html="row.data.parents"></div>
+                                </template>
+
                                 <template v-else>
                                     <div v-html="row.data[colIndex]"></div>
                                 </template>
@@ -299,6 +304,11 @@ export default {
     padding-top: 0;
     padding-bottom: 0;
     margin-left: -7px;
+}
+
+.zui-import-table td.element-cell .element-small {
+    font-size: 10px;
+    color: var(--gray-300);
 }
 
 .zui-review-status-badge {

@@ -144,6 +144,7 @@ abstract class Element implements ZenElementInterface
         $prefixColumns = [
             'id' => $elementId,
             'element' => $elementHtml,
+            'parents' => static::getParentSummary($element->getParent()),
             'site' => $element->site->name ?? '',
         ];
 
@@ -624,6 +625,21 @@ abstract class Element implements ZenElementInterface
             ->status(null)
             ->trashed(null)
             ->one();
+    }
+
+    protected static function getParentSummary(?ElementInterface $element): string
+    {
+        $items = [];
+
+        if ($element) {
+            if ($parent = $element->getParent()) {
+                $items[] = static::getParentSummary($parent);
+            }
+
+            $items[] = $element->getUiLabel();
+        }
+
+        return implode(' / ', $items);
     }
 
 }
