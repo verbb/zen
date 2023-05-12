@@ -68,7 +68,7 @@ class DiffHelper
                 foreach ($items as $action => $item) {
                     // We only really care (at the moment) about top-level fields not how many individual
                     //  diffs there are for nested arrays like relations, so just increment by one.
-                    $newArray[$action] = ($newArray[$action] ?? 0) + 1;
+                    $newArray[$action] = ($newArray[$action] ?? 0) + $item;
                 }
             }
         }
