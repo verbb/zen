@@ -123,6 +123,9 @@ class Import extends Component
                             // Apply the patch of the diff to the origin element
                             $sourceItem = $patcher->patch($destItem, new Diff($diffs));
 
+                            // Fix gaps in associative arrays when applying diffs (element fields)
+                            $sourceItem = ArrayHelper::reindexAssociativeArray($sourceItem);
+
                             $summaryState = 'change';
                         } else {
                             // A destination element exists, but no diffs found, so no need to action.
@@ -261,6 +264,9 @@ class Import extends Component
                     if ($diffs) {
                         // Apply the patch of the diff to the origin element
                         $sourceItem = $patcher->patch($destItem, new Diff($diffs));
+
+                        // Fix gaps in associative arrays when applying diffs (element fields)
+                        $sourceItem = ArrayHelper::reindexAssociativeArray($sourceItem);
                     }
                 } else {
                     // This is just for show more than anything. Because this is all new info, there will be a bunch

@@ -55,4 +55,46 @@ class ArrayHelper extends CraftArrayHelper
         return $array;
     }
 
+    public static function reindexAssociativeArray(array $array): array
+    {
+        $result = [];
+
+        // Re-indexes a multi-dimensional, associative array. Commonly an issue for diff patcher.
+        // [
+        //     'foo' => [
+        //         'bar' => 'value'
+        //     ],
+        //     'hello' => 'world',
+        //     'test' => [
+        //         0 => 'some value',
+        //         4 => 'another value'
+        //     ]
+        // ]
+        // into
+        // [
+        //     'foo' => [
+        //         'bar' => 'value'
+        //     ],
+        //     'hello' => 'world',
+        //     'test' => [
+        //         0 => 'some value',
+        //         1 => 'another value'
+        //     ]
+        // ]
+
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $value = self::reindexAssociativeArray($value);
+            }
+
+            if (is_numeric($key)) {
+                $result[] = $value;
+            } else {
+                $result[$key] = $value;
+            }
+        }
+
+        return $result;
+    }
+
 }
