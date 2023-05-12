@@ -456,7 +456,7 @@ abstract class Element implements ZenElementInterface
             if ($fieldLayout = $element->getFieldLayout()) {
                 // Allow any registered fields to modify their values for preview
                 foreach ($fieldLayout->getCustomFields() as $field) {
-                    Zen::$plugin->getFields()->getFieldForPreview($field, $element);
+                    Zen::$plugin->getFields()->getFieldForPreview($field, $element, $type);
                 }
 
                 $form = $fieldLayout->createForm($element, true);

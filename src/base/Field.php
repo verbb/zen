@@ -31,7 +31,7 @@ abstract class Field implements ZenFieldInterface
         return null;
     }
 
-    public static function getFieldForPreview(FieldInterface $field, ElementInterface $element): void
+    public static function getFieldForPreview(FieldInterface $field, ElementInterface $element, string $type): void
     {
     }
 

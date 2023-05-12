@@ -90,14 +90,14 @@ class Fields extends Component
         return $value;
     }
 
-    public function getFieldForPreview(FieldInterface $field, ElementInterface $element): void
+    public function getFieldForPreview(FieldInterface $field, ElementInterface $element, string $type): void
     {
         // Cheek if any registered field types match this field
         if ($fieldType = $this->getFieldByType(get_class($field))) {
-            $fieldType::getFieldForPreview($field, $element);
+            $fieldType::getFieldForPreview($field, $element, $type);
         } else if ($field instanceof BaseRelationField) {
             // Always use the value from the RelationField class to override
-            fieldTypes\RelationField::getFieldForPreview($field, $element);
+            fieldTypes\RelationField::getFieldForPreview($field, $element, $type);
         }
     }
 

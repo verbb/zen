@@ -65,7 +65,7 @@ class RelationField extends ZenField
         return $elements;
     }
 
-    public static function getFieldForPreview(FieldInterface $field, ElementInterface $element): void
+    public static function getFieldForPreview(FieldInterface $field, ElementInterface $element, string $type): void
     {
         $elements = [];
         $elementType = $field::elementType();
@@ -73,6 +73,11 @@ class RelationField extends ZenField
         // Check our cached elements for any new ones we need to create
         if ($registeredElement = Zen::$plugin->getElements()->getElementByType($elementType)) {
             $tempElements = self::$_cachedElements[$element->uid][$field->handle] ?? [];
+
+            // If this is the old element, ensure we don't use the cache, which will reflect what the field _will_ be.
+            if ($type === 'old') {
+                $tempElements = $element->getFieldValue($field->handle)->all();
+            }
 
             foreach ($tempElements as $tempElement) {
                 // If this is an existing element, easy
