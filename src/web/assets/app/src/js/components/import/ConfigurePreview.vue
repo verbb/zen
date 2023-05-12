@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import TransitionExpand from '@components/TransitionExpand.vue';
 import Icon from '@components/Icon.vue';
 
 import { getErrorMessage } from '@utils/forms';
@@ -44,7 +43,6 @@ export default {
 
     components: {
         Icon,
-        TransitionExpand,
     },
 
     props: {

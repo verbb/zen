@@ -40,7 +40,6 @@ import 'vue3-lottie/dist/style.css';
 
 import loadingSvg from '@/js/svg/work-list.json?raw';
 
-import ConfigureTabs from '@components/import/ConfigureTabs.vue';
 import ConfigureTable from '@components/import/ConfigureTable.vue';
 import Icon from '@components/Icon.vue';
 
@@ -50,7 +49,6 @@ export default {
     name: 'InputReview',
 
     components: {
-        ConfigureTabs,
         ConfigureTable,
         Icon,
         Vue3Lottie,
