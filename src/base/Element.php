@@ -131,7 +131,7 @@ abstract class Element implements ZenElementInterface
         return [];
     }
 
-    public static function getImportTableValues(array $diffs, ?ElementInterface $newElement, ?ElementInterface $currentElement, ?string $state): array
+    public static function getImportTableValues(array $diffSummary, ?ElementInterface $newElement, ?ElementInterface $currentElement, ?string $state): array
     {
         $element = $newElement ?? $currentElement ?? null;
         $elementHtml = $element ? static::getElementHtml($element) : '';
@@ -150,7 +150,7 @@ abstract class Element implements ZenElementInterface
 
         try {
             // Important to catch any errors related to the element (invalid field handles, invalid PC updates)
-            $elementColumns = static::defineImportTableValues($diffs, $newElement, $currentElement, $state);
+            $elementColumns = static::defineImportTableValues($newElement, $currentElement, $state);
         } catch (Throwable $e) {
             return [
                 'error' => true,
@@ -161,7 +161,7 @@ abstract class Element implements ZenElementInterface
         
         $suffixColumns = array_filter([
             'state' => $state,
-            'summary' => DiffHelper::convertDiffToCount($diffs),
+            'summary' => DiffHelper::getDiffSummary($diffSummary),
         ]);
 
         // Give plugins a chance to modify them
@@ -176,7 +176,7 @@ abstract class Element implements ZenElementInterface
         ]);
     }
 
-    public static function defineImportTableValues(array $diffs, ?ElementInterface $newElement, ?ElementInterface $currentElement, ?string $state): array
+    public static function defineImportTableValues(?ElementInterface $newElement, ?ElementInterface $currentElement, ?string $state): array
     {
         return [];
     }

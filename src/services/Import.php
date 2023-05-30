@@ -97,7 +97,7 @@ class Import extends Component
             $elementData = [];
 
             foreach ($sourceItems as $sourceKeyItem => $sourceItem) {
-                $diffs = [];
+                $diffSummary = [];
 
                 // Store the state for what action needs to be done when importing (save/delete/restore the element)
                 // along with showing what state the action is in a summary (add/change/delete/remove).
@@ -117,9 +117,16 @@ class Import extends Component
 
                     // If a destination element is found, do a diff check. Otherwise, it's treated as a new element.
                     if ($destItem) {
-                        $diffs = $differ->doDiff($destItem, $sourceItem);
+                        // Remove any parents, we don't want to use them in diffs
+                        if (!$returnElementData) {
+                            unset($sourceItem['parent'], $destItem['parent']);
+                        }
 
-                        if ($diffs) {
+                        // Save an instance of this source and destination data to determine a summary.
+                        $diffSummary = [$destItem, $sourceItem];
+
+                        // Get diffs between source and destination to be applied
+                        if ($diffs = $differ->doDiff($destItem, $sourceItem)) {
                             // Apply the patch of the diff to the origin element
                             $sourceItem = $patcher->patch($destItem, new Diff($diffs));
 
@@ -174,7 +181,7 @@ class Import extends Component
                     ]);
                 } else {
                     // Generate data used for the "row" of the table for this element compare. We can't send models to Vue.
-                    $tableData = $elementType::getImportTableValues($diffs, $newElement, $currentElement, $summaryState);
+                    $tableData = $elementType::getImportTableValues($diffSummary, $newElement, $currentElement, $summaryState);
 
                     if ($tableData) {
                         $elementData[] = $tableData;
@@ -252,6 +259,9 @@ class Import extends Component
             $destItem = $currentElement ? $elementType::getSerializedElement($currentElement) : [];
 
             $diffs = [];
+
+            // Remove any parents, we don't want to use them in diffs
+            unset($sourceItem['parent'], $destItem['parent']);
 
             // If modified (add or change), run diff checks
             if ($sourceItemState === 'modified') {

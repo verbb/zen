@@ -11,6 +11,68 @@ class DiffHelper
     // Static Methods
     // =========================================================================
 
+    public static function getDiffSummary(array $diffData): array
+    {
+        $summaries = [];
+        $summary = [];
+
+        // Because the serialized content will contain lots of extra info that we don't want to report on user-facing, 
+        // we select just the attributes that are (use-facing) and check their add/change/remove state.
+        // We also need special handling for fields, which have the same scenario. Especially for complex fields like Matrix.
+        if ($diffData) {
+            [$destItem, $sourceItem] = $diffData;
+
+            // Get the combined keys from the serialized objects
+            $attributes = array_values(array_unique(array_merge(array_keys($destItem), array_keys($sourceItem))));
+
+            // Remove anything we don't need
+            ArrayHelper::removeValue($attributes, 'parent');
+            ArrayHelper::removeValue($attributes, 'fields');
+
+            $attributes = array_values($attributes);
+
+            // Fields need to be treated differently
+            $destFields = ArrayHelper::remove($destItem, 'fields');
+            $sourceFields = ArrayHelper::remove($sourceItem, 'fields');
+
+            foreach ($attributes as $attribute) {
+                $dest = $destItem[$attribute] ?? null;
+                $source = $sourceItem[$attribute] ?? null;
+
+                if ($dest === null) {
+                    $summaries['add'][$attribute] = $source;
+                    $summary['add'] = ($summary['add'] ?? 0) + 1;
+                } else if ($source === null) {
+                    $summaries['remove'][$attribute] = $dest;
+                    $summary['remove'] = ($summary['remove'] ?? 0) + 1;
+                } else if ($source !== $dest) {
+                    // Special-case for element fields, which will be an array, which is "empty".
+                    // Note we can't combine (easily) into the above (`$dest === null || $dest === []`).
+                    // For example, when both source and destination are `[]` that'll be incorrectly marked as an addition.
+                    if ($source === []) {
+                        $summaries['remove'][$attribute] = $dest;
+                        $summary['remove'] = ($summary['remove'] ?? 0) + 1;
+                    } else if ($dest === []) {
+                        $summaries['add'][$attribute] = $source;
+                        $summary['add'] = ($summary['add'] ?? 0) + 1;
+                    } else {
+                        $summaries['change'][$attribute] = [$source, $dest];
+                        $summary['change'] = ($summary['change'] ?? 0) + 1;
+                    }
+                }
+            }
+
+            // Sort out custom fields
+            if ($destFields || $sourceFields) {
+                foreach (self::getDiffSummary([$destFields, $sourceFields]) as $key => $value) {
+                    $summary[$key] = ($summary[$key] ?? 0) + $value;
+                }
+            }
+        }
+
+        return $summary;
+    }
+
     public static function convertDiffToArray(array $array): array
     {
         $newArray = [];

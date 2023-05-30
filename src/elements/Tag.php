@@ -65,7 +65,7 @@ class Tag extends ZenElement
         ];
     }
 
-    public static function defineImportTableValues(array $diffs, ?ElementInterface $newElement, ?ElementInterface $currentElement, ?string $state): array
+    public static function defineImportTableValues(?ElementInterface $newElement, ?ElementInterface $currentElement, ?string $state): array
     {
         // Use either the new or current element to get data for, at this generic stage.
         $element = $newElement ?? $currentElement ?? null;
