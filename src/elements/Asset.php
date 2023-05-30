@@ -216,6 +216,12 @@ class Asset extends ZenElement
                         'value' => $element->dateCreated,
                         'disabled' => true,
                     ]),
+                    'dateModified' => Cp::dateTimeFieldHtml([
+                        'label' => Craft::t('app', 'Date Modified'),
+                        'id' => 'dateModified',
+                        'value' => $element->dateModified,
+                        'disabled' => true,
+                    ]),
                 ],
             ]),
         ];
