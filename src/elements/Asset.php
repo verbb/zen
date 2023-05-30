@@ -75,7 +75,9 @@ class Asset extends ZenElement
         $data['volumeUid'] = Db::uidById(Table::VOLUMES, $element->volumeId);
 
         if ($element->uploaderId) {
-            $data['uploader'] = Db::emailById($element->uploaderId);
+            if (Craft::$app->getEdition() === Craft::Pro) {
+                $data['uploader'] = Db::emailById($element->uploaderId);
+            }
         }
 
         // Only store focal point data if it's set. SVGs can throw errors when storing this against the asset

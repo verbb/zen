@@ -70,7 +70,10 @@ class Entry extends ZenElement
         $data['typeUid'] = Db::uidById(Table::ENTRYTYPES, $element->typeId);
 
         if ($element->authorId) {
-            $data['authorEmail'] = Db::emailById($element->authorId);
+            // Don't include author for Craft Solo
+            if (Craft::$app->getEdition() === Craft::Pro) {
+                $data['authorEmail'] = Db::emailById($element->authorId);
+            }
         }
 
         return $data;
