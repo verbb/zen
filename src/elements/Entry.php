@@ -130,14 +130,14 @@ class Entry extends ZenElement
                         'on' => $element->enabled,
                         'disabled' => true,
                     ]),
-                    'authorEmail' => Cp::elementSelectFieldHtml([
+                    'authorEmail' => (Craft::$app->getEdition() === Craft::Pro) ? Cp::elementSelectFieldHtml([
                         'label' => Craft::t('app', 'Author'),
                         'id' => 'authorEmail',
                         'elementType' => User::class,
                         'elements' => [$element->author],
                         'disabled' => true,
                         'single' => true,
-                    ]),
+                    ]) : '',
                     'postDate' => Cp::dateTimeFieldHtml([
                         'label' => Craft::t('app', 'Post Date'),
                         'id' => 'postDate',
