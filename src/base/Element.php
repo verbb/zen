@@ -470,7 +470,7 @@ abstract class Element implements ZenElementInterface
                 foreach ($tabs as $key => $tab) {
                     $tabHtml .= Html::tag('button', $tab->getName(), [
                         'type' => 'button',
-                        'data-zui-tab-target' => $tab->getName(),
+                        'data-zui-tab-target' => $tab->getName() . '-' . $key,
                         'class' => ['tab', ($key === 0 ? 'sel' : '')],
                     ]);
                 }
@@ -481,7 +481,7 @@ abstract class Element implements ZenElementInterface
 
                 foreach ($tabs as $key => $tab) {
                     $html .= Html::tag('div', $tab->getContent(), [
-                        'data-zui-tab-pane' => $tab->getName(),
+                        'data-zui-tab-pane' => $tab->getName() . '-' . $key,
                         'class' => [($key === 0 ? '' : 'hidden')],
                     ]);
                 }
