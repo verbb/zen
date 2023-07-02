@@ -1,6 +1,8 @@
 <?php
 namespace verbb\zen\helpers;
 
+use verbb\zen\Zen;
+
 use Diff\DiffOp\DiffOpAdd;
 use Diff\DiffOp\DiffOpChange;
 use Diff\DiffOp\DiffOpRemove;
@@ -16,11 +18,14 @@ class DiffHelper
         $summaries = [];
         $summary = [];
 
+        $fieldService = Zen::$plugin->getFields();
+
         // Because the serialized content will contain lots of extra info that we don't want to report on user-facing, 
         // we select just the attributes that are (use-facing) and check their add/change/remove state.
         // We also need special handling for fields, which have the same scenario. Especially for complex fields like Matrix.
         if ($diffData) {
-            [$destItem, $sourceItem] = $diffData;
+            $destItem = $diffData[0] ?? [];
+            $sourceItem = $diffData[1] ?? [];
 
             // Get the combined keys from the serialized objects
             $attributes = array_values(array_unique(array_merge(array_keys($destItem), array_keys($sourceItem))));
@@ -38,6 +43,9 @@ class DiffHelper
             foreach ($attributes as $attribute) {
                 $dest = $destItem[$attribute] ?? null;
                 $source = $sourceItem[$attribute] ?? null;
+
+                // Give fields a chance (if they are registered) to handle getting the summary.
+                $fieldService->handleValueForDiffSummary($attribute, $dest, $source);
 
                 if ($dest === null) {
                     $summaries['add'][$attribute] = $source;

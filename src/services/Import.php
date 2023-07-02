@@ -3,6 +3,7 @@ namespace verbb\zen\services;
 
 use verbb\zen\Zen;
 use verbb\zen\helpers\ArrayHelper;
+use verbb\zen\helpers\DiffHelper;
 use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\MapDiffer;
 
@@ -123,10 +124,18 @@ class Import extends Component
                         }
 
                         // Save an instance of this source and destination data to determine a summary.
-                        $diffSummary = [$destItem, $sourceItem];
+                        // We can only really report on this for changes, as adding new elements contains lots of
+                        // extra data we don't want to report on as a summary.
+                        $diffSummary = DiffHelper::getDiffSummary([$destItem, $sourceItem]);
 
-                        // Get diffs between source and destination to be applied
-                        if ($diffs = $differ->doDiff($destItem, $sourceItem)) {
+                        // Get diffs between source and destination to be applied.
+                        $diffs = $differ->doDiff($destItem, $sourceItem);
+
+                        // We also check if there are _meaningful_ diffs. This is helpful because `doDiff` will recursively
+                        // diff arrays, but we don't always want that to show as a change. For example, an element might contain
+                        // an entry field and an entry in that field could have changes itself. We **don't** want that listed 
+                        // as a change against the top-level element, because it technically isn't.
+                        if ($diffs && $diffSummary) {
                             // Apply the patch of the diff to the origin element
                             $sourceItem = $patcher->patch($destItem, new Diff($diffs));
 

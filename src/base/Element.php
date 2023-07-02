@@ -161,7 +161,7 @@ abstract class Element implements ZenElementInterface
         
         $suffixColumns = array_filter([
             'state' => $state,
-            'summary' => DiffHelper::getDiffSummary($diffSummary),
+            'summary' => $diffSummary,
         ]);
 
         // Give plugins a chance to modify them

@@ -35,6 +35,10 @@ abstract class Field implements ZenFieldInterface
     {
     }
 
+    public static function handleValueForDiffSummary(FieldInterface $field, mixed &$dest, mixed &$source): void
+    {
+    }
+
     public static function beforeElementImport(FieldInterface $field, ElementInterface $element): bool
     {
         // Trigger a 'beforeImport' event

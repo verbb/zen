@@ -2,6 +2,7 @@
 namespace verbb\zen\services;
 
 use verbb\zen\fields as fieldTypes;
+use verbb\zen\helpers\ArrayHelper;
 use verbb\zen\helpers\Plugin;
 
 use Craft;
@@ -21,6 +22,12 @@ class Fields extends Component
     // =========================================================================
 
     public const EVENT_REGISTER_FIELD_TYPES = 'registerFieldTypes';
+
+
+    // Properties
+    // =========================================================================
+
+    private array $_fieldsByHandle = [];
 
 
     // Public Methods
@@ -154,6 +161,24 @@ class Fields extends Component
         }
 
         return $mapKey;
+    }
+
+    public function handleValueForDiffSummary(mixed $fieldHandle, mixed &$dest, mixed &$source): void
+    {
+        $field = Craft::$app->getFields()->getFieldByHandle($fieldHandle);
+
+        if ($field) {
+            // Some handlers are generic
+            if ($field instanceof BaseRelationField) {
+                // Always use the value from the RelationField class to override
+                fieldTypes\RelationField::handleValueForDiffSummary($field, $dest, $source);
+            }
+
+            // Cheek if any registered field types match this field
+            if ($fieldType = $this->getFieldByType(get_class($field))) {
+                $fieldType::handleValueForDiffSummary($field, $dest, $source);
+            }
+        }
     }
 
 

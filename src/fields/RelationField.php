@@ -3,6 +3,7 @@ namespace verbb\zen\fields;
 
 use verbb\zen\Zen;
 use verbb\zen\base\Field as ZenField;
+use verbb\zen\helpers\ArrayHelper;
 use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\TempQuery;
 
@@ -101,6 +102,22 @@ class RelationField extends ZenField
             $tempQuery->setElements($elements);
 
             $element->setFieldValue($field->handle, $tempQuery);
+        }
+    }
+
+    public static function handleValueForDiffSummary(FieldInterface $field, mixed &$dest, mixed &$source): void
+    {
+        // Remove custom fields from the element used in element fields. They're just noise.
+        $callback = function(&$item) {
+            ArrayHelper::remove($item, 'fields');
+        };
+
+        if (is_array($dest)) {
+            array_walk($dest, $callback);
+        }
+
+        if (is_array($source)) {
+            array_walk($source, $callback);
         }
     }
 
