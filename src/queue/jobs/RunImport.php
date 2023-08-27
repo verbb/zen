@@ -68,7 +68,8 @@ class RunImport extends BaseJob
                         'success' => true,
                         'element' => [
                             'type' => $elementImportAction->elementType::displayName(),
-                            'label' => $elementImportAction->element->getUiLabel(),
+                            'label' => Zen::getLogLabel($elementImportAction->element),
+                            'uid' => $elementImportAction->element->uid,
                         ],
                     ]);
                 }
@@ -80,7 +81,8 @@ class RunImport extends BaseJob
                     'trace' => $e->getCode() !== 1 ? $e->getTraceAsString() : null,
                     'element' => [
                         'type' => $elementImportAction->elementType::displayName(),
-                        'label' => $elementImportAction->element->getUiLabel(),
+                        'label' => Zen::getLogLabel($elementImportAction->element),
+                        'uid' => $elementImportAction->element->uid,
                     ],
                 ]);
 

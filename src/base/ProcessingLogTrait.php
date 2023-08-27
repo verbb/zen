@@ -2,6 +2,7 @@
 namespace verbb\zen\base;
 
 use Craft;
+use craft\base\ElementInterface;
 
 trait ProcessingLogTrait
 {
@@ -24,6 +25,17 @@ trait ProcessingLogTrait
     public static function getProcessingLog(string $taskId): array
     {
         return Craft::$app->getCache()->get('zen-process-log:' . $taskId) ?: [];
+    }
+
+    public static function getLogLabel(ElementInterface $element, array &$labels = [])
+    {
+        $labels[] = $element->getUiLabel();
+
+        if ($parent = $element->getParent()) {
+            self::getLogLabel($parent, $labels);
+        }
+
+        return implode(' > ', array_reverse($labels));
     }
 
 }
