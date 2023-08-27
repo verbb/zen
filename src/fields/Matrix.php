@@ -63,12 +63,13 @@ class Matrix extends ZenField
         $fieldsService = Zen::$plugin->getFields();
 
         foreach ($value as $blockUid => $block) {
-            $foundBlock = MatrixBlock::find()->uid($blockUid)->status(null)->one();
+            $foundBlock = MatrixBlock::find()->uid($blockUid)->status(null)->one() ?? new MatrixBlock();
             $blockId = $foundBlock->id ?? 'new' . ++$new;
 
             $normalizedFieldValues = [];
 
-            $blockType = $blockTypes[$block['type']] ?? null;
+            $blockTypeUid = $block['type'] ?? null;
+            $blockType = $blockTypes[$blockTypeUid] ?? null;
 
             // Serialize all nested fields properly through Zen
             if ($blockType) {

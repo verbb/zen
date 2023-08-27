@@ -66,12 +66,13 @@ class Neo extends ZenField
         $fieldsService = Zen::$plugin->getFields();
 
         foreach ($value as $blockUid => $block) {
-            $foundBlock = NeoBlock::find()->uid($blockUid)->status(null)->one();
+            $foundBlock = NeoBlock::find()->uid($blockUid)->status(null)->one() ?? new NeoBlock();
             $blockId = $foundBlock->id ?? 'new' . ++$new;
 
             $normalizedFieldValues = [];
 
-            $blockType = $blockTypes[$block['type']] ?? null;
+            $blockTypeUid = $block['type'] ?? null;
+            $blockType = $blockTypes[$blockTypeUid] ?? null;
 
             // Serialize all nested fields properly through Zen
             if ($blockType) {
