@@ -47,6 +47,14 @@ class Fields extends Component
             $fieldTypes[] = fieldTypes\Neo::class;
         }
 
+        if (Plugin::isPluginInstalledAndEnabled('seomatic')) {
+            $fieldTypes[] = fieldTypes\SeoMatic::class;
+        }
+
+        if (Plugin::isPluginInstalledAndEnabled('image-optimize')) {
+            $fieldTypes[] = fieldTypes\ImageOptimize::class;
+        }
+
         $event = new RegisterComponentTypesEvent([
             'types' => $fieldTypes,
         ]);
