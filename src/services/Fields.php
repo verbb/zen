@@ -70,9 +70,7 @@ class Fields extends Component
     {
         // Cheek if any registered field types match this field
         if ($fieldType = $this->getFieldByType(get_class($field))) {
-            if ($customValue = $fieldType::serializeValue($field, $element, $value)) {
-                return $customValue;
-            }
+            return $fieldType::serializeValue($field, $element, $value);
         } else if ($field instanceof BaseRelationField) {
             // Always use the value from the RelationField class to override
             return fieldTypes\RelationField::serializeValue($field, $element, $value);
@@ -85,9 +83,7 @@ class Fields extends Component
     {
         // Cheek if any registered field types match this field
         if ($fieldType = $this->getFieldByType(get_class($field))) {
-            if ($customValue = $fieldType::normalizeValue($field, $element, $value)) {
-                return $customValue;
-            }
+            return $fieldType::normalizeValue($field, $element, $value);
         } else if ($field instanceof BaseRelationField) {
             // Always use the value from the RelationField class to override
             return fieldTypes\RelationField::normalizeValue($field, $element, $value);
