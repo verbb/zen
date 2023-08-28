@@ -32,8 +32,6 @@ class Neo extends ZenField
         $fieldsService = Zen::$plugin->getFields();
 
         foreach ($value->all() as $block) {
-            $blockId = $block->uid ?? 'new' . ++$new;
-
             $serializedFieldValues = [];
 
             // Serialize all nested fields properly through Zen
@@ -43,7 +41,7 @@ class Neo extends ZenField
                 $serializedFieldValues[$subField->handle] = $fieldsService->serializeValue($subField, $block, $subValue);
             }
 
-            $blocks[$blockId] = [
+            $blocks[] = [
                 'type' => $block->getType()->uid,
                 'enabled' => $block->enabled,
                 'collapsed' => $block->getCollapsed(),
@@ -65,9 +63,16 @@ class Neo extends ZenField
         $blockTypes = ArrayHelper::index(Neo::$plugin->blockTypes->getAllBlockTypes(), 'uid');
         $fieldsService = Zen::$plugin->getFields();
 
-        foreach ($value as $blockUid => $block) {
-            $foundBlock = NeoBlock::find()->uid($blockUid)->status(null)->one() ?? new NeoBlock();
-            $blockId = $foundBlock->id ?? 'new' . ++$new;
+        foreach ($value as $block) {
+            $blockUid = $block['uid'] ?? null;
+
+            if ($blockUid) {
+                $existingBlock = NeoBlock::find()->uid($blockUid)->status(null)->one() ?? new NeoBlock();
+            } else {
+                $existingBlock = new NeoBlock();
+            }
+
+            $blockId = $existingBlock->id ?? 'new' . ++$new;
 
             $normalizedFieldValues = [];
 
@@ -79,7 +84,7 @@ class Neo extends ZenField
                 foreach ($blockType->getCustomFields() as $subField) {
                     $subValue = $block['fields'][$subField->handle] ?? null;
 
-                    $normalizedFieldValues[$subField->handle] = $fieldsService->normalizeValue($subField, $foundBlock, $subValue);
+                    $normalizedFieldValues[$subField->handle] = $fieldsService->normalizeValue($subField, $existingBlock, $subValue);
                 }
             }
 

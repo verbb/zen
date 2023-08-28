@@ -30,8 +30,6 @@ class Matrix extends ZenField
         $fieldsService = Zen::$plugin->getFields();
 
         foreach ($value->all() as $block) {
-            $blockId = $block->uid ?? 'new' . ++$new;
-
             $serializedFieldValues = [];
 
             // Serialize all nested fields properly through Zen
@@ -41,7 +39,7 @@ class Matrix extends ZenField
                 $serializedFieldValues[$subField->handle] = $fieldsService->serializeValue($subField, $block, $subValue);
             }
 
-            $blocks[$blockId] = [
+            $blocks[] = [
                 'type' => $block->getType()->uid,
                 'enabled' => $block->enabled,
                 'collapsed' => $block->collapsed,
@@ -62,9 +60,16 @@ class Matrix extends ZenField
         $blockTypes = ArrayHelper::index(Craft::$app->getMatrix()->getAllBlockTypes(), 'uid');
         $fieldsService = Zen::$plugin->getFields();
 
-        foreach ($value as $blockUid => $block) {
-            $foundBlock = MatrixBlock::find()->uid($blockUid)->status(null)->one() ?? new MatrixBlock();
-            $blockId = $foundBlock->id ?? 'new' . ++$new;
+        foreach ($value as $block) {
+            $blockUid = $block['uid'] ?? null;
+
+            if ($blockUid) {
+                $existingBlock = MatrixBlock::find()->uid($blockUid)->status(null)->one() ?? new MatrixBlock();
+            } else {
+                $existingBlock = new MatrixBlock();
+            }
+
+            $blockId = $existingBlock->id ?? 'new' . ++$new;
 
             $normalizedFieldValues = [];
 
@@ -76,7 +81,7 @@ class Matrix extends ZenField
                 foreach ($blockType->getCustomFields() as $subField) {
                     $subValue = $block['fields'][$subField->handle] ?? null;
 
-                    $normalizedFieldValues[$subField->handle] = $fieldsService->normalizeValue($subField, $foundBlock, $subValue);
+                    $normalizedFieldValues[$subField->handle] = $fieldsService->normalizeValue($subField, $existingBlock, $subValue);
                 }
             }
 

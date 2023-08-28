@@ -32,8 +32,6 @@ class SuperTable extends ZenField
         $fieldsService = Zen::$plugin->getFields();
 
         foreach ($value->all() as $block) {
-            $blockId = $block->uid ?? 'new' . ++$new;
-
             $serializedFieldValues = [];
 
             // Serialize all nested fields properly through Zen
@@ -43,7 +41,7 @@ class SuperTable extends ZenField
                 $serializedFieldValues[$subField->handle] = $fieldsService->serializeValue($subField, $block, $subValue);
             }
 
-            $blocks[$blockId] = [
+            $blocks[] = [
                 'type' => $block->getType()->uid,
                 'uid' => $block->uid,
                 'fields' => $serializedFieldValues,
@@ -62,9 +60,16 @@ class SuperTable extends ZenField
         $blockTypes = ArrayHelper::index(SuperTablePlugin::$plugin->getService()->getAllBlockTypes(), 'uid');
         $fieldsService = Zen::$plugin->getFields();
 
-        foreach ($value as $blockUid => $block) {
-            $foundBlock = SuperTableBlockElement::find()->uid($blockUid)->status(null)->one() ?? new SuperTableBlockElement();
-            $blockId = $foundBlock->id ?? 'new' . ++$new;
+        foreach ($value as $block) {
+            $blockUid = $block['uid'] ?? null;
+
+            if ($blockUid) {
+                $existingBlock = SuperTableBlockElement::find()->uid($blockUid)->status(null)->one() ?? new SuperTableBlockElement();
+            } else {
+                $existingBlock = new SuperTableBlockElement();
+            }
+
+            $blockId = $existingBlock->id ?? 'new' . ++$new;
 
             $normalizedFieldValues = [];
 
@@ -79,7 +84,7 @@ class SuperTable extends ZenField
                 foreach ($blockType->getCustomFields() as $subField) {
                     $subValue = $block['fields'][$subField->handle] ?? null;
 
-                    $normalizedFieldValues[$subField->handle] = $fieldsService->normalizeValue($subField, $foundBlock, $subValue);
+                    $normalizedFieldValues[$subField->handle] = $fieldsService->normalizeValue($subField, $existingBlock, $subValue);
                 }
             }
 
