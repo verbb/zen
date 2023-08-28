@@ -85,8 +85,6 @@ class Matrix extends ZenField
             $blocks[$blockId] = $block;
         }
 
-            Craft::dd($blocks);
-
         return $blocks;
     }
 
