@@ -24,6 +24,15 @@
     warning: macros.configWarning('pluginName', 'zen'),
 }) }}
 
+{{ forms.lightswitchField({
+    label: 'Stop on Error' | t('zen'),
+    instructions: 'Whether an import should stop when an error is encountered, or continue with the rest of the import.' | t('zen'),
+    id: 'stopOnError',
+    name: 'stopOnError',
+    on: settings.stopOnError,
+    warning: macros.configWarning('stopOnError', 'zen'),
+}) }}
+
 {% endnamespace %}
 
 {% endblock %}

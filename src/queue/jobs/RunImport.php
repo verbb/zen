@@ -2,6 +2,7 @@
 namespace verbb\zen\queue\jobs;
 
 use verbb\zen\Zen;
+use verbb\zen\models\Settings;
 
 use Craft;
 use craft\db\Table;
@@ -30,6 +31,9 @@ class RunImport extends BaseJob
     {
         $filename = $this->filename;
         $elementsToExclude = $this->elementsToExclude;
+
+        /* @var Settings $settings */
+        $settings = Zen::$plugin->getSettings();
 
         $importService = Zen::$plugin->getImport();
         $elementsToImport = $importService->getElementsToImport($filename, $elementsToExclude);
@@ -86,7 +90,9 @@ class RunImport extends BaseJob
                     ],
                 ]);
 
-                throw new Exception($e);
+                if ($settings->stopOnError) {
+                    throw new Exception($e);
+                }
             }
         }
     }

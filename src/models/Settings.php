@@ -9,5 +9,6 @@ class Settings extends Model
     // =========================================================================
 
     public string $pluginName = 'Zen';
+    public bool $stopOnError = true;
 
 }
