@@ -42,7 +42,7 @@ class Matrix extends ZenField
             }
 
             $blocks[$blockId] = [
-                'type' => $block->getType()->handle,
+                'type' => $block->getType()->uid,
                 'enabled' => $block->enabled,
                 'collapsed' => $block->collapsed,
                 'uid' => $block->uid,
@@ -59,7 +59,7 @@ class Matrix extends ZenField
         $blocks = [];
         $new = 0;
 
-        $blockTypes = ArrayHelper::index(Craft::$app->getMatrix()->getAllBlockTypes(), 'handle');
+        $blockTypes = ArrayHelper::index(Craft::$app->getMatrix()->getAllBlockTypes(), 'uid');
         $fieldsService = Zen::$plugin->getFields();
 
         foreach ($value as $blockUid => $block) {
@@ -84,6 +84,8 @@ class Matrix extends ZenField
 
             $blocks[$blockId] = $block;
         }
+
+            Craft::dd($blocks);
 
         return $blocks;
     }

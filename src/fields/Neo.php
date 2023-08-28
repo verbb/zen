@@ -44,7 +44,7 @@ class Neo extends ZenField
             }
 
             $blocks[$blockId] = [
-                'type' => $block->getType()->handle,
+                'type' => $block->getType()->uid,
                 'enabled' => $block->enabled,
                 'collapsed' => $block->getCollapsed(),
                 'level' => $block->level,
@@ -62,7 +62,7 @@ class Neo extends ZenField
         $blocks = [];
         $new = 0;
 
-        $blockTypes = ArrayHelper::index(Neo::$plugin->blockTypes->getAllBlockTypes(), 'handle');
+        $blockTypes = ArrayHelper::index(Neo::$plugin->blockTypes->getAllBlockTypes(), 'uid');
         $fieldsService = Zen::$plugin->getFields();
 
         foreach ($value as $blockUid => $block) {
