@@ -135,7 +135,7 @@ export default {
             this.processingLog.forEach((log) => {
                 const line = [];
 
-                line.push(`${log.element.type}: “${log.element.label}”`);
+                line.push(`${log.element.type}: “${log.element.label}” <small>(${log.element.uid})</small>`);
 
                 if (!log.success) {
                     line.push(`<span class="error">  > ${log.error}</span>`);
