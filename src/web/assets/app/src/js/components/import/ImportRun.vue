@@ -63,7 +63,7 @@ export default {
             progressBar: null,
             completed: false,
             cancelled: false,
-            taskId: Craft.randomString(10),
+            taskId: '',
             processingLog: [],
         };
     },
@@ -71,6 +71,13 @@ export default {
     created() {
         this.$store().setSaveButton(this.$route);
         this.$store().setBreadcrumbs(this.$route, ['index', 'configure', 'review', 'run']);
+
+        // Allow us to resume an import task, or create a new one
+        this.taskId = this.$route.query.taskId;
+
+        if (!this.taskId) {
+            this.taskId = Craft.randomString(10);
+        }
     },
 
     mounted() {
@@ -209,7 +216,16 @@ export default {
         },
 
         onRefresh() {
-            this.$router.go(0);
+            // Attach the current taskId so we can resume it on reload
+            this.$router.replace({
+                path: this.$route.path,
+                query: { taskId: this.taskId },
+            });
+
+            // Reload the page just for easiness
+            setTimeout(() => {
+                this.$router.go(0);
+            }, 50);
         },
     },
 
