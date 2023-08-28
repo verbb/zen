@@ -124,11 +124,11 @@ class ImportController extends Controller
         if ($direct) {
             Zen::$plugin->getImport()->runImport($filename, $elementsToExclude);
         } else {
-            Queue::push(new RunImport([
+            Zen::createOrRestartImportJob([
                 'filename' => $filename,
                 'elementsToExclude' => $elementsToExclude,
                 'taskId' => $taskId,
-            ]));
+            ]);
         }
 
         return $this->asJson(['success' => true]);

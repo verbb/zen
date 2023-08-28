@@ -26,21 +26,8 @@ class QueueController extends Controller
         $queue = Craft::$app->getQueue();
         $taskId = $this->request->getRequiredParam('taskId');
 
-        foreach ($queue->getJobInfo() as $jobInfoSummary) {
-            try {
-                $jobInfo = $queue->getJobDetails($jobInfoSummary['id']);
-                $job = $jobInfo['job'] ?? null;
-
-                if ($job instanceof RunImport && $job->taskId === $taskId) {
-                    $queue->release($jobInfoSummary['id']);
-                }
-            } catch (Throwable $e) {
-                Zen::error(Craft::t('zen', 'Unable to fetch job info: “{message}” {file}:{line}', [
-                    'message' => $e->getMessage(),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine(),
-                ]));
-            }
+        if ($jobInfo = Zen::getQueueJobByTaskId($taskId)) {
+            $queue->release($jobInfo['id']);
         }
 
         return $this->asSuccess();
@@ -55,28 +42,14 @@ class QueueController extends Controller
         $taskId = $this->request->getRequiredParam('taskId');
         $zenJob = null;
 
-        // Extra check to return just the job task that we're after
-        foreach ($queue->getJobInfo() as $jobInfoSummary) {
-            try {
-                $jobInfo = $queue->getJobDetails($jobInfoSummary['id']);
-                $job = $jobInfo['job'] ?? null;
+        if ($jobInfo = Zen::getQueueJobByTaskId($taskId)) {
+            $jobInfo = $queue->getJobDetails($jobInfo['id']);
+                    
+            // Using `toArray()` isn't good enough here, but we want to add our own attributes
+            $zenJob = Json::decode(Json::encode($jobInfo));
 
-                if ($job instanceof RunImport && $job->taskId === $taskId) {
-                    // Using `toArray()` isn't good enough here, but we want to add our own attributes
-                    $zenJob = Json::decode(Json::encode($jobInfo));
-
-                    // Add in custom properties
-                    $zenJob['processingLog'] = Zen::getProcessingLog($taskId);
-
-                    break;
-                }
-            } catch (Throwable $e) {
-                Zen::error(Craft::t('zen', 'Unable to fetch job info: “{message}” {file}:{line}', [
-                    'message' => $e->getMessage(),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine(),
-                ]));
-            }
+            // Add in custom properties
+            $zenJob['processingLog'] = Zen::getProcessingLog($taskId);
         }
 
         return $this->asJson([
