@@ -40,24 +40,26 @@ class RelationField extends ZenField
         // This will be serialized element info. We want to fetch any existing elements, or handle creating them
         $elements = [];
 
-        foreach ($value as $el) {
-            $elementType = $el['type'] ?? null;
+        if (is_array($value)) {
+            foreach ($value as $el) {
+                $elementType = $el['type'] ?? null;
 
-            if ($registeredElement = Zen::$plugin->getElements()->getElementByType($elementType)) {
-                $elementIdentifier = $registeredElement::elementUniqueIdentifier();
-                $elementUid = $el[$elementIdentifier] ?? null;
+                if ($registeredElement = Zen::$plugin->getElements()->getElementByType($elementType)) {
+                    $elementIdentifier = $registeredElement::elementUniqueIdentifier();
+                    $elementUid = $el[$elementIdentifier] ?? null;
 
-                if ($elementUid) {
-                    $foundElement = $registeredElement::elementType()::find()->$elementIdentifier($elementUid)->status(null)->one();
+                    if ($elementUid) {
+                        $foundElement = $registeredElement::elementType()::find()->$elementIdentifier($elementUid)->status(null)->one();
 
-                    if ($foundElement) {
-                        $elements[] = $foundElement->id;
+                        if ($foundElement) {
+                            $elements[] = $foundElement->id;
 
-                        // Store all found and new elements in a cache for this field. This allows us to create the new ones
-                        // at later stages, but we record existing ones, so we retain the order of elements in the field.
-                        self::$_cachedElements[$element->uid][$field->handle][$elementUid] = $foundElement;
-                    } else {
-                        self::$_cachedElements[$element->uid][$field->handle][$elementUid] = $el;
+                            // Store all found and new elements in a cache for this field. This allows us to create the new ones
+                            // at later stages, but we record existing ones, so we retain the order of elements in the field.
+                            self::$_cachedElements[$element->uid][$field->handle][$elementUid] = $foundElement;
+                        } else {
+                            self::$_cachedElements[$element->uid][$field->handle][$elementUid] = $el;
+                        }
                     }
                 }
             }
