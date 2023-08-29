@@ -48,7 +48,7 @@ class Fields extends Component
         }
 
         if (Plugin::isPluginInstalledAndEnabled('seomatic')) {
-            $fieldTypes[] = fieldTypes\SeoMatic::class;
+            $fieldTypes[] = fieldTypes\Seomatic::class;
         }
 
         if (Plugin::isPluginInstalledAndEnabled('image-optimize')) {
