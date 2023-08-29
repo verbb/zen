@@ -53,6 +53,10 @@ class Elements extends Component
             $elementTypes[] = elementTypes\Variant::class;
         }
 
+        if (Plugin::isPluginInstalledAndEnabled('navigation')) {
+            $elementTypes[] = elementTypes\NavigationNode::class;
+        }
+
         $event = new RegisterComponentTypesEvent([
             'types' => $elementTypes,
         ]);
