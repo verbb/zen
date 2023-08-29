@@ -386,6 +386,18 @@ class Import extends Component
             return false;
         }
 
+        // We should always process the top-most parent first, then downward to this one
+        if ($parent = $element->getParent()) {
+            $parentElementAction = new ElementImportAction([
+                'elementType' => $importAction->elementType,
+                'action' => $importAction->action,
+                'data' => $importAction->data,
+                'element' => $parent,
+            ]);
+
+            $this->runElementAction($parentElementAction);
+        }
+
         // Do a final check to see if the element has already been imported by something else in the import.
         $elementType::checkExistingImportedElement($importAction);
 

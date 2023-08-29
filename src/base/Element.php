@@ -430,8 +430,14 @@ abstract class Element implements ZenElementInterface
         // So, to address everything here, we query for an existing element, and apply the ID if found.
         static::populateExistingImportedElement($importAction->element);
 
-        // Do the same for any parent
-        static::populateExistingImportedElement($importAction->element->parent);
+        // Do the same for any parent all the way up the tree
+        $parent = $importAction->element->parent;
+
+        while ($parent) {
+            static::populateExistingImportedElement($parent);
+
+            $parent = $parent->parent;
+        }
     }
 
     public static function getEagerLoadingMap(): array
