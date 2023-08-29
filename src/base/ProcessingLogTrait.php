@@ -76,7 +76,11 @@ trait ProcessingLogTrait
         if ($jobInfo = Zen::getQueueJobByTaskId($config['taskId'])) {
             $queue->retry($jobInfo['id']);
         } else {
-            Queue::push(new RunImport($config));
+            $priority = null;
+            $delay = null;
+            $ttr = 600;
+
+            Queue::push(new RunImport($config), $priority, $delay, $ttr);
         }
     }
 
