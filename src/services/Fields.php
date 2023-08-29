@@ -55,6 +55,10 @@ class Fields extends Component
             $fieldTypes[] = fieldTypes\ImageOptimize::class;
         }
 
+        if (Plugin::isPluginInstalledAndEnabled('preparse-field')) {
+            $fieldTypes[] = fieldTypes\Preparse::class;
+        }
+
         $event = new RegisterComponentTypesEvent([
             'types' => $fieldTypes,
         ]);
