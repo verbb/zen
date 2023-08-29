@@ -25,6 +25,20 @@ class ElementImportDependency extends Model
         call_user_func($this->callback, ...$args);
     }
 
+    public function process(ElementInterface $element): void
+    {
+        // Check every time if the dependent element already exists. It could be created by another element
+        if ($existingElement = $this->getExistingElement()) {
+            // Update the dependency model with the found element
+            $this->elementImportAction->element = $existingElement;
+        } else {
+            Zen::$plugin->getImport()->runElementAction($this->elementImportAction);
+        }
+
+        // Fire a callback to the dependency-defining instance that the element has been imported
+        $this->callback($element, $this);
+    }
+
     public function getExistingElement(): ?ElementInterface
     {
         // Find an existing element given the criteria in `$this->elementImportAction` to save importing it.

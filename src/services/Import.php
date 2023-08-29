@@ -401,16 +401,7 @@ class Import extends Component
         // Are there any dependencies on the element (does it contain a reference to another element?)
         // This shouid be imported first, and then a callback fired to notify the original element
         foreach ($this->getImportDependencies($element->$elementIdentifier) as $dependency) {
-            // Check every time if the dependent element already exists. It could be created by another element
-            if ($existingElement = $dependency->getExistingElement()) {
-                // Update the dependency model with the found element
-                $dependency->elementImportAction->element = $existingElement;
-            } else {
-                $this->runElementAction($dependency->elementImportAction);
-            }
-
-            // Fire a callback to the dependency-defining instance that the element has been imported
-            $dependency->callback($element, $dependency);
+            $dependency->process($element);
         }
 
         // Do a final check to see if the element has already been imported by something else in the import.
