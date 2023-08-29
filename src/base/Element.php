@@ -13,6 +13,7 @@ use verbb\zen\helpers\ArrayHelper;
 use verbb\zen\helpers\Db;
 use verbb\zen\helpers\DiffHelper;
 use verbb\zen\models\ElementImportAction;
+use verbb\zen\models\ElementImportDependency;
 
 use Craft;
 use craft\base\ElementInterface;
@@ -293,7 +294,7 @@ abstract class Element implements ZenElementInterface
 
         // Handle parent items (after classes can handle them)
         if ($parent = ArrayHelper::remove($data, 'parent')) {
-            $data['parent'] = static::getNormalizedElement($parent, $includeFields);
+            static::createDependency('parentId', $parent, $data);
         }
 
         // Allow plugins to modify the data
@@ -653,6 +654,34 @@ abstract class Element implements ZenElementInterface
         }
 
         return implode(' / ', $items);
+    }
+
+    protected static function createDependency(string $attribute, array $sourceData, array $data): void
+    {
+        $elementType = $sourceData['type'] ?? null;
+
+        // Ensure that the dependency is Zen-enabled
+        if ($registeredElement = Zen::$plugin->getElements()->getElementByType($elementType)) {
+            $elementIdentifier = $registeredElement::elementUniqueIdentifier();
+            $elementUid = $sourceData[$elementIdentifier] ?? null;
+            $sourceKey = $data[$elementIdentifier] ?? null;
+
+            if ($sourceKey && $elementUid) {
+                // The linked-to element isn't imported yet, so add that as a dependency
+                Zen::$plugin->getImport()->addImportDependency($sourceKey, new ElementImportDependency([
+                    'elementImportAction' => new ElementImportAction([
+                        'elementType' => $registeredElement,
+                        'action' => ElementImportAction::ACTION_SAVE,
+                        'data' => $sourceData,
+                        'element' => $registeredElement::getNormalizedElement($sourceData, true),
+                    ]),
+                    'callback' => function(ElementInterface $element, ElementImportDependency $dependency) use ($attribute) {
+                        // Assign the link element now that it's been imported
+                        $element->$attribute = $dependency->elementImportAction->element->id;
+                    },
+                ]));
+            }
+        }
     }
 
 }

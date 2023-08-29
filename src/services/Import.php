@@ -5,6 +5,7 @@ use verbb\zen\Zen;
 use verbb\zen\helpers\ArrayHelper;
 use verbb\zen\helpers\DiffHelper;
 use verbb\zen\models\ElementImportAction;
+use verbb\zen\models\ElementImportDependency;
 use verbb\zen\models\MapDiffer;
 
 use Craft;
@@ -24,6 +25,7 @@ class Import extends Component
     // Properties
     // =========================================================================
     
+    private array $_dependencies = [];
     private array $_storedFiles = [];
 
 
@@ -338,6 +340,16 @@ class Import extends Component
         return $this->_storedFiles;
     }
 
+    public function addImportDependency(string $identifier, ElementImportDependency $dependency): void
+    {
+        $this->_dependencies[$identifier][] = $dependency;
+    }
+
+    public function getImportDependencies(string $identifier): array
+    {
+        return $this->_dependencies[$identifier] ?? [];
+    }
+
     public function getImportPayload(string $filename): array
     {
         $payloadPath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . basename($filename, '.zip');
@@ -386,16 +398,19 @@ class Import extends Component
             return false;
         }
 
-        // We should always process the top-most parent first, then downward to this one
-        if ($parent = $element->getParent()) {
-            $parentElementAction = new ElementImportAction([
-                'elementType' => $importAction->elementType,
-                'action' => $importAction->action,
-                'data' => $importAction->data,
-                'element' => $parent,
-            ]);
+        // Are there any dependencies on the element (does it contain a reference to another element?)
+        // This shouid be imported first, and then a callback fired to notify the original element
+        foreach ($this->getImportDependencies($element->$elementIdentifier) as $dependency) {
+            // Check every time if the dependent element already exists. It could be created by another element
+            if ($existingElement = $dependency->getExistingElement()) {
+                // Update the dependency model with the found element
+                $dependency->elementImportAction->element = $existingElement;
+            } else {
+                $this->runElementAction($dependency->elementImportAction);
+            }
 
-            $this->runElementAction($parentElementAction);
+            // Fire a callback to the dependency-defining instance that the element has been imported
+            $dependency->callback($element, $dependency);
         }
 
         // Do a final check to see if the element has already been imported by something else in the import.

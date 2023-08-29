@@ -1,8 +1,11 @@
 <?php
 namespace verbb\zen\elements;
 
+use verbb\zen\Zen;
 use verbb\zen\base\Element as ZenElement;
 use verbb\zen\helpers\Db;
+use verbb\zen\models\ElementImportAction;
+use verbb\zen\models\ElementImportDependency;
 use verbb\zen\models\ImportFieldTab;
 
 use Craft;
@@ -77,8 +80,11 @@ class NavigationNode extends ZenElement
         $data['data'] = $element->data;
         $data['newWindow'] = $element->newWindow;
 
-        if ($element->elementId) {
-            $data['elementUid'] = Db::uidById('{{%elements}}', $element->elementId);
+        // Check for the linked element for element nodes
+        if ($linkedElement = $element->getElement()) {
+            if ($registeredElement = Zen::$plugin->getElements()->getElementByType(get_class($linkedElement))) {
+                $data['linkedElement'] = $registeredElement::getSerializedElement($linkedElement);
+            }
         }
 
         return $data;
@@ -89,8 +95,9 @@ class NavigationNode extends ZenElement
         $data['navId'] = Db::idByUid('{{%navigation_navs}}', ArrayHelper::remove($data, 'navUid'));
         $data['type'] = ArrayHelper::remove($data, 'nodeType');
 
-        if ($elementId = ArrayHelper::remove($data, 'elementUid')) {
-            $data['elementId'] = Db::idByUid('{{%elements}}', $elementId);
+        // Create the linked-to element, if an element node
+        if ($linkedElement = ArrayHelper::remove($data, 'linkedElement')) {
+            static::createDependency('elementId', $linkedElement, $data);
         }
 
         return $data;

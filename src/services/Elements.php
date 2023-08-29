@@ -32,6 +32,7 @@ class Elements extends Component
     private ?string $_excludedElement = null;
     private array $_cachedSerializedElements = [];
     private array $_cachedNormalizedElements = [];
+    private array $_cachedExistingElements = [];
 
 
     // Public Methods
@@ -140,6 +141,16 @@ class Elements extends Component
     public function getCachedNormalizedElement(string $uid): ?ElementInterface
     {
         return $this->_cachedNormalizedElements[$uid] ?? null;
+    }
+
+    public function setCachedExistingElement(string $uid, ElementInterface $data): void
+    {
+        $this->_cachedExistingElements[$uid] = $data;
+    }
+
+    public function getCachedExistingElement(string $uid): ?ElementInterface
+    {
+        return $this->_cachedExistingElements[$uid] ?? null;
     }
 
 
