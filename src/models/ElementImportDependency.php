@@ -42,10 +42,15 @@ class ElementImportDependency extends Model
                 return $cachedExistingElement;
             }
 
-            $element = $registeredElement::elementType()::find()->$elementIdentifier($elementUid)->status(null)->one();
+            $element = $registeredElement::elementType()::find()
+                ->$elementIdentifier($elementUid)
+                ->status(null)
+                ->one();
 
             // Cache it in case we call the same element
-            Zen::$plugin->getElements()->setCachedExistingElement($elementUid, $element);
+            if ($element) {
+                Zen::$plugin->getElements()->setCachedExistingElement($elementUid, $element);
+            }
         }
 
         return $element;
