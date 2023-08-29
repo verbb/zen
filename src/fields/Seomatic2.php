@@ -9,7 +9,7 @@ use craft\base\FieldInterface;
 
 use nystudio107\seomatic\fields\SeoSettings;
 
-class SeoMatic extends ZenField
+class Seomatic extends ZenField
 {
     // Static Methods
     // =========================================================================
