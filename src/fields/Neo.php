@@ -81,6 +81,9 @@ class Neo extends ZenField
 
             // Serialize all nested fields properly through Zen
             if ($blockType) {
+                // Swap out the UID with the ID now it's been ported
+                $block['type'] = $blockType->handle;
+
                 foreach ($blockType->getCustomFields() as $subField) {
                     $subValue = $block['fields'][$subField->handle] ?? null;
 
