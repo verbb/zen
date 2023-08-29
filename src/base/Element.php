@@ -261,13 +261,12 @@ abstract class Element implements ZenElementInterface
 
         $fieldsService = Zen::$plugin->getFields();
 
-        if ($fieldLayout = $element->getFieldLayout()) {
-            foreach ($fieldLayout->getCustomFields() as $field) {
-                $value = $element->getFieldValue($field->handle);
+        foreach ($fieldsService->getCustomFields($element) as $field) {
+            // Only handly fields that are "supported"
+            $value = $element->getFieldValue($field->handle);
 
-                // Allow registered fields with Zen to handle the serialization
-                $values[$field->handle] = $fieldsService->serializeValue($field, $element, $value);
-            }
+            // Allow registered fields with Zen to handle the serialization
+            $values[$field->handle] = $fieldsService->serializeValue($field, $element, $value);
         }
 
         return $values;
@@ -335,14 +334,20 @@ abstract class Element implements ZenElementInterface
         $values = [];
         $fieldsByHandle = [];
 
-        if ($fieldLayout = $element->getFieldLayout()) {
-            $fieldsByHandle = ArrayHelper::index($fieldLayout->getCustomFields(), 'handle');
-        }
+        $fieldsService = Zen::$plugin->getFields();
+
+        $fieldsByHandle = ArrayHelper::index($fieldsService->getCustomFields($element), 'handle');
 
         foreach ($fieldData as $fieldHandle => $fieldValue) {
             if ($field = ArrayHelper::getValue($fieldsByHandle, $fieldHandle)) {
                 // Allow registered fields with Zen to handle the serialization
-                $values[$field->handle] = Zen::$plugin->getFields()->normalizeValue($field, $element, $fieldValue);
+                $normalizedValue = $fieldsService->normalizeValue($field, $element, $fieldValue);
+
+                if ($normalizedValue instanceof UnsupportedField) {
+                    continue;
+                }
+                
+                $values[$field->handle] = $normalizedValue;
             }
         }
 
@@ -460,11 +465,13 @@ abstract class Element implements ZenElementInterface
         // Required when testing outside of the CP (using the URLs directly)
         $view->setTemplateMode(View::TEMPLATE_MODE_CP);
 
+        $fieldsService = Zen::$plugin->getFields();
+
         if ($element) {
-            if ($fieldLayout = $element->getFieldLayout()) {
+            if ($fieldLayout = $fieldsService->getElementFieldLayout($element)) {
                 // Allow any registered fields to modify their values for preview
                 foreach ($fieldLayout->getCustomFields() as $field) {
-                    Zen::$plugin->getFields()->getFieldForPreview($field, $element, $type);
+                    $fieldsService->getFieldForPreview($field, $element, $type);
                 }
 
                 $form = $fieldLayout->createForm($element, true);

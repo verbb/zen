@@ -35,7 +35,7 @@ class Neo extends ZenField
             $serializedFieldValues = [];
 
             // Serialize all nested fields properly through Zen
-            foreach ($block->getType()->getCustomFields() as $subField) {
+            foreach ($fieldsService->getCustomFields($block->getType()) as $subField) {
                 $subValue = $block->getFieldValue($subField->handle);
 
                 $serializedFieldValues[$subField->handle] = $fieldsService->serializeValue($subField, $block, $subValue);
@@ -84,7 +84,7 @@ class Neo extends ZenField
                 // Swap out the UID with the ID now it's been ported
                 $block['type'] = $blockType->handle;
 
-                foreach ($blockType->getCustomFields() as $subField) {
+                foreach ($fieldsService->getCustomFields($blockType) as $subField) {
                     $subValue = $block['fields'][$subField->handle] ?? null;
 
                     $normalizedFieldValues[$subField->handle] = $fieldsService->normalizeValue($subField, $existingBlock, $subValue);
@@ -107,7 +107,7 @@ class Neo extends ZenField
 
         foreach ($value->all() as $block) {
             // Ensure all sub-fields are prepped for preview
-            foreach ($block->getType()->getCustomFields() as $subField) {
+            foreach ($fieldsService->getCustomFields($block->getType()) as $subField) {
                 $fieldsService->getFieldForPreview($subField, $block, $type);
             }
         }

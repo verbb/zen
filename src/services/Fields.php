@@ -10,8 +10,10 @@ use craft\base\Component;
 use craft\base\ElementInterface;
 use craft\base\FieldInterface;
 use craft\events\RegisterComponentTypesEvent;
+use craft\fieldlayoutelements\CustomField;
 use craft\fields\BaseRelationField;
 use craft\fields\Matrix;
+use craft\models\FieldLayout;
 
 use verbb\supertable\fields\SuperTableField;
 use benf\neo\Field as NeoField;
@@ -76,6 +78,56 @@ class Fields extends Component
         }
 
         return null;
+    }
+
+    public function getFieldLayout(?FieldLayout $fieldLayout): ?FieldLayout
+    {
+        // Filter out any unsupported fields in the field layout
+        if ($fieldLayout) {
+            $fieldLayout = clone $fieldLayout;
+
+            $tabs = $fieldLayout->getTabs();
+
+            foreach ($tabs as $tabKey => $tab) {
+                $fieldElements = $tab->getElements();
+
+                foreach ($fieldElements as $fieldElementKey => $fieldElement) {
+                    if ($fieldElement instanceof CustomField) {
+                        $field = $fieldElement->getField();
+
+                        if ($fieldType = $this->getFieldByType(get_class($field))) {
+                            if (!$fieldType::isSupported()) {
+                                unset($fieldElements[$fieldElementKey]);
+                            }
+                        }
+                    }
+                }
+
+                $tab->setElements($fieldElements);
+            }
+
+            $fieldLayout->setTabs($tabs);
+
+            return $fieldLayout;
+        }
+
+        return null;
+    }
+
+    public function getElementFieldLayout(mixed $element): ?FieldLayout
+    {
+        return $this->getFieldLayout($element->getFieldLayout());
+    }
+
+    public function getCustomFields(mixed $element): array
+    {
+        $fields = [];
+
+        if ($fieldLayout = $this->getElementFieldLayout($element)) {
+            $fields = $fieldLayout->getCustomFields();
+        }
+
+        return $fields;
     }
 
     public function serializeValue(FieldInterface $field, ElementInterface $element, mixed $value): mixed

@@ -21,6 +21,11 @@ abstract class Field implements ZenFieldInterface
     // Static Methods
     // =========================================================================
 
+    public static function isSupported(): bool
+    {
+        return true;
+    }
+
     public static function serializeValue(FieldInterface $field, ElementInterface $element, mixed $value): mixed
     {
         return null;

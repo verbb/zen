@@ -19,6 +19,11 @@ class Preparse extends ZenField
         return PreparseFieldType::class;
     }
 
+    public static function isSupported(): bool
+    {
+        return false;
+    }
+
     public static function serializeValue(FieldInterface $field, ElementInterface $element, mixed $value): mixed
     {
         return null;
