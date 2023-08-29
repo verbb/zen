@@ -11,6 +11,7 @@ use verbb\zen\services\Import;
 
 use Craft;
 use craft\base\ElementInterface;
+use craft\base\FieldInterface;
 use craft\db\Table;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\ArrayHelper;
@@ -21,6 +22,12 @@ use verbb\navigation\elements\Node;
 
 class NavigationNode extends ZenElement
 {
+    // Properties
+    // =========================================================================
+
+    private static array $_cachedElements = [];
+
+
     // Static Methods
     // =========================================================================
 
@@ -98,6 +105,9 @@ class NavigationNode extends ZenElement
 
         // Create the linked-to element, if an element node
         if ($linkedElement = ArrayHelper::remove($data, 'linkedElement')) {
+            // Save it to the cache so we can use it in the preview
+            self::$_cachedElements['linkedElement'] = $linkedElement;
+
             Import::createDependency($linkedElement, $data, function(ElementInterface $element, ElementImportDependency $dependency) {
                 // Assign the link element now that it's been imported
                 $element->elementId = $dependency->elementImportAction->element->id;
@@ -105,6 +115,22 @@ class NavigationNode extends ZenElement
         }
 
         return $data;
+    }
+
+    public static function getElementForPreview(ElementInterface $element, string $type): void
+    {
+        $linkedElement = self::$_cachedElements['linkedElement'] ?? [];
+
+        if ($linkedElement) {
+            $elementType = $linkedElement['type'] ?? null;
+
+            if ($elementType) {
+                // Check our cached elements for any new ones we need to create
+                if ($registeredElement = Zen::$plugin->getElements()->getElementByType($elementType)) {
+                    $element->setElement($registeredElement::getNormalizedElement($linkedElement));
+                }
+            }
+        }
     }
 
     public static function defineImportTableAttributes(): array

@@ -394,7 +394,7 @@ abstract class Element implements ZenElementInterface
         return [];
     }
 
-    public static function getFieldForPreview(FieldInterface $field, ElementInterface $element): void
+    public static function getElementForPreview(ElementInterface $element, string $type): void
     {
     }
 
@@ -473,6 +473,8 @@ abstract class Element implements ZenElementInterface
 
         if ($element) {
             if ($fieldLayout = $fieldsService->getElementFieldLayout($element)) {
+                static::getElementForPreview($element, $type);
+
                 // Allow any registered fields to modify their values for preview
                 foreach ($fieldLayout->getCustomFields() as $field) {
                     $fieldsService->getFieldForPreview($field, $element, $type);
