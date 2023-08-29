@@ -90,7 +90,7 @@ class Product extends ZenElement
                 $variant['fieldLayoutId'] = $productType->fieldLayout->id ?? null;
             }
 
-            $data['variants'][] = Variant::getNormalizedElement($variant);
+            $data['variants'][] = Variant::getNormalizedElement($variant, true);
         }
 
         return $data;

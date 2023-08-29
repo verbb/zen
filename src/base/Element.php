@@ -293,7 +293,7 @@ abstract class Element implements ZenElementInterface
 
         // Handle parent items (after classes can handle them)
         if ($parent = ArrayHelper::remove($data, 'parent')) {
-            $data['parent'] = static::getNormalizedElement($parent);
+            $data['parent'] = static::getNormalizedElement($parent, $includeFields);
         }
 
         // Allow plugins to modify the data
