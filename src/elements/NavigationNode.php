@@ -69,7 +69,7 @@ class NavigationNode extends ZenElement
     {
         // Serialize any additional attributes. Be sure to switch out IDs for UIDs.
         $data['navUid'] = Db::uidById('{{%navigation_navs}}', $element->navId);
-        $data['url'] = $element->url;
+        $data['url'] = $element->getRawUrl();
         $data['nodeType'] = $element->type;
         $data['classes'] = $element->classes;
         $data['urlSuffix'] = $element->urlSuffix;
@@ -123,12 +123,6 @@ class NavigationNode extends ZenElement
             new ImportFieldTab([
                 'name' => Craft::t('zen', 'Meta'),
                 'fields' => [
-                    // 'slug' => Cp::textFieldHtml([
-                    //     'label' => Craft::t('app', 'Slug'),
-                    //     'id' => 'slug',
-                    //     'value' => $element->slug,
-                    //     'disabled' => true,
-                    // ]),
                     'enabled' => Cp::lightswitchFieldHtml([
                         'label' => Craft::t('app', 'Enabled'),
                         'id' => 'enabled',
