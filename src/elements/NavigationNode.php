@@ -7,6 +7,7 @@ use verbb\zen\helpers\Db;
 use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\ElementImportDependency;
 use verbb\zen\models\ImportFieldTab;
+use verbb\zen\services\Import;
 
 use Craft;
 use craft\base\ElementInterface;
@@ -97,7 +98,10 @@ class NavigationNode extends ZenElement
 
         // Create the linked-to element, if an element node
         if ($linkedElement = ArrayHelper::remove($data, 'linkedElement')) {
-            static::createDependency('elementId', $linkedElement, $data);
+            Import::createDependency($linkedElement, $data, function(ElementInterface $element, ElementImportDependency $dependency) {
+                // Assign the link element now that it's been imported
+                $element->elementId = $dependency->elementImportAction->element->id;
+            });
         }
 
         return $data;

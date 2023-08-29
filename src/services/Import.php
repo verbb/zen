@@ -15,6 +15,7 @@ use craft\helpers\FileHelper;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
 
+use Closure;
 use Exception;
 
 use Diff\DiffOp\Diff\Diff;
@@ -22,6 +23,39 @@ use Diff\Patcher\MapPatcher;
 
 class Import extends Component
 {
+    // Static Methods
+    // =========================================================================
+
+    public static function createDependency(array $sourceData, array $destinationData, Closure $callback): void
+    {
+        $elementType = $sourceData['type'] ?? null;
+
+        // Ensure that the dependency is Zen-enabled
+        if ($registeredElement = Zen::$plugin->getElements()->getElementByType($elementType)) {
+            $elementIdentifier = $registeredElement::elementUniqueIdentifier();
+            $elementUid = $sourceData[$elementIdentifier] ?? null;
+            $dependencyKey = $destinationData[$elementIdentifier] ?? null;
+
+            if ($dependencyKey && $elementUid) {
+                // The linked-to element isn't imported yet, so add that as a dependency
+                Zen::$plugin->getImport()->addImportDependency($dependencyKey, new ElementImportDependency([
+                    'elementImportAction' => new ElementImportAction([
+                        'elementType' => $registeredElement,
+                        'action' => ElementImportAction::ACTION_SAVE,
+                        'data' => $sourceData,
+                        'element' => $registeredElement::getNormalizedElement($sourceData, true),
+                    ]),
+                    'data' => [
+                        'sourceData' => $sourceData,
+                        'destinationData' => $destinationData,
+                    ],
+                    'callback' => $callback,
+                ]));
+            }
+        }
+    }
+
+
     // Properties
     // =========================================================================
     

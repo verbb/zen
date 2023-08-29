@@ -15,6 +15,7 @@ class ElementImportDependency extends Model
 
     public ElementImportAction $elementImportAction;
     public Closure $callback;
+    public array $data = [];
 
 
     // Public Methods
@@ -36,7 +37,7 @@ class ElementImportDependency extends Model
         }
 
         // Fire a callback to the dependency-defining instance that the element has been imported
-        $this->callback($element, $this);
+        $this->callback($element, $this, $this->data);
     }
 
     public function getExistingElement(): ?ElementInterface
