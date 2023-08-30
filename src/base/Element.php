@@ -84,7 +84,7 @@ abstract class Element implements ZenElementInterface
 
     public static function getElementHtml(ElementInterface $element): string
     {
-        return $element->id ? Cp::elementHtml(element: $element, single: true, context: 'modal') : (string)$element;
+        return $element->id ? Cp::elementHtml(element: $element, single: true, context: 'index') : (string)$element;
     }
 
     public static function exportKey(): string
