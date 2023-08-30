@@ -298,6 +298,9 @@ abstract class Element implements ZenElementInterface
             Import::createDependency($parent, $data, function(ElementInterface $element, ElementImportDependency $dependency) {
                 $element->parentId = $dependency->elementImportAction->element->id;
             });
+
+            // Despite not really needing this yet, we prep the parent so it's ready for use in previews, not for the actual import
+            $data['parent'] = static::getNormalizedElement($parent, false);
         }
 
         // Allow plugins to modify the data
