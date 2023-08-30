@@ -162,6 +162,12 @@ class User extends ZenElement
             new ImportFieldTab([
                 'name' => Craft::t('zen', 'Meta'),
                 'fields' => [
+                    'uid' => Cp::textFieldHtml([
+                        'label' => Craft::t('app', 'UID'),
+                        'id' => 'uid',
+                        'value' => $element->uid,
+                        'disabled' => true,
+                    ]),
                     'email' => Cp::textFieldHtml([
                         'label' => Craft::t('app', 'Email'),
                         'id' => 'email',

@@ -186,6 +186,12 @@ class Asset extends ZenElement
             new ImportFieldTab([
                 'name' => Craft::t('zen', 'Meta'),
                 'fields' => [
+                    'uid' => Cp::textFieldHtml([
+                        'label' => Craft::t('app', 'UID'),
+                        'id' => 'uid',
+                        'value' => $element->uid,
+                        'disabled' => true,
+                    ]),
                     'filename' => Cp::textFieldHtml([
                         'label' => Craft::t('app', 'Filename'),
                         'id' => 'filename',

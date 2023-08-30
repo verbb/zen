@@ -85,6 +85,12 @@ class Category extends ZenElement
             new ImportFieldTab([
                 'name' => Craft::t('zen', 'Meta'),
                 'fields' => [
+                    'uid' => Cp::textFieldHtml([
+                        'label' => Craft::t('app', 'UID'),
+                        'id' => 'uid',
+                        'value' => $element->uid,
+                        'disabled' => true,
+                    ]),
                     'slug' => Cp::textFieldHtml([
                         'label' => Craft::t('app', 'Slug'),
                         'id' => 'slug',
