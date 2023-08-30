@@ -110,20 +110,4 @@ class SuperTable extends ZenField
         }
     }
 
-    public static function handleValueForDiffSummary(FieldInterface $field, mixed &$dest, mixed &$source): void
-    {
-        // Remove custom fields from the element used in element fields. They're just noise.
-        $callback = function(&$item) {
-            ArrayHelper::remove($item, 'fields');
-        };
-
-        if (is_array($dest)) {
-            array_walk($dest, $callback);
-        }
-
-        if (is_array($source)) {
-            array_walk($source, $callback);
-        }
-    }
-
 }

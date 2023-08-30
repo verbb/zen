@@ -21,7 +21,7 @@ class DiffHelper
         $fieldService = Zen::$plugin->getFields();
 
         // Because the serialized content will contain lots of extra info that we don't want to report on user-facing, 
-        // we select just the attributes that are (use-facing) and check their add/change/remove state.
+        // we select just the attributes that are (user-facing) and check their add/change/remove state.
         // We also need special handling for fields, which have the same scenario. Especially for complex fields like Matrix.
         if ($diffData) {
             $destItem = $diffData[0] ?? [];
