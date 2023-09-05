@@ -133,7 +133,7 @@ abstract class Element implements ZenElementInterface
         return [];
     }
 
-    public static function getImportTableValues(array $diffSummary, ?ElementInterface $newElement, ?ElementInterface $currentElement, ?string $state): array
+    public static function getImportTableValues(array $diffCounts, ?ElementInterface $newElement, ?ElementInterface $currentElement, ?string $state): array
     {
         $element = $newElement ?? $currentElement ?? null;
         $elementHtml = $element ? static::getElementHtml($element) : '';
@@ -163,7 +163,7 @@ abstract class Element implements ZenElementInterface
         
         $suffixColumns = array_filter([
             'state' => $state,
-            'summary' => $diffSummary,
+            'summary' => $diffCounts,
         ]);
 
         // Give plugins a chance to modify them
@@ -464,7 +464,7 @@ abstract class Element implements ZenElementInterface
         return [];
     }
 
-    public static function generateCompareHtml(?ElementInterface $element, array $diffs, string $type): string
+    public static function generateCompareHtml(?ElementInterface $element, array $diffSummary, string $type): string
     {
         $html = '';
         $view = Craft::$app->getView();
@@ -564,7 +564,7 @@ abstract class Element implements ZenElementInterface
 
         // Add our change status indicator to each field for the "new" element
         if ($type === 'new') {
-            foreach (DiffHelper::convertDiffToFieldIndicators($diffs) as $selector => $diffType) {
+            foreach ($diffSummary as $selector => $diffType) {
                 $addStatusIndicator($crawler, $selector, $diffType);
             }
         }

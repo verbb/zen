@@ -27,7 +27,6 @@
     "require": {
         "php": "^8.0.2",
         "craftcms/cms": "^4.0.0",
-        "diff/diff": "^3.3",
         "nystudio107/craft-plugin-vite": "^4.0.0",
         "verbb/base": "^2.0.0",
         "wa72/htmlpagedom": "^3.0"

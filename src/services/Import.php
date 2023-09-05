@@ -6,7 +6,6 @@ use verbb\zen\helpers\ArrayHelper;
 use verbb\zen\helpers\DiffHelper;
 use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\ElementImportDependency;
-use verbb\zen\models\MapDiffer;
 
 use Craft;
 use craft\base\Component;
@@ -17,9 +16,6 @@ use craft\helpers\StringHelper;
 
 use Closure;
 use Exception;
-
-use Diff\DiffOp\Diff\Diff;
-use Diff\Patcher\MapPatcher;
 
 class Import extends Component
 {
@@ -77,14 +73,13 @@ class Import extends Component
             'restore' => 0,
         ];
 
-        $differ = new MapDiffer(true);
-        $patcher = new MapPatcher();
+        $differ = new \verbb\zen\models\ElementDiffer();
 
         // Eager-load any fields automatically. Called here outside of the loop for performance
         $eagerLoadingFieldsMap = Zen::$plugin->getFields()->getEagerLoadingMap();
 
         foreach ($data as $elementType => $dataItems) {
-            $sourceItems = [];
+            $newItems = [];
 
             // Consolidate all modified/deleted/restored elements
             foreach ($dataItems as $stateKey => $dataElements) {
@@ -92,17 +87,17 @@ class Import extends Component
                     // Append what sort of action this will be
                     $dataItem['state'] = $stateKey;
 
-                    $sourceItems[] = $dataItem;
+                    $newItems[] = $dataItem;
                 }
             }
 
             // Get all the UIDs in the provided import to query in one go for performance
             // But, not all elements use UID for their unique identifier (Users use email)
             $elementIdentifier = $elementType::elementUniqueIdentifier();
-            $elementIdentifiers = array_keys(ArrayHelper::index($sourceItems, $elementIdentifier));
+            $elementIdentifiers = array_keys(ArrayHelper::index($newItems, $elementIdentifier));
 
-            // Re-index the soure items with their unique UID + siteUID key
-            $sourceItems = ArrayHelper::index($sourceItems, function($item) use ($elementIdentifier) {
+            // Re-index the new items with their unique UID + siteUID key
+            $newItems = ArrayHelper::index($newItems, function($item) use ($elementIdentifier) {
                 return $item[$elementIdentifier] . ':' . $item['siteUid'];
             });
 
@@ -124,92 +119,75 @@ class Import extends Component
                 return $element->$elementIdentifier . ':' . $element->site->uid;
             });
 
-            $destItems = [];
+            $oldItems = [];
 
             foreach ($elements as $elementKey => $element) {
-                // Ensure we serialize the destination element the same way we serialize the source exported element for accurate compare
-                $destItems[$elementKey] = $elementType::getSerializedElement($element);
+                // Ensure we serialize the old (current) element the same way we serialize the new exported element for accurate compare
+                $oldItems[$elementKey] = $elementType::getSerializedElement($element);
             }
 
             $elementData = [];
 
-            foreach ($sourceItems as $sourceKeyItem => $sourceItem) {
-                $diffSummary = [];
-
+            foreach ($newItems as $newItemKey => $newItem) {
                 // Store the state for what action needs to be done when importing (save/delete/restore the element)
                 // along with showing what state the action is in a summary (add/change/delete/remove).
                 $elementActionState = 'save';
-                $summaryState = null;
-                $sourceItemState = ArrayHelper::remove($sourceItem, 'state');
+                $elementState = null;
+                $diffs = [];
+                $itemState = ArrayHelper::remove($newItem, 'state');
 
                 // Something might have gone wrong, so exit
-                if (!$sourceItemState) {
+                if (!$itemState) {
                     continue;
                 }
 
+                // Find an existing element
+                $currentElement = $elements[$newItemKey] ?? null;
+
                 // If modified (add or change), run diff checks
-                if ($sourceItemState === 'modified') {
-                    // Find the same element on this install. If not found, it's new
-                    $destItem = $destItems[$sourceKeyItem] ?? [];
+                if ($itemState === 'modified') {
+                    // Find the same (serialized) element on this install. If not found, it's new
+                    $oldItem = $oldItems[$newItemKey] ?? [];
 
-                    // If a destination element is found, do a diff check. Otherwise, it's treated as a new element.
-                    if ($destItem) {
-                        // Remove any parents, we don't want to use them in diffs
-                        if (!$returnElementData) {
-                            unset($sourceItem['parent'], $destItem['parent']);
-                        }
+                    if ($oldItem) {
+                        // Run a diff check on the two serialized elements
+                        $diffs = $differ->doDiff($oldItem, $newItem);
 
-                        // Save an instance of this source and destination data to determine a summary.
-                        // We can only really report on this for changes, as adding new elements contains lots of
-                        // extra data we don't want to report on as a summary.
-                        $diffSummary = DiffHelper::getDiffSummary([$destItem, $sourceItem]);
-
-                        // Get diffs between source and destination to be applied.
-                        $diffs = $differ->doDiff($destItem, $sourceItem);
-
-                        // We also check if there are _meaningful_ diffs. This is helpful because `doDiff` will recursively
-                        // diff arrays, but we don't always want that to show as a change. For example, an element might contain
-                        // an entry field and an entry in that field could have changes itself. We **don't** want that listed 
-                        // as a change against the top-level element, because it technically isn't.
-                        if ($diffs && $diffSummary) {
+                        if ($diffs) {
                             // Apply the patch of the diff to the origin element
-                            $sourceItem = $patcher->patch($destItem, new Diff($diffs));
+                            $newItem = $differ->applyDiff($oldItem, $diffs);
 
-                            $summaryState = 'change';
+                            $elementState = 'change';
                         } else {
                             // A destination element exists, but no diffs found, so no need to action.
                             continue;
                         }
                     } else {
-                        $summaryState = 'add';
+                        $elementState = 'add';
                     }
                 }
 
-                // Now that we're done comparing, turn the imported data into a proper element. 
-                // This will have any changes already patched in - if there's an existing element on this install.
-                $currentElement = $elements[$sourceKeyItem] ?? null;
-
                 // Add the ID into the source item from the destination item - if it exists. After we compare.
                 if ($currentElement) {
-                    $sourceItem['id'] = $currentElement->id;
+                    $newItem['id'] = $currentElement->id;
                 }
 
                 // Do final setups for the new/current/actioned element
-                if ($sourceItemState === 'modified') {
-                    $elementToAction = $elementType::getNormalizedElement($sourceItem, $returnElementData);
+                if ($itemState === 'modified') {
+                    $elementToAction = $elementType::getNormalizedElement($newItem, $returnElementData);
                     $newElement = $elementToAction;
-                } else if ($sourceItemState === 'deleted') {
-                    $summaryState = 'delete';
+                } else if ($itemState === 'deleted') {
+                    $elementState = 'delete';
                     $elementActionState = 'delete';
 
                     $elementToAction = $currentElement;
                     $newElement = null;
-                } else if ($sourceItemState === 'restored') {
-                    $summaryState = 'restore';
+                } else if ($itemState === 'restored') {
+                    $elementState = 'restore';
                     $elementActionState = 'restore';
 
                     $currentElement = null;
-                    $elementToAction = $elementType::getNormalizedElement($sourceItem, $returnElementData);
+                    $elementToAction = $elementType::getNormalizedElement($newItem, $returnElementData);
                     $newElement = $elementToAction;
                 } else {
                     $elementToAction = null;
@@ -226,13 +204,14 @@ class Import extends Component
                     ]);
                 } else {
                     // Generate data used for the "row" of the table for this element compare. We can't send models to Vue.
-                    $tableData = $elementType::getImportTableValues($diffSummary, $newElement, $currentElement, $summaryState);
+                    $summaryCount = $differ->getSummaryCount($diffs);
+                    $tableData = $elementType::getImportTableValues($summaryCount, $newElement, $currentElement, $elementState);
 
                     if ($tableData) {
                         $elementData[] = $tableData;
                 
                         // Increment our summary for a nice look. Added here to ensure there are no errors for the row
-                        $summary[$summaryState] += 1;
+                        $summary[$elementState] += 1;
                     }
                 }
             }
@@ -262,12 +241,11 @@ class Import extends Component
         $oldHtml = '';
         $newHtml = '';
 
-        $differ = new MapDiffer(true);
-        $patcher = new MapPatcher();
+        $differ = new \verbb\zen\models\ElementDiffer();
 
         $elementType = null;
-        $sourceItemState = null;
-        $sourceItem = [];
+        $itemState = null;
+        $newItem = [];
 
         // Find just the source data we need for this element/site
         foreach ($data as $type => $dataItems) {
@@ -279,8 +257,8 @@ class Import extends Component
 
                     if ($elementId === $id) {
                         $elementType = $type;
-                        $sourceItemState = $stateKey;
-                        $sourceItem = $dataItem;
+                        $itemState = $stateKey;
+                        $newItem = $dataItem;
 
                         break 3;
                     }
@@ -288,9 +266,9 @@ class Import extends Component
             }
         }
 
-        if ($sourceItem) {
+        if ($newItem) {
             $elementIdentifier = $elementType::elementUniqueIdentifier();
-            $elementIdentifiers = $sourceItem[$elementIdentifier] ?? null;
+            $elementIdentifiers = $newItem[$elementIdentifier] ?? null;
 
             // Fetch the element on this site
             $currentElement = $elementType::find()
@@ -301,30 +279,27 @@ class Import extends Component
                 ->one();
 
             // Create a serialized version to compare with
-            $destItem = $currentElement ? $elementType::getSerializedElement($currentElement) : [];
+            $oldItem = $currentElement ? $elementType::getSerializedElement($currentElement) : [];
 
             $diffs = [];
 
-            // Remove any parents, we don't want to use them in diffs
-            unset($sourceItem['parent'], $destItem['parent']);
-
             // If modified (add or change), run diff checks
-            if ($sourceItemState === 'modified') {
-                if ($destItem) {
-                    $diffs = $differ->doDiff($destItem, $sourceItem);
+            if ($itemState === 'modified') {
+                if ($oldItem) {
+                    $diffs = $differ->doDiff($oldItem, $newItem);
 
                     if ($diffs) {
                         // Apply the patch of the diff to the origin element
-                        $sourceItem = $patcher->patch($destItem, new Diff($diffs));
+                        $newItem = $differ->applyDiff($oldItem, $diffs);
                     }
                 } else {
                     // This is just for show more than anything. Because this is all new info, there will be a bunch
                     // of attributes to add, but not all are shown visually to the user. If we used the diff data, 
                     // this would show more new items to apply that you can see, which is confusing. Instead, 
                     // construct "fake" diffs (all add) just for the fields and meta fields for the element.
-                    $elementToAction = $elementType::getNormalizedElement($sourceItem, true);
+                    $elementToAction = $elementType::getNormalizedElement($newItem, true);
 
-                    if ($tempDiffs = $differ->doDiff($destItem, $sourceItem)) {
+                    if ($tempDiffs = $differ->doDiff($oldItem, $newItem)) {
                         $attrs = [
                             'title',
                             'fields',
@@ -343,19 +318,21 @@ class Import extends Component
                 }
             }
 
-            if ($sourceItemState === 'modified') {
-                $newElement = $elementType::getNormalizedElement($sourceItem, true);
-            } else if ($sourceItemState === 'deleted') {
+            if ($itemState === 'modified') {
+                $newElement = $elementType::getNormalizedElement($newItem, true);
+            } else if ($itemState === 'deleted') {
                 $newElement = $currentElement;
-            } else if ($sourceItemState === 'restored') {
-                $newElement = $elementType::getNormalizedElement($sourceItem, true);
+            } else if ($itemState === 'restored') {
+                $newElement = $elementType::getNormalizedElement($newItem, true);
             } else {
                 $newElement = null;
             }
 
             // Generate the old/new summary of attributes and fields
-            $oldHtml = $elementType::generateCompareHtml($currentElement, $diffs, 'old');
-            $newHtml = $elementType::generateCompareHtml($newElement, $diffs, 'new');
+            $diffSummary = $differ->getSummaryFieldIndicators($diffs);
+
+            $oldHtml = $elementType::generateCompareHtml($currentElement, $diffSummary, 'old');
+            $newHtml = $elementType::generateCompareHtml($newElement, $diffSummary, 'new');
         }
 
         return [
