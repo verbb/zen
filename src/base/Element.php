@@ -542,7 +542,10 @@ abstract class Element implements ZenElementInterface
             } 
         }
 
-        $addStatusIndicator = function($crawler, $selector, $diffType) {
+        $addStatusIndicator = function($crawler, $selector, $diffInfo) {
+            $diffType = $diffInfo['type'];
+            $diffHtml = $diffInfo['diffHtml'] ?? null;
+
             if (str_starts_with($selector, 'uid:')) {
                 $field = $crawler->filter('[data-zen-field-uid="' . str_replace('uid:', '', $selector) . '"]');
             } else {
@@ -574,13 +577,22 @@ abstract class Element implements ZenElementInterface
 
                     $crawler->filter('[data-zui-tab-target="' . $tabName . '"]')->addClass('has-change');
                 }
+
+                // Modify inputs or text to show diff as text/html
+                if ($diffHtml) {
+                    $inputs = $field->filter('textarea.nicetext, .text.readable')->each(function($node, $i) use ($diffHtml) {
+                        $classes = $node->attr('class');
+
+                        $node->replaceWith('<div class="' . $classes .'">' . $diffHtml . '</div>');
+                    });
+                }
             }
         };
 
         // Add our change status indicator to each field for the "new" element
         if ($type === 'new') {
-            foreach ($diffSummary as $selector => $diffType) {
-                $addStatusIndicator($crawler, $selector, $diffType);
+            foreach ($diffSummary as $selector => $diffInfo) {
+                $addStatusIndicator($crawler, $selector, $diffInfo);
             }
         }
 

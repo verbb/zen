@@ -84,11 +84,11 @@ class ElementDiffer extends Model
             }
 
             if ($diff instanceof DiffAdd) {
-                $summary[$key] = 'add';
+                $summary[$key] = ['type' => 'add'];
             } else if ($diff instanceof DiffChange) {
-                $summary[$key] = 'change';
+                $summary[$key] = ['type' => 'change', 'diffHtml' => $diff->getDiffHtml()];
             } else if ($diff instanceof DiffRemove) {
-                $summary[$key] = 'remove';
+                $summary[$key] = ['type' => 'remove'];
             }
         }
 

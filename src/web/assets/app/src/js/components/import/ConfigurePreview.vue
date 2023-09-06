@@ -230,6 +230,22 @@ export default {
     }
 }
 
+.zui-import-detail-content .text-diff-container {
+    del, ins {
+        text-decoration: none;
+    }
+
+    del {
+        background: #ffebe9;
+        color: #82071e;
+    }
+
+    ins {
+        background: #dafbe1;
+        color: #116329;
+    }
+}
+
 .zui-import-indicator {
     position: relative;
     width: 2rem;
