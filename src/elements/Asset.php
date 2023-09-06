@@ -210,6 +210,12 @@ class Asset extends ZenElement
                         'value' => $element->height,
                         'disabled' => true,
                     ]),
+                    'kind' => Cp::textFieldHtml([
+                        'label' => Craft::t('app', 'Kind'),
+                        'id' => 'kind',
+                        'value' => $element->kind,
+                        'disabled' => true,
+                    ]),
                     'size' => Cp::textFieldHtml([
                         'label' => Craft::t('app', 'Size'),
                         'id' => 'size',
