@@ -8,6 +8,40 @@ class ArrayHelper extends CraftArrayHelper
     // Static Methods
     // =========================================================================
 
+    public static function flatten(array $data, string $separator = '.'): array
+    {
+        $result = [];
+        $stack = [];
+        $path = '';
+
+        reset($data);
+
+        while (!empty($data)) {
+            $key = key($data);
+            $element = $data[$key];
+            unset($data[$key]);
+
+            if (is_array($element) && !empty($element)) {
+                if (!empty($data)) {
+                    $stack[] = [$data, $path];
+                }
+                
+                $data = $element;
+                reset($data);
+                $path .= $key . $separator;
+            } else {
+                $result[$path . $key] = $element;
+            }
+
+            if (empty($data) && !empty($stack)) {
+                [$data, $path] = array_pop($stack);
+                reset($data);
+            }
+        }
+
+        return $result;
+    }
+
     public static function expand(array $data, string $separator = '.'): array
     {
         $hash = [];
@@ -53,6 +87,14 @@ class ArrayHelper extends CraftArrayHelper
         }
 
         return $array;
+    }
+
+    public static function getAllKeys(array $array1, array $array2): array
+    {
+        return array_unique(array_merge(
+            array_keys($array1),
+            array_keys($array2)
+        ));
     }
 
 }

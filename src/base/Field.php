@@ -28,20 +28,23 @@ abstract class Field implements ZenFieldInterface
 
     public static function serializeValue(FieldInterface $field, ElementInterface $element, mixed $value): mixed
     {
-        return null;
+        return $field->serializeValue($value, $element);
     }
 
     public static function normalizeValue(FieldInterface $field, ElementInterface $element, mixed $value): mixed
     {
-        return null;
+        // We don't need to normalize here, as the element will do that, when calling `setFieldValues()`
+        return $value;
     }
 
     public static function getFieldForPreview(FieldInterface $field, ElementInterface $element, string $type): void
     {
+        
     }
 
-    public static function handleValueForDiffSummary(FieldInterface $field, mixed &$dest, mixed &$source): void
+    public static function handleValueForDiff(FieldInterface $field, mixed &$oldValue, mixed &$newValue): ?array
     {
+        return null;
     }
 
     public static function beforeElementImport(FieldInterface $field, ElementInterface $element): bool

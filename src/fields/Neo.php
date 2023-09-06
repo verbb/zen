@@ -4,6 +4,7 @@ namespace verbb\zen\fields;
 use verbb\zen\Zen;
 use verbb\zen\base\Field as ZenField;
 use verbb\zen\helpers\ArrayHelper;
+use verbb\zen\models\ElementDiffer;
 
 use Craft;
 use craft\base\ElementInterface;
@@ -36,9 +37,12 @@ class Neo extends ZenField
 
             // Serialize all nested fields properly through Zen
             foreach ($fieldsService->getCustomFields($block->getType()) as $subField) {
+                // Use the field UID to maintain uniqueness, as handles can be the same in Matrix/etc fields. This helps with diffing resolution.
+                $fieldKey = $subField->handle . ':' . $subField->uid;
+
                 $subValue = $block->getFieldValue($subField->handle);
 
-                $serializedFieldValues[$subField->handle] = $fieldsService->serializeValue($subField, $block, $subValue);
+                $serializedFieldValues[$fieldKey] = $fieldsService->serializeValue($subField, $block, $subValue);
             }
 
             $blocks[] = [
@@ -111,6 +115,27 @@ class Neo extends ZenField
                 $fieldsService->getFieldForPreview($subField, $block, $type);
             }
         }
+    }
+
+    public static function handleValueForDiff(FieldInterface $field, mixed &$oldValue, mixed &$newValue): ?array
+    {
+        // By default, the ElementDiffer at the element-compare level won't be recursive into field data.
+        // But for Matrix, we want to show the diff between blocks, so run our own diffs.
+        $differ = new ElementDiffer();
+        $diffs = [];
+
+        foreach (ArrayHelper::getAllKeys($oldValue, $newValue) as $nestedKey) {
+            $oldValueNested = $oldValue[$nestedKey] ?? [];
+            $newValueNested = $newValue[$nestedKey] ?? [];
+
+            $diff = $differ->doDiff($oldValueNested, $newValueNested);
+
+            if ($diff !== null) {
+                $diffs[$nestedKey] = $diff;
+            }
+        }
+
+        return array_filter($diffs);
     }
 
 }

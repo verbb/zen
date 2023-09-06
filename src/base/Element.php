@@ -25,6 +25,8 @@ use craft\helpers\Cp;
 use craft\helpers\Html;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
+use craft\models\FieldLayout;
+use craft\models\FieldLayoutForm;
 use craft\models\FieldLayoutFormTab;
 use craft\models\FieldLayoutTab;
 use craft\web\View;
@@ -264,11 +266,14 @@ abstract class Element implements ZenElementInterface
         $fieldsService = Zen::$plugin->getFields();
 
         foreach ($fieldsService->getCustomFields($element) as $field) {
+            // Use the field UID to maintain uniqueness, as handles can be the same in Matrix/etc fields. This helps with diffing resolution.
+            $fieldKey = $field->handle . ':' . $field->uid;
+
             // Only handly fields that are "supported"
             $value = $element->getFieldValue($field->handle);
 
             // Allow registered fields with Zen to handle the serialization
-            $values[$field->handle] = $fieldsService->serializeValue($field, $element, $value);
+            $values[$fieldKey] = $fieldsService->serializeValue($field, $element, $value);
         }
 
         return $values;
@@ -338,6 +343,9 @@ abstract class Element implements ZenElementInterface
      */
     public static function getNormalizedElementFields(ElementInterface $element, array $fieldData): array
     {
+        // Field handles contain their handle and UID to ensure uniqueness, but that's now no longer needed. Convert back to handles.
+        $fieldData = self::_normalizeFieldHandles($fieldData);
+
         $values = [];
         $fieldsByHandle = [];
 
@@ -348,13 +356,7 @@ abstract class Element implements ZenElementInterface
         foreach ($fieldData as $fieldHandle => $fieldValue) {
             if ($field = ArrayHelper::getValue($fieldsByHandle, $fieldHandle)) {
                 // Allow registered fields with Zen to handle the serialization
-                $normalizedValue = $fieldsService->normalizeValue($field, $element, $fieldValue);
-
-                if ($normalizedValue instanceof UnsupportedField) {
-                    continue;
-                }
-                
-                $values[$field->handle] = $normalizedValue;
+                $values[$field->handle] = $fieldsService->normalizeValue($field, $element, $fieldValue);
             }
         }
 
@@ -532,8 +534,21 @@ abstract class Element implements ZenElementInterface
         // Do some extra work to prepare the HTML just the way we need it.
         $crawler = HtmlPageCrawler::create($html);
 
+        // Add `data-zen-field-uid` attributes to all fields, so we can target change indicators. This is mainly
+        // to allow support for Matrix-inner fields, but it's useful for all fields, everywhere.
+        foreach ($fieldsService->getFieldUidMap() as $uid => $fieldUid) {
+            foreach ($crawler->filter('[data-layout-element="' . $uid . '"]') as $el) {
+                $el->setAttribute('data-zen-field-uid', $fieldUid);
+            } 
+        }
+
         $addStatusIndicator = function($crawler, $selector, $diffType) {
-            $field = $crawler->filter("#$selector-field");
+            if (str_starts_with($selector, 'uid:')) {
+                $field = $crawler->filter('[data-zen-field-uid="' . str_replace('uid:', '', $selector) . '"]');
+            } else {
+                $field = $crawler->filter('[data-attribute="' . $selector . '"]');
+            }
+
             $text = '';
 
             if ($diffType === 'add') {
@@ -662,6 +677,25 @@ abstract class Element implements ZenElementInterface
         }
 
         return implode(' / ', $items);
+    }
+
+
+    // Private Methods
+    // =========================================================================
+
+    private static function _normalizeFieldHandles($array)
+    {
+        $result = [];
+
+        foreach ($array as $key => $value) {
+            if (str_contains($key, ':')) {
+                $key = explode(':', $key)[0];
+            }
+
+            $result[$key] = is_array($value) ? self::_normalizeFieldHandles($value) : $value;
+        }
+
+        return $result;
     }
 
 }

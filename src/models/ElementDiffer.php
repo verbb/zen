@@ -1,6 +1,7 @@
 <?php
 namespace verbb\zen\models;
 
+use verbb\zen\Zen;
 use verbb\zen\helpers\ArrayHelper;
 
 use craft\base\Model;
@@ -21,7 +22,7 @@ class ElementDiffer extends Model
 
         $diffs = [];
 
-        foreach ($this->getAllKeys($oldSet, $newSet) as $key) {
+        foreach (ArrayHelper::getAllKeys($oldSet, $newSet) as $key) {
             $diff = $this->getDiff($key, $oldSet, $newSet);
 
             if ($diff !== null) {
@@ -54,7 +55,7 @@ class ElementDiffer extends Model
     public function getSummaryCount(array $diffs, array $summary = ['add' => 0, 'change' => 0, 'remove' => 0]): array
     {
         foreach ($diffs as $key => $diff) {
-            if ($key === 'fields') {
+            if (is_array($diff)) {
                 return $this->getSummaryCount($diff, $summary);
             }
 
@@ -70,23 +71,16 @@ class ElementDiffer extends Model
         return array_filter($summary);
     }
 
-    public function getSummaryFieldIndicators(array $diffs): array
+    public function getSummaryFieldIndicators(array $diffs, array $summary = []): array
     {
-        $summary = [];
-
         foreach ($diffs as $key => $diff) {
-            if ($key === 'fields') {
-                $items = $this->getSummaryFieldIndicators($diff);
+            // Is this a custom field?
+            if (str_contains($key, ':')) {
+                $key = 'uid:' . explode(':', $key)[1];
+            }
 
-                foreach ($items as $subKey => $action) {
-                    $summary[$key] = $action;
-
-                    // If the index is numeric, assume we just want to know about the top-level field
-                    // Otherwise, it's something more complicated like Matrix
-                    if (!is_int($subKey)) {
-                        $summary[$key . '-' . $subKey] = $action;
-                    }
-                }
+            if (is_array($diff)) {
+                return $this->getSummaryFieldIndicators($diff, $summary);
             }
 
             if ($diff instanceof DiffAdd) {
@@ -105,19 +99,16 @@ class ElementDiffer extends Model
     // Private Methods
     // =========================================================================
 
-    private function getAllKeys(array $oldValues, array $newValues): array
-    {
-        return array_unique(array_merge(
-            array_keys($oldValues),
-            array_keys($newValues)
-        ));
-    }
-
-    private function getDiff(string $key, array $oldValues, array $newValues)
+    private function getDiff(string|int $key, array $oldValues, array $newValues)
     {
         // We treat `null` values as empty, so add/remove should apply
         $oldValue = $oldValues[$key] ?? null;
         $newValue = $newValues[$key] ?? null;
+
+        // Check if this is a custom field key (handle+uid), and if it's returning specific diffs
+        if ($fieldDiff = Zen::$plugin->getFields()->handleValueForDiff($key, $oldValue, $newValue)) {
+            return $fieldDiff;
+        }
 
         // Fields are the only thing we allow recursively
         if ($key === 'fields') {
