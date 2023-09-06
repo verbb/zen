@@ -36,7 +36,7 @@ class ElementDiffer extends Model
     public function applyDiff(array $oldValues, array $diffs): array
     {
         foreach ($diffs as $key => $diff) {
-            if ($key === 'fields') {
+            if (is_array($diff)) {
                 $oldValues[$key] = $this->applyDiff($oldValues[$key], $diff);
             }
 
