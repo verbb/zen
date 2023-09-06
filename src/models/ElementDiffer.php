@@ -37,11 +37,11 @@ class ElementDiffer extends Model
     {
         foreach ($diffs as $key => $diff) {
             if (is_array($diff)) {
-                $oldValues[$key] = $this->applyDiff($oldValues[$key], $diff);
+                $oldValues[$key] = $this->applyDiff(($oldValues[$key] ?? []), $diff);
             }
 
             if ($diff instanceof DiffAdd || $diff instanceof DiffChange) {
-                $oldValues[$key] = $diff['newValue'];
+                $oldValues[$key] = $diff->newValue;
             }
 
             if ($diff instanceof DiffRemove) {
