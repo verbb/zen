@@ -67,7 +67,7 @@ class Asset extends ZenElement
         $data['alt'] = $element->alt;
         $data['size'] = $element->size;
         $data['keptFile'] = $element->keptFile;
-        $data['dateModified'] = $element->dateModified;
+        $data['dateModified'] = Db::prepareDateForDb($element->dateModified);
         $data['deletedWithVolume'] = $element->deletedWithVolume;
         $data['filename'] = $element->filename;
         $data['width'] = $element->width;
