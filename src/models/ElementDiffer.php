@@ -52,11 +52,11 @@ class ElementDiffer extends Model
         return $oldValues;
     }
 
-    public function getSummaryCount(array $diffs, array $summary = ['add' => 0, 'change' => 0, 'remove' => 0]): array
+    public function getSummaryCount(array $diffs, array &$summary = ['add' => 0, 'change' => 0, 'remove' => 0]): array
     {
         foreach ($diffs as $key => $diff) {
             if (is_array($diff)) {
-                return $this->getSummaryCount($diff, $summary);
+                $this->getSummaryCount($diff, $summary);
             }
 
             if ($diff instanceof DiffAdd) {
@@ -71,7 +71,7 @@ class ElementDiffer extends Model
         return array_filter($summary);
     }
 
-    public function getSummaryFieldIndicators(array $diffs, array $summary = [], string $parentKey = ''): array
+    public function getSummaryFieldIndicators(array $diffs, array &$summary = [], string $parentKey = ''): array
     {
         foreach ($diffs as $key => $diff) {
             // Is this a custom field?
@@ -82,7 +82,7 @@ class ElementDiffer extends Model
             $index = $parentKey ? $parentKey . '.' . $key : $key;
 
             if (is_array($diff)) {
-                return $this->getSummaryFieldIndicators($diff, $summary, $index);
+                $this->getSummaryFieldIndicators($diff, $summary, $index);
             }
 
             if ($diff instanceof DiffAdd) {
