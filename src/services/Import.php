@@ -199,7 +199,7 @@ class Import extends Component
                     $elementData[] = new ElementImportAction([
                         'elementType' => $elementType,
                         'action' => $elementActionState,
-                        'data' => $sourceItem,
+                        'data' => $newItem,
                         'element' => $elementToAction,
                     ]);
                 } else {
