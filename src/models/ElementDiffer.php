@@ -117,11 +117,11 @@ class ElementDiffer extends Model
             return $this->doDiff(($oldValue ?? []), ($newValue ?? []));
         }
 
-        if ($this->isEmpty($oldValue) && $newValue) {
+        if ($this->isEmpty($oldValue) && !$this->isEmpty($newValue)) {
             return new DiffAdd(['newValue' => $newValue]);
         }
 
-        if ($this->isEmpty($newValue) && $oldValue) {
+        if ($this->isEmpty($newValue) && !$this->isEmpty($oldValue)) {
             return new DiffRemove(['oldValue' => $oldValue]);
         }
 
