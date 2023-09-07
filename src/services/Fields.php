@@ -35,7 +35,6 @@ class Fields extends Component
     // =========================================================================
 
     private array $_fieldTypeMap = [];
-    private array $_fieldUidMap = [];
     private array $_fieldHashes = [];
     private array $_fieldsByHandle = [];
 
@@ -98,33 +97,6 @@ class Fields extends Component
 
         // Return either a specific class to handle the field, or a generic one.
         return $this->_fieldTypeMap[get_class($field)] ?? $fallback;
-    }
-
-    public function getFieldUidMap(): array
-    {
-        if ($this->_fieldUidMap) {
-            return $this->_fieldUidMap;
-        }
-
-        $fields = [];
-
-        // Generate a map of field layout element UIDs vs field UIDs for the DOM manipulation of the preview for fields
-        // This is because `FieldLayoutForm::createForm()` will generate `data-layout-element="xxxx"` for the field layout
-        // element UID - but that's just annoying to deal with. We add the field UID alongside that.
-        $fieldLayoutElements = array_filter((new Query)
-            ->select(['flt.elements'])
-            ->from('{{%fieldlayouttabs}} flt')
-            ->column());
-
-        foreach ($fieldLayoutElements as $elements) {
-            $elements = Json::decode($elements);
-
-            foreach ($elements as $element) {
-                $fields[$element['uid']] = $element['fieldUid'] ?? null;
-            }
-        }
-
-        return $this->_fieldUidMap = array_filter($fields);
     }
 
     public function getFieldFromHash(string $hash): ?ZenField

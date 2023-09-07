@@ -71,24 +71,26 @@ class ElementDiffer extends Model
         return array_filter($summary);
     }
 
-    public function getSummaryFieldIndicators(array $diffs, array $summary = []): array
+    public function getSummaryFieldIndicators(array $diffs, array $summary = [], string $parentKey = ''): array
     {
         foreach ($diffs as $key => $diff) {
             // Is this a custom field?
             if (str_contains($key, ':')) {
-                $key = 'uid:' . explode(':', $key)[1];
+                $key = explode(':', $key)[0];
             }
 
+            $index = $parentKey ? $parentKey . '.' . $key : $key;
+
             if (is_array($diff)) {
-                return $this->getSummaryFieldIndicators($diff, $summary);
+                return $this->getSummaryFieldIndicators($diff, $summary, $index);
             }
 
             if ($diff instanceof DiffAdd) {
-                $summary[$key] = ['type' => 'add'];
+                $summary[$index] = ['type' => 'add'];
             } else if ($diff instanceof DiffChange) {
-                $summary[$key] = ['type' => 'change', 'diffHtml' => $diff->getDiffHtml()];
+                $summary[$index] = ['type' => 'change', 'diffHtml' => $diff->getDiffHtml()];
             } else if ($diff instanceof DiffRemove) {
-                $summary[$key] = ['type' => 'remove'];
+                $summary[$index] = ['type' => 'remove'];
             }
         }
 

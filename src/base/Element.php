@@ -534,23 +534,12 @@ abstract class Element implements ZenElementInterface
         // Do some extra work to prepare the HTML just the way we need it.
         $crawler = HtmlPageCrawler::create($html);
 
-        // Add `data-zen-field-uid` attributes to all fields, so we can target change indicators. This is mainly
-        // to allow support for Matrix-inner fields, but it's useful for all fields, everywhere.
-        foreach ($fieldsService->getFieldUidMap() as $uid => $fieldUid) {
-            foreach ($crawler->filter('[data-layout-element="' . $uid . '"]') as $el) {
-                $el->setAttribute('data-zen-field-uid', $fieldUid);
-            } 
-        }
-
         $addStatusIndicator = function($crawler, $selector, $diffInfo) {
             $diffType = $diffInfo['type'];
             $diffHtml = $diffInfo['diffHtml'] ?? null;
 
-            if (str_starts_with($selector, 'uid:')) {
-                $field = $crawler->filter('[data-zen-field-uid="' . str_replace('uid:', '', $selector) . '"]');
-            } else {
-                $field = $crawler->filter('[data-attribute="' . $selector . '"]');
-            }
+            // From the diff, build the selector to fetch the right field.
+            $field = self::_buildFieldSelector($crawler, $selector);
 
             $text = '';
 
@@ -710,4 +699,44 @@ abstract class Element implements ZenElementInterface
         return $result;
     }
 
+    private static function _buildFieldSelector($crawler, string $selector)
+    {
+        // From the diff, build the selector to fetch the right field. This will convert diff selectors
+        // into DOM selectors. For example:
+        // `title` = `[data-attribute="title"]`
+        // `fields.icon` = `[data-attribute="icon"]`
+        // `fields.pluginPricing.0.fields.features` = `[data-attribute="pluginPricing"] [data-attribute="features"]:eq(0)`
+        $selector = str_replace(['fields.', '.fields.'], ['', '.'], $selector);
+        $result = $crawler;
+        $equalCommand = null;
+
+        $commands = [];
+
+        foreach (explode('.', $selector) as $item) {
+            if (is_numeric($item)) {
+                $equalCommand = 'eq:' . $item;
+                continue;
+            } else {
+                $commands[] = 'filter:[data-attribute="' . $item . '"]';
+            }
+
+            // Tricky check here, as we need to have `filter(...)->eq(..)` and not `eq->(...)filter(...)`
+            if ($equalCommand) {
+                $commands[] = $equalCommand;
+                $equalCommand = null;
+            }
+        }
+
+        foreach ($commands as $command) {
+            if (str_starts_with($command, 'filter:')) {
+                $result = $result->filter(str_replace('filter:', '', $command));
+            }
+
+            if (str_starts_with($command, 'eq:')) {
+                $result = $result->eq(str_replace('eq:', '', $command));
+            }
+        }
+
+        return $result;
+    }
 }
