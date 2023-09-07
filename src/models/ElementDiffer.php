@@ -30,7 +30,10 @@ class ElementDiffer extends Model
             }
         }
 
-        return $diffs;
+        // Filter out any null or empty array items
+        return array_filter($diffs, function($value) {
+            return $value !== null && $value !== [];
+        });
     }
 
     public function applyDiff(array $oldValues, array $diffs): array
@@ -110,6 +113,11 @@ class ElementDiffer extends Model
         // Check if this is a custom field key (handle+uid), and if it's returning specific diffs
         if ($fieldDiff = Zen::$plugin->getFields()->handleValueForDiff($key, $oldValue, $newValue)) {
             return $fieldDiff;
+        }
+
+        // Fields may have altered the values, so check again in equal
+        if ($oldValue === $newValue) {
+            return null;
         }
 
         // Fields are the only thing we allow recursively
