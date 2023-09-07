@@ -110,12 +110,16 @@ class RelationField extends ZenField
     public static function handleValueForDiff(FieldInterface $field, mixed &$oldValue, mixed &$newValue): ?array
     {
         // Remove custom fields from the element used in element fields. They're just noise.
-        if (is_array($oldValue)) {
-            ArrayHelper::remove($oldValue, 'fields');
-        }
+        $callback = function(&$item) {
+            ArrayHelper::remove($item, 'fields');
+        };
 
         if (is_array($newValue)) {
-            ArrayHelper::remove($newValue, 'fields');
+            array_walk($newValue, $callback);
+        }
+
+        if (is_array($oldValue)) {
+            array_walk($oldValue, $callback);
         }
 
         return null;
