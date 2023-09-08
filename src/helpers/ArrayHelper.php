@@ -89,6 +89,18 @@ class ArrayHelper extends CraftArrayHelper
         return $array;
     }
 
+    public static function recursiveRemove(array &$array, string $value): void
+    {
+        // We only want to filter true empty values
+        self::remove($array, $value);
+        
+        foreach ($array as &$item) {
+            if (is_array($item)) {
+                self::recursiveRemove($item, $value);
+            }
+        }
+    }
+
     public static function getAllKeys(array $array1, array $array2): array
     {
         return array_unique(array_merge(

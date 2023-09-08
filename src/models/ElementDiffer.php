@@ -15,8 +15,8 @@ class ElementDiffer extends Model
     {
         // Remove any values we don't need to diff against
         foreach (['parent', 'prevSibling', 'nextSibling'] as $ignore) {
-            ArrayHelper::remove($oldValues, $ignore);
-            ArrayHelper::remove($newValues, $ignore);
+            ArrayHelper::recursiveRemove($oldValues, $ignore);
+            ArrayHelper::recursiveRemove($newValues, $ignore);
         }
 
         $newSet = $this->arrayDiffAssoc($newValues, $oldValues);
