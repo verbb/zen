@@ -91,7 +91,7 @@ class GlobalSet extends ZenElement
         return [
             new ImportFieldTab([
                 'name' => Craft::t('zen', 'Meta'),
-                'fields' => [
+                'fields' => array_merge([
                     'uid' => Cp::textFieldHtml([
                         'label' => Craft::t('app', 'UID'),
                         'id' => 'uid',
@@ -111,6 +111,8 @@ class GlobalSet extends ZenElement
                         'disabled' => true,
                     ]),
                 ],
+                static::getRawDataHtml($element),
+                ),
             ]),
         ];
     }

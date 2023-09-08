@@ -680,6 +680,22 @@ abstract class Element implements ZenElementInterface
         return implode(' / ', $items);
     }
 
+    protected static function getRawDataHtml(ElementInterface $element): array
+    {
+        $id = StringHelper::randomString(10);
+
+        return [
+            'dataToggle' => Html::tag('a', Craft::t('zen', 'Raw Data'), [
+                'class' => 'fieldtoggle',
+                'data-target' => 'raw-data-' . $id,
+            ]),
+            'rawData' => Html::tag('div', Html::tag('pre', Json::encode(static::getSerializedElement($element), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)), [
+                'class' => 'zui-raw-data hidden',
+                'id' => 'raw-data-' . $id,
+            ]),
+        ];
+    }
+
 
     // Private Methods
     // =========================================================================

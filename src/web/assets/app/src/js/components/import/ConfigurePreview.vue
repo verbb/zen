@@ -106,6 +106,8 @@ export default {
 
         bindEventListeners() {
             setTimeout(() => {
+                Craft.initUiElements(this.$el);
+
                 // Fix element select images not working without jQuery
                 this.$el.querySelectorAll('.elementselect .elements').forEach((elements) => {
                     new Craft.ElementThumbLoader().load($(elements));
@@ -228,6 +230,16 @@ export default {
     input.checkbox:disabled+label {
         opacity: 1;
     }
+}
+
+.zui-raw-data {
+    padding: 12px;
+    background: #f3f7fc;
+    border-radius: 3px;
+    border: 1px solid #cbd6e2;
+    font-size: 11px;
+    max-height: 400px;
+    overflow: auto;
 }
 
 .zui-import-detail-content .text-diff-container {
