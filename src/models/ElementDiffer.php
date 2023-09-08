@@ -14,8 +14,10 @@ class ElementDiffer extends Model
     public function doDiff(array $oldValues, array $newValues): array
     {
         // Remove any values we don't need to diff against
-        ArrayHelper::remove($oldValues, 'parent');
-        ArrayHelper::remove($newValues, 'parent');
+        foreach (['parent', 'prevSibling', 'nextSibling'] as $ignore) {
+            ArrayHelper::remove($oldValues, $ignore);
+            ArrayHelper::remove($newValues, $ignore);
+        }
 
         $newSet = $this->arrayDiffAssoc($newValues, $oldValues);
         $oldSet = $this->arrayDiffAssoc($oldValues, $newValues);

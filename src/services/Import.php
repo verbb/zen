@@ -395,6 +395,16 @@ class Import extends Component
                 ]));
             }
         }
+
+        $this->runPostImport();
+    }
+
+    public function runPostImport(): void
+    {
+        // For any items in a structure, these will have been imported at the end. Re-order them here, now that
+        // all the siblings are in place. It's too difficult to tackle this on each step as siblings could be
+        // being imported too alongside the element.
+        $this->moveItemsInStructure();
     }
 
     public function runElementAction(ElementImportAction $importAction): bool
@@ -472,6 +482,42 @@ class Import extends Component
         }
 
         return $elementImportActions;
+    }
+    
+    public function moveItemsInStructure(): void
+    {
+        $structuresService = Craft::$app->getStructures();
+        $elementsService = Craft::$app->getElements();
+
+        // Structure element/sibling relationships are stored when normalizing each element
+        foreach (Zen::$plugin->getElements()->getStructureItems() as $uid => $siblingInfo) {
+            $siteId = $siblingInfo['siteId'] ?? null;
+            $elementType = $siblingInfo['elementType'] ?? null;
+
+            // Get both the element and sibling from UID
+            $element = $elementsService->getElementByUid($uid, $elementType, $siteId);
+
+            // Most of the time, we only care about the previous sibling to add after, but the only case where
+            // it's the first item and there's no previous sibling, we use the next sibling as a reference.
+            if ($element && $element->structureId) {
+                $prevSiblingUid = $siblingInfo['prevSibling'] ?? null;
+                $nextSiblingUid = $siblingInfo['nextSibling'] ?? null;
+
+                if ($prevSiblingUid) {
+                    $prevSibling = $elementsService->getElementByUid($prevSiblingUid, $elementType, $siteId);
+
+                    if ($prevSibling) {
+                        $structuresService->moveAfter($element->structureId, $element, $prevSibling);
+                    }
+                } else if ($nextSiblingUid) {
+                    $nextSibling = $elementsService->getElementByUid($nextSiblingUid, $elementType, $siteId);
+
+                    if ($nextSibling) {
+                        $structuresService->moveBefore($element->structureId, $element, $nextSibling);
+                    }
+                }
+            }
+        }
     }
 
 }

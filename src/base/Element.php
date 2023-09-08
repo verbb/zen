@@ -222,6 +222,17 @@ abstract class Element implements ZenElementInterface
             }
         }
 
+        // For any elements in a structure, reference the siblings to ensure theyre placed correctly and not just appended
+        if ($element->structureId) {
+            if ($prevSibling = $element->getPrevSibling()) {
+                $data['prevSibling'] = $prevSibling->uid;
+            }
+
+            if ($nextSibling = $element->getNextSibling()) {
+                $data['nextSibling'] = $nextSibling->uid;
+            }
+        }
+
         // Swap some IDs to their UIDs
         $data['siteUid'] = $element->getSite()->uid;
         $data['fields'] = static::getSerializedElementFields($element);
@@ -306,6 +317,20 @@ abstract class Element implements ZenElementInterface
 
             // Despite not really needing this yet, we prep the parent so it's ready for use in previews, not for the actual import
             $data['parent'] = static::getNormalizedElement($parent, false);
+        }
+
+        // For any elements in a structure, reference the siblings to ensure theyre placed correctly and not just appended
+        $prevSibling = ArrayHelper::remove($data, 'prevSibling');
+        $nextSibling = ArrayHelper::remove($data, 'nextSibling');
+
+        if ($prevSibling || $nextSibling) {
+            // Add a post-import (after _all_ items are done) task to move the elements into their right place
+            Zen::$plugin->getElements()->setStructureItem(($data['uid'] ?? ''), [
+                'elementType' => $data['class'] ?? null,
+                'siteId' => $data['siteId'] ?? null,
+                'prevSibling' => $prevSibling,
+                'nextSibling' => $nextSibling,
+            ]);
         }
 
         // Allow plugins to modify the data

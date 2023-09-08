@@ -95,6 +95,8 @@ class RunImport extends BaseJob
                 }
             }
         }
+
+        $importService->runPostImport();
     }
 
     // Protected Methods

@@ -33,6 +33,7 @@ class Elements extends Component
     private array $_cachedSerializedElements = [];
     private array $_cachedNormalizedElements = [];
     private array $_cachedExistingElements = [];
+    private array $_structureItems = [];
 
 
     // Public Methods
@@ -151,6 +152,21 @@ class Elements extends Component
     public function getCachedExistingElement(string $uid): ?ElementInterface
     {
         return $this->_cachedExistingElements[$uid] ?? null;
+    }
+
+    public function setStructureItem(string $uid, array $siblingInfo): void
+    {
+        $this->_structureItems[$uid] = $siblingInfo;
+    }
+
+    public function getStructureItem(string $uid): ?string
+    {
+        return $this->_structureItems[$uid] ?? null;
+    }
+
+    public function getStructureItems(): array
+    {
+        return $this->_structureItems;
     }
 
 
