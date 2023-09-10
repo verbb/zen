@@ -136,6 +136,7 @@ class NavigationNode extends ZenElement
     public static function defineImportTableAttributes(): array
     {
         return [
+            'type' => Craft::t('zen', 'Type'),
             'nav' => Craft::t('zen', 'Navigation'),
         ];
     }
@@ -150,6 +151,7 @@ class NavigationNode extends ZenElement
         }
 
         return [
+            'type' => $element->getTypeLabel(),
             'nav' => $element->nav->name,
         ];
     }
