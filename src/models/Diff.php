@@ -10,8 +10,12 @@ class Diff extends Model
     // Properties
     // =========================================================================
 
-    public mixed $oldValue;
-    public mixed $newValue;
+    public mixed $oldValue = null;
+    public mixed $newValue = null;
+
+
+    // Public Methods
+    // =========================================================================
 
     public function getDiffHtml()
     {
