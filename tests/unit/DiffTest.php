@@ -3,11 +3,9 @@ namespace verbb\zentests\unit;
 
 use verbb\zentests\fixtures\FieldsFixture;
 
-use verbb\zen\helpers\DiffHelper;
 use verbb\zen\models\DiffAdd;
 use verbb\zen\models\DiffChange;
 use verbb\zen\models\DiffRemove;
-use verbb\zen\models\MapDiffer;
 use verbb\zen\models\ElementDiffer;
 use verbb\zen\services\Fields;
 

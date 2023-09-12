@@ -245,11 +245,11 @@ class Fields extends Component
 
         foreach (Craft::$app->getFields()->getAllFields() as $field) {
             if ($keys = $this->_getEagerLoadingMapForField($field)) {
-                $mapKey = array_merge($mapKey, $keys);
+                $mapKey[] = $keys;
             }
         }
 
-        return $mapKey;
+        return array_merge(...$mapKey);
     }
 
 

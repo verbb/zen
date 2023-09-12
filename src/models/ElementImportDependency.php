@@ -21,7 +21,7 @@ class ElementImportDependency extends Model
     // Public Methods
     // =========================================================================
 
-    public function callback(...$args)
+    public function callback(...$args): void
     {
         call_user_func($this->callback, ...$args);
     }

@@ -11,8 +11,8 @@ class Db extends CraftDb
     // Properties
     // =========================================================================
 
-    private static $idsByUids = [];
-    private static $uidsByIds = [];
+    private static array $idsByUids = [];
+    private static array $uidsByIds = [];
 
 
     // Static Methods

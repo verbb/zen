@@ -11,7 +11,6 @@ use verbb\zen\events\ModifyElementNormalizedDataEvent;
 use verbb\zen\events\ModifyElementSerializedDataEvent;
 use verbb\zen\helpers\ArrayHelper;
 use verbb\zen\helpers\Db;
-use verbb\zen\helpers\DiffHelper;
 use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\ElementImportDependency;
 use verbb\zen\services\Import;
@@ -725,7 +724,7 @@ abstract class Element implements ZenElementInterface
     // Private Methods
     // =========================================================================
 
-    private static function _normalizeFieldHandles($array)
+    private static function _normalizeFieldHandles($array): array
     {
         $result = [];
 
@@ -757,9 +756,9 @@ abstract class Element implements ZenElementInterface
             if (is_numeric($item)) {
                 $equalCommand = 'eq:' . $item;
                 continue;
-            } else {
-                $commands[] = 'filter:[data-attribute="' . $item . '"]';
             }
+
+            $commands[] = 'filter:[data-attribute="' . $item . '"]';
 
             // Tricky check here, as we need to have `filter(...)->eq(..)` and not `eq->(...)filter(...)`
             if ($equalCommand) {

@@ -17,13 +17,13 @@ class Diff extends Model
     // Public Methods
     // =========================================================================
 
-    public function getDiffHtml()
+    public function getDiffHtml(): ?string
     {
         if (is_string($this->oldValue) && is_string($this->newValue)) {
-            $diff = DiffText::compareStrings($this->oldValue, $this->newValue);
-            
-            return $diff->toHTML();
+            return DiffText::compareStrings($this->oldValue, $this->newValue)->toHTML();
         }
+
+        return null;
     }
 
 }

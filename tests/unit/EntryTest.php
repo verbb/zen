@@ -15,6 +15,7 @@ use craft\helpers\Db;
 use Codeception\Test\Unit;
 
 use UnitTester;
+use DateTime;
 
 class EntryTest extends Unit
 {
@@ -67,10 +68,10 @@ class EntryTest extends Unit
         self::assertSame(1000, $entry->typeId, 'Entry typeId is valid.');
         self::assertSame(1, $entry->siteId, 'Entry siteId is valid.');
 
-        self::assertInstanceOf(\DateTime::class, $entry->dateCreated, 'Entry dateCreated is DateTime.');
+        self::assertInstanceOf(DateTime::class, $entry->dateCreated, 'Entry dateCreated is DateTime.');
         self::assertSame($entryData['dateCreated'], Db::prepareDateForDb($entry->dateCreated), 'Entry dateCreated is valid.');
 
-        self::assertInstanceOf(\DateTime::class, $entry->postDate, 'Entry postDate is DateTime.');
+        self::assertInstanceOf(DateTime::class, $entry->postDate, 'Entry postDate is DateTime.');
         self::assertSame($entryData['postDate'], Db::prepareDateForDb($entry->postDate), 'Entry postDate is valid.');
     }
 
@@ -90,7 +91,7 @@ class EntryTest extends Unit
         $matrixField = Craft::$app->getFields()->getFieldByHandle('testMatrixField1');
         $blockTypeUid = null;
 
-        foreach ($matrixField->blockTypes as $blockType) {
+        foreach ($matrixField->getBlockTypes() as $blockType) {
             $blockTypeUid = $blockType->uid;
 
             foreach ($blockType->getCustomFields() as $field) {
@@ -319,10 +320,10 @@ class EntryTest extends Unit
         self::assertSame(1001, $entry->typeId, 'Entry typeId is valid.');
         self::assertSame(1, $entry->siteId, 'Entry siteId is valid.');
 
-        self::assertInstanceOf(\DateTime::class, $entry->dateCreated, 'Entry dateCreated is DateTime.');
+        self::assertInstanceOf(DateTime::class, $entry->dateCreated, 'Entry dateCreated is DateTime.');
         self::assertSame($entryData['dateCreated'], Db::prepareDateForDb($entry->dateCreated), 'Entry dateCreated is valid.');
 
-        self::assertInstanceOf(\DateTime::class, $entry->postDate, 'Entry postDate is DateTime.');
+        self::assertInstanceOf(DateTime::class, $entry->postDate, 'Entry postDate is DateTime.');
         self::assertSame($entryData['postDate'], Db::prepareDateForDb($entry->postDate), 'Entry postDate is valid.');
 
         // Check all fields

@@ -46,7 +46,7 @@ class User extends ZenElement
         // There's not a simple "ungrouped" query, so use IDs
         $tempQuery = clone $query;
         $groupHandles = ArrayHelper::getColumn(Craft::$app->getUserGroups()->getAllGroups(), 'handle');
-        $ungroupedIds = $tempQuery->group(array_merge(['not', $groupHandles]))->ids();
+        $ungroupedIds = $tempQuery::group(array_merge(['not', $groupHandles]))->ids();
 
         $options = [[
             'label' => Craft::t('zen', 'Ungrouped'),

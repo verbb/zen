@@ -34,7 +34,7 @@ trait ProcessingLogTrait
         return Craft::$app->getCache()->get('zen-process-log:' . $taskId) ?: [];
     }
 
-    public static function getLogLabel(ElementInterface $element, array &$labels = [])
+    public static function getLogLabel(ElementInterface $element, array &$labels = []): string
     {
         $labels[] = $element->getUiLabel();
 
@@ -69,7 +69,7 @@ trait ProcessingLogTrait
         return null;
     }
 
-    public static function createOrRestartImportJob(array $config)
+    public static function createOrRestartImportJob(array $config): void
     {
         $queue = Craft::$app->getQueue();
 

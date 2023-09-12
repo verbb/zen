@@ -12,7 +12,7 @@ use craft\base\FieldInterface;
 
 use benf\neo\elements\Block as NeoBlock;
 use benf\neo\Field as NeoField;
-use benf\neo\Plugin as Neo;
+use benf\neo\Plugin as NeoPlugin;
 
 class Neo extends ZenField
 {
@@ -64,7 +64,7 @@ class Neo extends ZenField
         $blocks = [];
         $new = 0;
 
-        $blockTypes = ArrayHelper::index(Neo::$plugin->blockTypes->getAllBlockTypes(), 'uid');
+        $blockTypes = ArrayHelper::index(NeoPlugin::getInstance()->blockTypes->getAllBlockTypes(), 'uid');
         $fieldsService = Zen::$plugin->getFields();
 
         foreach ($value as $block) {
