@@ -32,9 +32,20 @@
         "verbb/base": "^2.0.0",
         "wa72/htmlpagedom": "^2.0 || ^3.0"
     },
+    "require-dev": {
+        "codeception/codeception": "^4.0.0",
+        "vlucas/phpdotenv": "^3.0",
+        "codeception/module-asserts": "^1.0.0",
+        "codeception/module-yii2": "^1.0.0"
+    },
     "autoload": {
         "psr-4": {
-          "verbb\\zen\\": "src/"
+            "verbb\\zen\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "verbb\\zentests\\": "tests/"
         }
     },
     "extra": {

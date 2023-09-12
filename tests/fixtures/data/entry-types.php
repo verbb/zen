@@ -1,0 +1,37 @@
+<?php
+
+return [
+    [
+        'id' => '1000',
+        'sectionId' => '1000',
+        'fieldLayoutId' => null,
+        'name' => 'Test Entry Type',
+        'handle' => 'testEntryType',
+        'hasTitleField' => true,
+        'titleTranslationMethod' => 'site',
+        'titleTranslationKeyFormat' => null,
+        'titleFormat' => null,
+        'slugTranslationMethod' => 'site',
+        'slugTranslationKeyFormat' => null,
+        'showStatusField' => true,
+        'sortOrder' => 1,
+        'uid' => 'entry-type-1000------------------uid',
+    ],
+    [
+        'id' => '1001',
+        'sectionId' => '1001',
+        'fieldLayoutId' => null,
+        'name' => 'Test Entry Type with Fields',
+        'handle' => 'testEntryTypeWithFields',
+        'hasTitleField' => true,
+        'titleTranslationMethod' => 'site',
+        'titleTranslationKeyFormat' => null,
+        'titleFormat' => null,
+        'slugTranslationMethod' => 'site',
+        'slugTranslationKeyFormat' => null,
+        'showStatusField' => true,
+        'sortOrder' => 1,
+        'fieldLayoutType' => 'field_layout_with_matrix_and_normal_fields',
+        'uid' => 'entry-type-1001------------------uid',
+    ],
+];
