@@ -4,6 +4,7 @@ namespace verbb\zen\services;
 use verbb\zen\Zen;
 use verbb\zen\helpers\ArrayHelper;
 use verbb\zen\helpers\DiffHelper;
+use verbb\zen\models\ElementDiffer;
 use verbb\zen\models\ElementImportAction;
 use verbb\zen\models\ElementImportDependency;
 
@@ -73,7 +74,7 @@ class Import extends Component
             'restore' => 0,
         ];
 
-        $differ = new \verbb\zen\models\ElementDiffer();
+        $differ = new ElementDiffer();
 
         // Eager-load any fields automatically. Called here outside of the loop for performance
         $eagerLoadingFieldsMap = Zen::$plugin->getFields()->getEagerLoadingMap();
@@ -241,7 +242,7 @@ class Import extends Component
         $oldHtml = '';
         $newHtml = '';
 
-        $differ = new \verbb\zen\models\ElementDiffer();
+        $differ = new ElementDiffer();
 
         $elementType = null;
         $itemState = null;
