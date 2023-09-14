@@ -154,6 +154,9 @@ class RelationField extends ZenField
 
                     if ($success && $fieldElement->id) {
                         $elements[] = $fieldElement->id;
+
+                        // Update the cache in case we need to use this same element elsewhere in the import
+                        self::$_cachedElements[$element->uid][$field->handle][$fieldElement->uid] = $fieldElement;
                     }
                 }
             }
