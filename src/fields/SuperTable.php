@@ -73,6 +73,9 @@ class SuperTable extends ZenField
                 $existingBlock = new SuperTableBlockElement();
             }
 
+            // Ensure that we track the owner of any existing (or new) block for inner fields (see relation fields)
+            $existingBlock->owner = $element;
+
             $blockId = $existingBlock->id ?? 'new' . ++$new;
 
             $normalizedFieldValues = [];
