@@ -78,6 +78,7 @@ class Neo extends ZenField
 
             // Ensure that we track the owner of any existing (or new) block for inner fields (see relation fields)
             $existingBlock->owner = $element;
+            $existingBlock->uid = $blockUid;
 
             $blockId = $existingBlock->id ?? 'new' . ++$new;
 
@@ -118,6 +119,36 @@ class Neo extends ZenField
                 $fieldsService->getFieldForPreview($subField, $block, $type);
             }
         }
+
+        parent::getFieldForPreview($field, $element, $type);
+    }
+
+    public static function beforeElementImport(FieldInterface $field, ElementInterface $element): bool
+    {
+        $fieldsService = Zen::$plugin->getFields();
+
+        $value = $element->getFieldValue($field->handle);
+
+        foreach ($value->all() as $block) {
+            // Ensure we trigger inner fields' `beforeElementImport()`
+            $fieldsService->beforeElementImport($block);
+        }
+
+        return parent::beforeElementImport($field, $element);
+    }
+
+    public static function afterElementImport(FieldInterface $field, ElementInterface $element): void
+    {
+        $fieldsService = Zen::$plugin->getFields();
+
+        $value = $element->getFieldValue($field->handle);
+
+        foreach ($value->all() as $block) {
+            // Ensure we trigger inner fields' `beforeElementImport()`
+            $fieldsService->beforeElementImport($block);
+        }
+
+        parent::afterElementImport($field, $element);
     }
 
     public static function handleValueForDiff(FieldInterface $field, mixed &$oldValue, mixed &$newValue): ?array
