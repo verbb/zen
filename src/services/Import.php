@@ -18,6 +18,8 @@ use craft\helpers\StringHelper;
 use Closure;
 use Exception;
 
+use ZipArchive;
+
 class Import extends Component
 {
     // Static Methods
@@ -371,6 +373,16 @@ class Import extends Component
     {
         $payloadPath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . basename($filename, '.zip');
         $content = [];
+
+        // Just in case the .zip file hasn't been extracted yet
+        if (!is_dir($payloadPath)) {
+            $zipPath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
+
+            $zip = new ZipArchive();
+            $zip->open($zipPath);
+            $zip->extractTo($payloadPath);
+            $zip->close();
+        }
 
         foreach (FileHelper::findFiles($payloadPath) as $file) {
             $filename = basename($file);
