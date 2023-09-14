@@ -92,6 +92,11 @@ class Import extends Component
                 }
             }
 
+            // Just in case there's an empty collection
+            if (!$newItems) {
+                continue;
+            }
+
             // Get all the UIDs in the provided import to query in one go for performance
             // But, not all elements use UID for their unique identifier (Users use email)
             $elementIdentifier = $elementType::elementUniqueIdentifier();
