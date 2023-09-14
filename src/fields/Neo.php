@@ -124,14 +124,16 @@ class Neo extends ZenField
         $differ = new ElementDiffer();
         $diffs = [];
 
-        foreach (ArrayHelper::getAllKeys($oldValue, $newValue) as $nestedKey) {
-            $oldValueNested = $oldValue[$nestedKey] ?? [];
-            $newValueNested = $newValue[$nestedKey] ?? [];
+        if (is_array($oldValue) && is_array($newValue)) {
+            foreach (ArrayHelper::getAllKeys($oldValue, $newValue) as $nestedKey) {
+                $oldValueNested = $oldValue[$nestedKey] ?? [];
+                $newValueNested = $newValue[$nestedKey] ?? [];
 
-            $diff = $differ->doDiff($oldValueNested, $newValueNested);
+                $diff = $differ->doDiff($oldValueNested, $newValueNested);
 
-            if ($diff !== null) {
-                $diffs[$nestedKey] = $diff;
+                if ($diff !== null) {
+                    $diffs[$nestedKey] = $diff;
+                }
             }
         }
 
