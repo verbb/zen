@@ -621,6 +621,9 @@ abstract class Element implements ZenElementInterface
         // Fix checkboxes can still be toggled
         $crawler->filter('input[type="checkbox"]')->setAttribute('disabled', true);
 
+        // Fix dropdown fields (selectize) being hidden
+        $crawler->filter('.selectize.select select')->removeAttribute('style');
+
         return $crawler->saveHTML();
     }
 
