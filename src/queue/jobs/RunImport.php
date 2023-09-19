@@ -96,11 +96,11 @@ class RunImport extends BaseJob
             }
         }
 
-        $this->setProgress($queue, 99, Translation::prep('zen', 'Running post-import tasks.'));
+        $this->setProgress($queue, 0.99, Translation::prep('zen', 'Running post-import tasks.'));
 
         $importService->runPostImport();
 
-        $this->setProgress($queue, 100, Translation::prep('zen', 'Successfully imported.'));
+        $this->setProgress($queue, 1, Translation::prep('zen', 'Successfully imported.'));
     }
 
     // Protected Methods
