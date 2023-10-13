@@ -33,7 +33,7 @@ class Entry extends ZenElement
     {
         $options = [];
 
-        foreach (Craft::$app->getSections()->getAllSections() as $section) {
+        foreach (Craft::$app->getEntries()->getAllSections() as $section) {
             $entryTypes = [];
 
             foreach ($section->getEntryTypes() as $entryType) {

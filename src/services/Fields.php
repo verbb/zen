@@ -256,16 +256,23 @@ class Fields extends Component
     // Private Methods
     // =========================================================================
 
-    private function _getEagerLoadingMapForField(FieldInterface $field, ?string $prefix = null): array
+    private function _getEagerLoadingMapForField(FieldInterface $field, ?string $prefix = null, int $iteration = 0): array
     {
         $keys = [];
 
         if ($field instanceof Matrix) {
+            if ($iteration > 5) {
+                return [];
+            }
+            
+            $iteration++;
+
+            // Because Matrix fiels can be infinitely nested, we need to short-circuit things to prevent infinite looping.
             $keys[] = $prefix . $field->handle;
 
-            foreach ($field->getBlockTypes() as $blocktype) {
-                foreach ($blocktype->getCustomFields() as $subField) {
-                    $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.' . $blocktype->handle . ':');
+            foreach ($field->getEntryTypes() as $entryType) {
+                foreach ($entryType->getCustomFields() as $subField) {
+                    $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.' . $entryType->handle . ':', $iteration);
 
                     if ($nestedKeys) {
                         $keys = array_merge($keys, $nestedKeys);
@@ -280,7 +287,7 @@ class Fields extends Component
                 
                 foreach ($field->getBlockTypes() as $blocktype) {
                     foreach ($blocktype->getCustomFields() as $subField) {
-                        $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.');
+                        $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.', $iteration);
 
                         if ($nestedKeys) {
                             $keys = array_merge($keys, $nestedKeys);
@@ -296,7 +303,7 @@ class Fields extends Component
                 
                 foreach ($field->getBlockTypes() as $blocktype) {
                     foreach ($blocktype->getCustomFields() as $subField) {
-                        $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.');
+                        $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.', $iteration);
 
                         if ($nestedKeys) {
                             $keys = array_merge($keys, $nestedKeys);

@@ -61,7 +61,7 @@ class Matrix extends BlockField
         $blocks = [];
         $new = 0;
 
-        $blockTypes = ArrayHelper::index(Craft::$app->getMatrix()->getAllBlockTypes(), 'uid');
+        $entryTypes = ArrayHelper::index($field->getEntryTypes(), 'uid');
         $fieldsService = Zen::$plugin->getFields();
 
         foreach ($value as $block) {
@@ -81,15 +81,15 @@ class Matrix extends BlockField
 
             $normalizedFieldValues = [];
 
-            $blockTypeUid = $block['type'] ?? null;
-            $blockType = $blockTypes[$blockTypeUid] ?? null;
+            $entryTypeUid = $block['type'] ?? null;
+            $entryType = $entryTypes[$entryTypeUid] ?? null;
 
             // Serialize all nested fields properly through Zen
-            if ($blockType) {
+            if ($entryType) {
                 // Swap out the UID with the ID now it's been ported
-                $block['type'] = $blockType->handle;
+                $block['type'] = $entryType->handle;
 
-                foreach ($fieldsService->getCustomFields($blockType) as $subField) {
+                foreach ($fieldsService->getCustomFields($entryType) as $subField) {
                     $subValue = $block['fields'][$subField->handle] ?? null;
 
                     $normalizedFieldValues[$subField->handle] = $fieldsService->normalizeValue($subField, $existingBlock, $subValue);

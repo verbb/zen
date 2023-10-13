@@ -8,41 +8,51 @@ use verbb\zen\services\Fields;
 use verbb\zen\services\Import;
 use verbb\zen\web\assets\app\ZenAsset;
 
-use Craft;
-
-use yii\log\Logger;
-
-use verbb\base\BaseHelper;
+use verbb\base\LogTrait;
+use verbb\base\helpers\Plugin;
 
 use nystudio107\pluginvite\services\VitePluginService;
 
 trait PluginTrait
 {
-    // Static Properties
+    // Properties
     // =========================================================================
 
-    public static Zen $plugin;
+    public static ?Zen $plugin = null;
 
 
-    // Public Methods
+    // Traits
     // =========================================================================
 
-    public static function log(string $message, array $attributes = []): void
+    use LogTrait;
+    
+
+    // Static Methods
+    // =========================================================================
+
+    public static function config(): array
     {
-        if ($attributes) {
-            $message = Craft::t('zen', $message, $attributes);
-        }
+        Plugin::bootstrapPlugin('zen');
 
-        Craft::getLogger()->log($message, Logger::LEVEL_INFO, 'zen');
-    }
-
-    public static function error(string $message, array $attributes = []): void
-    {
-        if ($attributes) {
-            $message = Craft::t('zen', $message, $attributes);
-        }
-
-        Craft::getLogger()->log($message, Logger::LEVEL_ERROR, 'zen');
+        return [
+            'components' => [
+                'elements' => Elements::class,
+                'export' => Export::class,
+                'fields' => Fields::class,
+                'import' => Import::class,
+                'vite' => [
+                    'class' => VitePluginService::class,
+                    'assetClass' => ZenAsset::class,
+                    'useDevServer' => true,
+                    'devServerPublic' => 'http://localhost:4030/',
+                    'errorEntry' => 'js/main.js',
+                    'cacheKeySuffix' => '',
+                    'devServerInternal' => 'http://localhost:4030/',
+                    'checkDevServer' => true,
+                    'includeReactRefreshShim' => false,
+                ],
+            ],
+        ];
     }
 
 
@@ -72,38 +82,6 @@ trait PluginTrait
     public function getVite(): VitePluginService
     {
         return $this->get('vite');
-    }
-
-
-    // Private Methods
-    // =========================================================================
-
-    private function _setPluginComponents(): void
-    {
-        $this->setComponents([
-            'elements' => Elements::class,
-            'export' => Export::class,
-            'fields' => Fields::class,
-            'import' => Import::class,
-            'vite' => [
-                'class' => VitePluginService::class,
-                'assetClass' => ZenAsset::class,
-                'useDevServer' => true,
-                'devServerPublic' => 'http://localhost:4030/',
-                'errorEntry' => 'js/main.js',
-                'cacheKeySuffix' => '',
-                'devServerInternal' => 'http://localhost:4030/',
-                'checkDevServer' => true,
-                'includeReactRefreshShim' => false,
-            ],
-        ]);
-
-        BaseHelper::registerModule();
-    }
-
-    private function _setLogging(): void
-    {
-        BaseHelper::setFileLogging('zen');
     }
 
 }

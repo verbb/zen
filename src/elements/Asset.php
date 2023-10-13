@@ -174,7 +174,7 @@ class Asset extends ZenElement
                         'class' => array_filter([
                             'preview-thumb-container',
                             'button-fade',
-                            $element->getHasCheckeredThumb() ? 'checkered' : null,
+                            $element->hasCheckeredThumb() ? 'checkered' : null,
                         ]),
                     ]) .
                     Html::tag('div', $element->getPreviewThumbImg(350, 190), [

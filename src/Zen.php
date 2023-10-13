@@ -43,8 +43,6 @@ class Zen extends Plugin
 
         self::$plugin = $this;
 
-        $this->_setPluginComponents();
-        $this->_setLogging();
         $this->_registerVariables();
         $this->_registerElementEvents();
 
@@ -61,6 +59,22 @@ class Zen extends Plugin
     public function getSettingsResponse(): mixed
     {
         return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('zen/settings'));
+    }
+
+    public function getCpNavItem(): ?array
+    {
+        $nav = parent::getCpNavItem();
+
+        $nav['label'] = $this->getPluginName();
+
+        if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
+            $nav['subnav']['settings'] = [
+                'label' => Craft::t('zen', 'Settings'),
+                'url' => 'zen/settings',
+            ];
+        }
+
+        return $nav;
     }
 
 
