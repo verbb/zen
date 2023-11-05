@@ -27,6 +27,12 @@ class Install extends Migration
 
     public function createTables(): void
     {
+        if ($this->db->getIsMysql()) {
+            $dataType = 'longblob';
+        } else {
+            $dataType = $this->binary();
+        }
+
         $this->archiveTableIfExists('{{%zen_elements}}');
         $this->createTable('{{%zen_elements}}', [
             'id' => $this->primaryKey(),
@@ -37,7 +43,7 @@ class Install extends Migration
             'elementType' => $this->string()->notNull(),
             'draftId' => $this->string(),
             'canonicalId' => $this->string(),
-            'data' => 'longblob',
+            'data' => $dataType,
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
             'uid' => $this->uid(),
