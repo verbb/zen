@@ -296,7 +296,7 @@ class Fields extends Component
                 
                 foreach ($field->getBlockTypes() as $blocktype) {
                     foreach ($blocktype->getCustomFields() as $subField) {
-                        $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.');
+                        $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.' . $blocktype->handle . ':');
 
                         if ($nestedKeys) {
                             $keys = array_merge($keys, $nestedKeys);
