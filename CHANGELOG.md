@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.2 - 2023-12-08
+
+### Added
+- Add support for Event plugin Events/Tickets.
+
+### Fixed
+- Fix Neo field exports.
+- Fix export dates not working correctly for non-US-based locales.
+
 ## 1.0.1 - 2023-11-05
 
 ### Fixed
