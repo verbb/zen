@@ -195,11 +195,11 @@ class Elements extends Component
 
             $record->save(false);
         } catch (Throwable $e) {
-            Zen::error(Craft::t('zen', 'Unable to record element action: “{message}” {file}:{line}', [
+            Zen::error('Unable to record element action: “{message}” {file}:{line}', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-            ]));
+            ]);
         }
     }
 

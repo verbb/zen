@@ -468,10 +468,10 @@ class Import extends Component
         }
 
         if (!$result) {
-            Zen::error(Craft::t('zen', 'Unable to import {type}:{errors}', [
+            Zen::error('Unable to import {type}:{errors}', [
                 'type' => $elementType,
                 'errors' => Json::encode($element->getErrors()),
-            ]));
+            ]);
         }
 
         return $result;

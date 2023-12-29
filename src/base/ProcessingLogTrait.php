@@ -58,11 +58,11 @@ trait ProcessingLogTrait
                     return $jobInfoSummary;
                 }
             } catch (Throwable $e) {
-                Zen::error(Craft::t('zen', 'Unable to fetch job info: “{message}” {file}:{line}', [
+                Zen::error('Unable to fetch job info: “{message}” {file}:{line}', [
                     'message' => $e->getMessage(),
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
-                ]));
+                ]);
             }
         }
 
