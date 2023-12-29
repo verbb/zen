@@ -119,8 +119,8 @@ export default {
 
             $(this.$el).find(`#${this.getId('fromDate')}`).datepicker($.extend({
                 defaultDate: this.fromDate,
-                onSelect: (date) => {
-                    this.fromDate = new Date(date);
+                onSelect: (dateString, instance) => {
+                    this.fromDate = new Date(instance.selectedYear, instance.selectedMonth, instance.selectedDay, 0, 0, 0, 0);
 
                     this.updateElements();
                 },
@@ -128,8 +128,8 @@ export default {
 
             $(this.$el).find(`#${this.getId('toDate')}`).datepicker($.extend({
                 defaultDate: this.toDate,
-                onSelect: (date) => {
-                    this.toDate = new Date(date);
+                onSelect: (dateString, instance) => {
+                    this.toDate = new Date(instance.selectedYear, instance.selectedMonth, instance.selectedDay, 0, 0, 0, 0);
 
                     this.updateElements();
                 },

@@ -59,6 +59,12 @@ class Elements extends Component
             $elementTypes[] = elementTypes\NavigationNode::class;
         }
 
+        if (Plugin::isPluginInstalledAndEnabled('events')) {
+            $elementTypes[] = elementTypes\EventsEvent::class;
+            $elementTypes[] = elementTypes\EventsTicket::class;
+            $elementTypes[] = elementTypes\EventsTicketType::class;
+        }
+
         $event = new RegisterComponentTypesEvent([
             'types' => $elementTypes,
         ]);
