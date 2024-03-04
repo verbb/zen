@@ -1,5 +1,5 @@
-# Zen plugin for Craft CMS
-<img width="500" src="https://verbb.imgix.net/plugins/zen/zen-social-card.png?v=2">
+<p align="center"><img src="https://verbb.imgix.net/plugins/zen/zen-icon.svg" width="100" height="100" alt="Zen icon"></p>
+<h1 align="center">Zen for Craft CMS</h1>
 
 Zen is a Craft CMS plugin for synchronising content for your project across multiple environments. Export your content from one install to upload and import it on another environment. Perfect for making changes on local or staging environments and uploading them to production.
 
