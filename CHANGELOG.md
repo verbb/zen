@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 - 2024-03-04
+
+### Fixed
+- Fix order of operations when uninstalling the plugin.
+
 ## 1.0.2 - 2023-12-08
 
 ### Added
