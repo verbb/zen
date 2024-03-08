@@ -78,6 +78,10 @@ class Fields extends Component
             $fieldTypes[] = fieldTypes\Preparse::class;
         }
 
+        if (Plugin::isPluginInstalledAndEnabled('hyper')) {
+            $fieldTypes[] = fieldTypes\Hyper::class;
+        }
+
         $event = new RegisterComponentTypesEvent([
             'types' => $fieldTypes,
         ]);
