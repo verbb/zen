@@ -225,9 +225,13 @@ class Import extends Component
             }
 
             if ($elementData) {
+                // Ge tthe display name for the element from the class, otherwise it'll be translated
+                $classNameParts = explode('\\', $elementType);
+                $displayName = StringHelper::toCamelCase(array_pop($classNameParts));
+
                 $config[] = [
                     'label' => $elementType::pluralDisplayName(),
-                    'value' => StringHelper::toCamelCase($elementType::pluralLowerDisplayName()),
+                    'value' => $displayName,
                     'columns' => $elementType::getImportTableAttributes(),
                     'rows' => $elementData,
                 ];

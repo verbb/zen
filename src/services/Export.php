@@ -7,6 +7,7 @@ use verbb\zen\helpers\ArrayHelper;
 use craft\base\Component;
 use craft\helpers\Db;
 use craft\helpers\Json;
+use craft\helpers\StringHelper;
 
 use DateTime;
 
@@ -39,9 +40,13 @@ class Export extends Component
                 // For each item, add a prefix to the `value` param to allow us to record what type of element it's for.
                 $this->_decorateElementOptionValues($elementType::exportKey(), $elements);
 
+                // Ge tthe display name for the element from the class, otherwise it'll be translated
+                $classNameParts = explode('\\', $elementType);
+                $displayName = StringHelper::toCamelCase(array_pop($classNameParts));
+
                 $options[] = [
                     'label' => $elementType::pluralDisplayName(),
-                    'value' => $elementType::pluralLowerDisplayName(),
+                    'value' => $displayName,
                     'count' => array_sum(ArrayHelper::getColumn($elements, 'count')),
                     'children' => $elements,
                 ];
