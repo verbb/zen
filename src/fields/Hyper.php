@@ -29,8 +29,11 @@ class Hyper extends ZenField
         foreach ($value as $key => $link) {
             if (is_subclass_of($link['type'], ElementLink::class)) {
                 // Swap IDs for UIDs
-                $value[$key]['linkSiteId'] = Db::uidById(Table::SITES, $link['linkSiteId']);
-                $value[$key]['linkValue'] = Db::uidById(Table::ELEMENTS, $link['linkValue']);
+                $linkSiteId = $link['linkSiteId'] ?? null;
+                $linkValue = $link['linkValue'] ?? null;
+
+                $value[$key]['linkSiteId'] = $linkSiteId ? Db::uidById(Table::SITES, $linkSiteId) : null;
+                $value[$key]['linkValue'] = $linkValue ? Db::uidById(Table::ELEMENTS, $linkValue) : null;
             }
         }
 
@@ -42,8 +45,11 @@ class Hyper extends ZenField
         foreach ($value as $key => $link) {
             if (is_subclass_of($link['type'], ElementLink::class)) {
                 // Swap UIDs for IDs
-                $value[$key]['linkSiteId'] = Db::idByUd(Table::SITES, $link['linkSiteId']);
-                $value[$key]['linkValue'] = Db::idByUid(Table::ELEMENTS, $link['linkValue']);
+                $linkSiteId = $link['linkSiteId'] ?? null;
+                $linkValue = $link['linkValue'] ?? null;
+
+                $value[$key]['linkSiteId'] = $linkSiteId ? Db::idByUd(Table::SITES, $linkSiteId) : null;
+                $value[$key]['linkValue'] = $linkValue ? Db::idByUd(Table::ELEMENTS, $linkValue) : null;
             }
         }
 
