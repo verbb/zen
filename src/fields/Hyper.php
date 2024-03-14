@@ -48,8 +48,8 @@ class Hyper extends ZenField
                 $linkSiteId = $link['linkSiteId'] ?? null;
                 $linkValue = $link['linkValue'] ?? null;
 
-                $value[$key]['linkSiteId'] = $linkSiteId ? Db::idByUd(Table::SITES, $linkSiteId) : null;
-                $value[$key]['linkValue'] = $linkValue ? Db::idByUd(Table::ELEMENTS, $linkValue) : null;
+                $value[$key]['linkSiteId'] = $linkSiteId ? Db::idByUid(Table::SITES, $linkSiteId) : null;
+                $value[$key]['linkValue'] = $linkValue ? Db::idByUid(Table::ELEMENTS, $linkValue) : null;
             }
         }
 
