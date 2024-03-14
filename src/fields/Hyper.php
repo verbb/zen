@@ -26,14 +26,16 @@ class Hyper extends ZenField
     {
         $value = $field->serializeValue($value, $element);
 
-        foreach ($value as $key => $link) {
-            if (is_subclass_of($link['type'], ElementLink::class)) {
-                // Swap IDs for UIDs
-                $linkSiteId = $link['linkSiteId'] ?? null;
-                $linkValue = $link['linkValue'] ?? null;
+        if (is_array($value)) {
+            foreach ($value as $key => $link) {
+                if (is_subclass_of($link['type'], ElementLink::class)) {
+                    // Swap IDs for UIDs
+                    $linkSiteId = $link['linkSiteId'] ?? null;
+                    $linkValue = $link['linkValue'] ?? null;
 
-                $value[$key]['linkSiteId'] = $linkSiteId ? Db::uidById(Table::SITES, $linkSiteId) : null;
-                $value[$key]['linkValue'] = $linkValue ? Db::uidById(Table::ELEMENTS, $linkValue) : null;
+                    $value[$key]['linkSiteId'] = $linkSiteId ? Db::uidById(Table::SITES, $linkSiteId) : null;
+                    $value[$key]['linkValue'] = $linkValue ? Db::uidById(Table::ELEMENTS, $linkValue) : null;
+                }
             }
         }
 
@@ -42,14 +44,16 @@ class Hyper extends ZenField
 
     public static function normalizeValue(FieldInterface $field, ElementInterface $element, mixed $value): mixed
     {
-        foreach ($value as $key => $link) {
-            if (is_subclass_of($link['type'], ElementLink::class)) {
-                // Swap UIDs for IDs
-                $linkSiteId = $link['linkSiteId'] ?? null;
-                $linkValue = $link['linkValue'] ?? null;
+        if (is_array($value)) {
+            foreach ($value as $key => $link) {
+                if (is_subclass_of($link['type'], ElementLink::class)) {
+                    // Swap UIDs for IDs
+                    $linkSiteId = $link['linkSiteId'] ?? null;
+                    $linkValue = $link['linkValue'] ?? null;
 
-                $value[$key]['linkSiteId'] = $linkSiteId ? Db::idByUid(Table::SITES, $linkSiteId) : null;
-                $value[$key]['linkValue'] = $linkValue ? Db::idByUid(Table::ELEMENTS, $linkValue) : null;
+                    $value[$key]['linkSiteId'] = $linkSiteId ? Db::idByUid(Table::SITES, $linkSiteId) : null;
+                    $value[$key]['linkValue'] = $linkValue ? Db::idByUid(Table::ELEMENTS, $linkValue) : null;
+                }
             }
         }
 
