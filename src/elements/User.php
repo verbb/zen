@@ -81,7 +81,10 @@ class User extends ZenElement
         $data['fullName'] = $element->fullName;
         $data['friendlyName'] = $element->friendlyName;
         $data['groupUids'] = ArrayHelper::getColumn($element->getGroups(), 'uid');
-        $data['permissions'] = Craft::$app->getUserPermissions()->getPermissionsByUserId($element->id);
+
+        if ($element->id) {
+            $data['permissions'] = Craft::$app->getUserPermissions()->getPermissionsByUserId($element->id);
+        }
 
         if ($photo = $element->getPhoto()) {
             $data['photo'] = Asset::getSerializedElement($photo);
