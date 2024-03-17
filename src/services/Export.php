@@ -112,8 +112,19 @@ class Export extends Component
                 }
 
                 // Also need to do a separate call for deleted/restored elements and store separately
-                $json[$elementType]['deleted'] = $elementsService->getDeletedElementsForExport($elementType::elementType(), $dateRange, $elementCriteria);
-                $json[$elementType]['restored'] = $elementsService->getRestoredElementsForExport($elementType::elementType(), $dateRange, $elementCriteria);
+                $currentDeletedElements = $json[$elementType]['deleted'] ?? [];
+                $newDeletedElements = $elementsService->getDeletedElementsForExport($elementType::elementType(), $dateRange, $elementCriteria);
+                    
+                if ($newDeletedElements) {
+                    $json[$elementType]['deleted'] = array_merge($currentDeletedElements, $newDeletedElements);
+                }
+                
+                $currentRestoredElements = $json[$elementType]['restored'] ?? [];
+                $newRestoredElements = $elementsService->getRestoredElementsForExport($elementType::elementType(), $dateRange, $elementCriteria);
+                
+                if ($newRestoredElements) {
+                    $json[$elementType]['restored'] = array_merge($currentRestoredElements, $newRestoredElements);
+                }
             }
         }
 
