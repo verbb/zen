@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.4 - 2024-03-18
+
+### Added
+- Add support for Hyper fields
+
+### Fixed
+- Fix some fields like Hyper and Vizy not showing in preview correctly.
+- Fix display of importing deleted elements.
+- Fix deleted/restored elements not exporting correctly.
+- Fix an error when importing users and permissions.
+- Fix some errors when importing assets where folders or file cannot be found.
+- Fix an error when trying to preview an element with no parent.
+- Fix an error for non-English sites.
+
 ## 1.0.3 - 2024-03-04
 
 ### Fixed
