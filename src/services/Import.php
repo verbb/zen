@@ -188,6 +188,12 @@ class Import extends Component
                     $elementState = 'delete';
                     $elementActionState = 'delete';
 
+                    // If there's an element marked as deleted, but doesn't exist on the destination install, then skip
+                    // It's likely been created then deleted all on the source install.
+                    if (!$currentElement) {
+                        continue;
+                    }
+
                     $elementToAction = $currentElement;
                     $newElement = null;
                 } else if ($itemState === 'restored') {
@@ -333,7 +339,7 @@ class Import extends Component
             if ($itemState === 'modified') {
                 $newElement = $elementType::getNormalizedElement($newItem, true);
             } else if ($itemState === 'deleted') {
-                $newElement = $currentElement;
+                $newElement = null;
             } else if ($itemState === 'restored') {
                 $newElement = $elementType::getNormalizedElement($newItem, true);
             } else {
