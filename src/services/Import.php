@@ -258,6 +258,8 @@ class Import extends Component
     {
         $oldHtml = '';
         $newHtml = '';
+        $oldJs = '';
+        $newJs = '';
 
         $differ = new ElementDiffer();
 
@@ -349,13 +351,20 @@ class Import extends Component
             // Generate the old/new summary of attributes and fields
             $diffSummary = $differ->getSummaryFieldIndicators($diffs);
 
-            $oldHtml = $elementType::generateCompareHtml($currentElement, $diffSummary, 'old');
-            $newHtml = $elementType::generateCompareHtml($newElement, $diffSummary, 'new');
+            $oldHtmlData = $elementType::generateCompareHtml($currentElement, $diffSummary, 'old');
+            $newHtmlData = $elementType::generateCompareHtml($newElement, $diffSummary, 'new');
+
+            $oldHtml = $oldHtmlData['html'] ?? null;
+            $newHtml = $newHtmlData['html'] ?? null;
+            $oldJs = $oldHtmlData['js'] ?? null;
+            $newJs = $newHtmlData['js'] ?? null;
         }
 
         return [
             'old' => $oldHtml,
             'new' => $newHtml,
+            'oldJs' => $oldJs,
+            'newJs' => $newJs,
         ];
     }
 

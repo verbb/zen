@@ -491,9 +491,10 @@ abstract class Element implements ZenElementInterface
         return [];
     }
 
-    public static function generateCompareHtml(?ElementInterface $element, array $diffSummary, string $type): string
+    public static function generateCompareHtml(?ElementInterface $element, array $diffSummary, string $type): array
     {
         $html = '';
+        $js = '';
         $view = Craft::$app->getView();
 
         // Required when testing outside of the CP (using the URLs directly)
@@ -510,7 +511,10 @@ abstract class Element implements ZenElementInterface
                     $fieldsService->getFieldForPreview($field, $element, $type);
                 }
 
+                // Render the form, despite us not needing the HTML, we need to fetch any JS used to append it
+                Craft::$app->getView()->startJsBuffer();
                 $form = $fieldLayout->createForm($element, true);
+                $js = Craft::$app->getView()->clearJsBuffer();
 
                 // Get any custom field tabs for the element, and any extra defined class
                 $tabHtml = '';
@@ -552,6 +556,19 @@ abstract class Element implements ZenElementInterface
 
                     $url = $view->getAssetManager()->getActualAssetUrl($bundle, $cssFile);
                     $html .= '<link href="' . $url . '" rel="stylesheet">';
+                }
+
+                foreach ($bundle->js as $jsFile) {
+                    $type = 'script';
+
+                    if (is_array($jsFile)) {
+                        $type = $jsFile['type'] ?? $type;
+
+                        $jsFile = $jsFile[array_keys($jsFile)[0]];
+                    }
+
+                    $url = $view->getAssetManager()->getActualAssetUrl($bundle, $jsFile);
+                    $js = '<script type="' . $type . '" src="' . $url . '"></script>' . $js;
                 }
             }
         }
@@ -625,7 +642,7 @@ abstract class Element implements ZenElementInterface
         // Fix dropdown fields (selectize) being hidden
         $crawler->filter('.selectize.select select')->removeAttribute('style');
 
-        return $crawler->saveHTML();
+        return ['html' => $crawler->saveHTML(), 'js' => $js];
     }
 
 
