@@ -188,6 +188,12 @@ class Import extends Component
                     $elementState = 'delete';
                     $elementActionState = 'delete';
 
+                    // If there's an element marked as deleted, but doesn't exist on the destination install, then skip
+                    // It's likely been created then deleted all on the source install.
+                    if (!$currentElement) {
+                        continue;
+                    }
+
                     $elementToAction = $currentElement;
                     $newElement = null;
                 } else if ($itemState === 'restored') {
@@ -225,9 +231,13 @@ class Import extends Component
             }
 
             if ($elementData) {
+                // Ge tthe display name for the element from the class, otherwise it'll be translated
+                $classNameParts = explode('\\', $elementType);
+                $displayName = StringHelper::toCamelCase(array_pop($classNameParts));
+
                 $config[] = [
                     'label' => $elementType::pluralDisplayName(),
-                    'value' => StringHelper::toCamelCase($elementType::pluralLowerDisplayName()),
+                    'value' => $displayName,
                     'columns' => $elementType::getImportTableAttributes(),
                     'rows' => $elementData,
                 ];
@@ -248,6 +258,8 @@ class Import extends Component
     {
         $oldHtml = '';
         $newHtml = '';
+        $oldJs = '';
+        $newJs = '';
 
         $differ = new ElementDiffer();
 
@@ -329,7 +341,7 @@ class Import extends Component
             if ($itemState === 'modified') {
                 $newElement = $elementType::getNormalizedElement($newItem, true);
             } else if ($itemState === 'deleted') {
-                $newElement = $currentElement;
+                $newElement = null;
             } else if ($itemState === 'restored') {
                 $newElement = $elementType::getNormalizedElement($newItem, true);
             } else {
@@ -339,13 +351,20 @@ class Import extends Component
             // Generate the old/new summary of attributes and fields
             $diffSummary = $differ->getSummaryFieldIndicators($diffs);
 
-            $oldHtml = $elementType::generateCompareHtml($currentElement, $diffSummary, 'old');
-            $newHtml = $elementType::generateCompareHtml($newElement, $diffSummary, 'new');
+            $oldHtmlData = $elementType::generateCompareHtml($currentElement, $diffSummary, 'old');
+            $newHtmlData = $elementType::generateCompareHtml($newElement, $diffSummary, 'new');
+
+            $oldHtml = $oldHtmlData['html'] ?? null;
+            $newHtml = $newHtmlData['html'] ?? null;
+            $oldJs = $oldHtmlData['js'] ?? null;
+            $newJs = $newHtmlData['js'] ?? null;
         }
 
         return [
             'old' => $oldHtml,
             'new' => $newHtml,
+            'oldJs' => $oldJs,
+            'newJs' => $newJs,
         ];
     }
 

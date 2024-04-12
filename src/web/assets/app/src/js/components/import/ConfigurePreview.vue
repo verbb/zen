@@ -108,6 +108,15 @@ export default {
             setTimeout(() => {
                 Craft.initUiElements(this.$el);
 
+                // In case we have any JS to initialize for some fields.
+                if (this.data.newJs) {
+                    Craft.appendBodyHtml(this.data.newJs);
+                }
+
+                if (this.data.oldJs) {
+                    Craft.appendBodyHtml(this.data.oldJs);
+                }
+
                 // Fix element select images not working without jQuery
                 this.$el.querySelectorAll('.elementselect .elements').forEach((elements) => {
                     new Craft.ElementThumbLoader().load($(elements));

@@ -86,19 +86,24 @@ class Asset extends ZenElement
             $data['focalPoint'] = $element->focalPoint;
         }
 
-        $data['folder'] = [
-            'volume' => $element->getFolder()->volumeId,
-            'name' => $element->getFolder()->name,
-            'path' => $element->getFolder()->path,
-        ];
+        if ($element->folderId && $folder = $element->getFolder()) {
+            $data['folder'] = [
+                'volume' => $folder->volumeId,
+                'name' => $folder->name,
+                'path' => $folder->path,
+            ];
+        }
 
         // If serializing for an export, record any additional files (the actual asset) to be stored in the zip
         // But only for local storage. If a remote filesystem, no need to process
         if ($element->getVolume()->getFs() instanceof Local) {
-            Zen::$plugin->getExport()->storeExportFile([
-                'filename' => $element->filename,
-                'content' => $element->getContents(),
-            ]);
+            // Check if the file actually exists. Soft-deleted assets have their files hard-deleted
+            if ($element->getVolume()->fileExists($element->getPath())) {
+                Zen::$plugin->getExport()->storeExportFile([
+                    'filename' => $element->filename,
+                    'content' => $element->getContents(),
+                ]);
+            }
         }
 
         return $data;
