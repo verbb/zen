@@ -1,9 +1,13 @@
 # Changelog
 
-## 2.0.0-beta.3 - 2024-04-12
+## 2.0.0 - 2024-05-18
 
 ### Added
 - Add support for Hyper fields
+
+### Changed
+- Now requires PHP `8.2.0+`.
+- Now requires Craft `5.0.0+`.
 
 ### Fixed
 - Fix some fields like Hyper and Vizy not showing in preview correctly.
@@ -13,17 +17,6 @@
 - Fix some errors when importing assets where folders or file cannot be found.
 - Fix an error when trying to preview an element with no parent.
 - Fix an error for non-English sites.
-
-## 2.0.0-beta.2 - 2024-03-05
-
-### Fixed
-- Fix an install error related to `nystudio107/craft-plugin-vite`.
-
-## 2.0.0-beta.1 - 2024-03-04
-
-### Changed
-- Now requires PHP `8.2.0+`.
-- Now requires Craft `5.0.0-beta.1+`.
 
 ## 1.0.4 - 2024-03-18
 
