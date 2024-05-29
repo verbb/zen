@@ -71,7 +71,7 @@ class Entry extends ZenElement
 
         if ($element->authorId) {
             // Don't include author for Craft Solo
-            if (Craft::$app->getEdition() === Craft::Pro) {
+            if (Craft::$app->getEdition() !== Craft::Solo) {
                 $data['authorEmail'] = Db::emailById($element->authorId);
             }
         }
@@ -136,7 +136,7 @@ class Entry extends ZenElement
                         'on' => $element->enabled,
                         'disabled' => true,
                     ]),
-                    'authorEmail' => (Craft::$app->getEdition() === Craft::Pro) ? Cp::elementSelectFieldHtml([
+                    'authorEmail' => (Craft::$app->getEdition() !== Craft::Solo) ? Cp::elementSelectFieldHtml([
                         'label' => Craft::t('app', 'Author'),
                         'id' => 'authorEmail',
                         'elementType' => User::class,
