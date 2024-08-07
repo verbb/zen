@@ -12,5 +12,5 @@ Get in touch with us via the [Zen Support page](https://verbb.io/craft-plugins/z
 <h2></h2>
 
 <a href="https://verbb.io" target="_blank">
-    <img width="100" src="https://verbb.io/assets/img/verbb-pill.svg" alt="Verbb">
+    <img width="101" height="33" src="https://verbb.io/assets/img/verbb-pill.svg" alt="Verbb">
 </a>
