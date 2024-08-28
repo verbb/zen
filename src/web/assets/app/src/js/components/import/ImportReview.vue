@@ -25,6 +25,12 @@
                     </div>
                 </div>
 
+                <div class="flex">
+                    <h4 style="margin: 0;">{{ t('zen', 'Backup before import?') }}</h4>
+
+                    <lightswitch v-model="$store().$state.backup" name="backup" />
+                </div>
+
                 <div v-for="(item) in getValue(data, 'elementData')" :key="item.value" class="content-pane">
                     <configure-table :data="[item]" :read-only="true" />
                 </div>
@@ -41,6 +47,7 @@ import 'vue3-lottie/dist/style.css';
 import loadingSvg from '@/js/svg/work-list.json?raw';
 
 import ConfigureTable from '@components/import/ConfigureTable.vue';
+import Lightswitch from '@components/Lightswitch.vue';
 import Icon from '@components/Icon.vue';
 
 import { getErrorMessage } from '@utils/forms';
@@ -49,6 +56,7 @@ export default {
     name: 'InputReview',
 
     components: {
+        Lightswitch,
         ConfigureTable,
         Icon,
         Vue3Lottie,

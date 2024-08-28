@@ -169,6 +169,7 @@ export default {
             const data = {
                 filename: this.$route.params.filename,
                 elementsToExclude: this.$route.params.elementsToExclude,
+                backup: this.$store().$state.backup,
                 taskId: this.taskId,
             };
 

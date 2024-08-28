@@ -81,6 +81,7 @@ export const createVueApp = (props) => {
                 breadcrumbs: [],
                 route: [],
                 saveButton: false,
+                backup: true,
             };
         },
 
@@ -95,6 +96,10 @@ export const createVueApp = (props) => {
 
             getSaveButton: (state) => {
                 return state.saveButton;
+            },
+
+            getBackup: (state) => {
+                return state.backup;
             },
         },
 
@@ -128,6 +133,10 @@ export const createVueApp = (props) => {
 
             setSaveButton($route) {
                 this.saveButton = $route?.meta?.saveButton;
+            },
+
+            setBackup($route) {
+                this.backup = $route?.meta?.backup;
             },
         },
     });
