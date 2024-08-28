@@ -32,6 +32,11 @@ export default {
 
 <style lang="scss">
 
+.zen-app #content-container {
+    max-width: 100%;
+    width: 100%;
+}
+
 .page-fade-enter-active,
 .page-fade-leave-active {
     transition: opacity 0.5s;

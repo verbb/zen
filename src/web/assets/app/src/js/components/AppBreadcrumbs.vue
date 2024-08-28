@@ -1,7 +1,9 @@
 <template>
-    <ul class="breadcrumb-list">
-        <li v-for="(crumb, index) in breadcrumbs" :key="index" :class="(breadcrumbs.length - 1) === index ? 'last' : ''">
-            <a @click.prevent="onClick(crumb.value)">{{ t('zen', crumb.label) }}</a>
+    <ul id="crumb-list" class="breadcrumb-list">
+        <li v-for="(crumb, index) in breadcrumbs" :key="index" class="crumb" :class="(breadcrumbs.length - 1) === index ? 'current' : ''">
+            <button class="crumb-button" @click.prevent="onClick(crumb.value)">
+                <span>{{ t('zen', crumb.label) }}</span>
+            </button>
         </li>
     </ul>
 </template>
@@ -28,8 +30,9 @@ export default {
 
 <style lang="scss">
 
-body.ltr .breadcrumb-list li.last:after {
-    display: none;
+.crumb-button {
+    color: var(--link-color);
+    cursor: pointer;
 }
 
 </style>

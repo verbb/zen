@@ -104,6 +104,7 @@ export default {
 .zui-import-stat-number {
     font-weight: 700;
     font-size: 30px;
+    line-height: 1.3;
 }
 
 .zui-import-stat-heading {

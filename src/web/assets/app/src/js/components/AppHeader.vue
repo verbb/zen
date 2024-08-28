@@ -4,10 +4,10 @@
 
         <div v-if="$isDebug">
             &nbsp;&nbsp;
-            <a @click.prevent="navigate('/')">Index</a>&nbsp;&nbsp;&nbsp;&nbsp;
-            <a @click.prevent="navigate('/import/configure/zen-test.zip')">Configure</a>&nbsp;&nbsp;&nbsp;&nbsp;
-            <a @click.prevent="navigate('/import/review/zen-test.zip')">Review</a>&nbsp;&nbsp;&nbsp;&nbsp;
-            <a @click.prevent="navigate('/import/run/zen-test.zip')">Run</a>
+            <button @click.prevent="navigate('/')">Index</button>&nbsp;&nbsp;&nbsp;&nbsp;
+            <button @click.prevent="navigate('/import/configure/zen-test.zip')">Configure</button>&nbsp;&nbsp;&nbsp;&nbsp;
+            <button @click.prevent="navigate('/import/review/zen-test.zip')">Review</button>&nbsp;&nbsp;&nbsp;&nbsp;
+            <button @click.prevent="navigate('/import/run/zen-test.zip')">Run</button>
         </div>
     </div>
 
