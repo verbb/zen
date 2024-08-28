@@ -112,6 +112,7 @@ class ImportController extends Controller
         $elementsToExclude = $this->request->getParam('elementsToExclude');
         $taskId = $this->request->getParam('taskId');
         $direct = $this->request->getParam('direct');
+        $backup = $this->request->getParam('backup');
 
         $elementsToExclude = Json::decode(base64_decode($elementsToExclude));
 
@@ -119,7 +120,9 @@ class ImportController extends Controller
             $elementsToExclude = [];
         }
 
-        Craft::$app->getDb()->backup();
+        if ($backup) {
+            Craft::$app->getDb()->backup();
+        }
 
         if ($direct) {
             Zen::$plugin->getImport()->runImport($filename, $elementsToExclude);
