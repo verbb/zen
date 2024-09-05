@@ -81,11 +81,22 @@ class Entry extends ZenElement
 
     public static function defineNormalizedElement(array $data): array
     {
-        $data['sectionId'] = Db::idByUid(Table::SECTIONS, ArrayHelper::remove($data, 'sectionUid'));
-        $data['typeId'] = Db::idByUid(Table::ENTRYTYPES, ArrayHelper::remove($data, 'typeUid'));
+        if ($sectionUid = ArrayHelper::remove($data, 'sectionUid')) {
+            if ($sectionId = Db::idByUid(Table::SECTIONS, $sectionUid)) {
+                $data['sectionId'] = $sectionId;
+            }
+        }
+
+        if ($typeUid = ArrayHelper::remove($data, 'typeUid')) {
+            if ($typeId = Db::idByUid(Table::ENTRYTYPES, $typeUid)) {
+                $data['typeId'] = $typeId;
+            }
+        }
 
         if ($authorEmail = ArrayHelper::remove($data, 'authorEmail')) {
-            $data['authorId'] = Db::idByEmail($authorEmail);
+            if ($authorId = Db::idByEmail($authorEmail)) {
+                $data['authorId'] = $authorId;
+            }
         }
 
         return $data;
