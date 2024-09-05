@@ -30,10 +30,10 @@ export const getErrorMessage = function(error) {
         content.trace += `<br>${file2}:${line2}`;
     }
 
-    // Check for JS-side stack trace
+    // Check for JS-side stack trace, only include if there's not existing trace data (server-side)
     const jsStack = get(error, 'stack', '');
 
-    if (jsStack) {
+    if (jsStack && !content.trace.length) {
         content.trace += jsStack;
     }
 

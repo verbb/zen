@@ -117,7 +117,7 @@ export default {
 
             Craft.sendActionRequest('POST', 'zen/import/get-config-data', { data })
                 .then((response) => {
-                    this.data = response.data;
+                    this.data = responsse.data;
 
                     if (!this.isEmpty) {
                         this.$store().setSaveButton(this.$route);
@@ -127,6 +127,7 @@ export default {
                     this.error = true;
 
                     const info = getErrorMessage(error);
+
                     this.errorMessage = `<h1>${info.heading}</h1><br>${info.text}<br>${info.trace}`;
                 })
                 .finally(() => {
