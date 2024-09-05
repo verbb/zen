@@ -61,7 +61,7 @@ class Product extends ZenElement
         $data['typeUid'] = Db::uidById('{{%commerce_producttypes}}', $element->typeId);
         $data['taxCategory'] = $element->taxCategory->handle ?? null;
         $data['shippingCategory'] = $element->shippingCategory->handle ?? null;
-        $data['defaultVariantUid'] = $element->defaultVariant->uid;
+        $data['defaultVariantUid'] = $element->defaultVariant->uid ?? null;
 
         foreach ($element->getVariants() as $variant) {
             $data['variants'][] = Variant::getSerializedElement($variant);
@@ -76,11 +76,13 @@ class Product extends ZenElement
         $data['defaultVariantId'] = Db::idByUid('{{%commerce_variants}}',  ArrayHelper::remove($data, 'defaultVariantUid'));
 
         // Swap the handles of tax/shipping categories to IDs
-        $taxCategoryId = self::idByHandle('{{%commerce_taxcategories}}', ArrayHelper::remove($data, 'taxCategory'));
-        $shippingCategoryId = self::idByHandle('{{%commerce_shippingcategories}}', ArrayHelper::remove($data, 'shippingCategory'));
+        if ($taxCategoryHandle = ArrayHelper::remove($data, 'taxCategory')) {
+            $data['taxCategory'] = Commerce::getInstance()->getTaxCategories()->getTaxCategoryByHandle($taxCategoryHandle);
+        }
 
-        $data['taxCategory'] = Commerce::getInstance()->getTaxCategories()->getTaxCategoryById($taxCategoryId);
-        $data['shippingCategory'] = Commerce::getInstance()->getShippingCategories()->getShippingCategoryById($shippingCategoryId);
+        if ($shippingCategoryHandle = ArrayHelper::remove($data, 'shippingCategory')) {
+            $data['shippingCategory'] = Commerce::getInstance()->getShippingCategories()->getShippingCategoryById($shippingCategoryHandle);
+        }
 
         foreach (ArrayHelper::remove($data, 'variants', []) as $variant) {
             // Ensure we set the parent field layout from the product type, so that custom fields work correctly

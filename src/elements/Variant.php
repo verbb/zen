@@ -56,6 +56,9 @@ class Variant extends ZenElement
         // Discard it, we don't need it with a new or existing product this is attached to
         ArrayHelper::remove($data, 'productUid');
 
+        // Deprecated
+        ArrayHelper::remove($data, 'stock');
+
         return $data;
     }
 }
