@@ -9,7 +9,7 @@ use verbb\zen\models\ElementDiffer;
 use Craft;
 use craft\base\ElementInterface;
 use craft\base\FieldInterface;
-use craft\elements\MatrixBlock;
+use craft\elements\Entry;
 use craft\fields\Matrix as MatrixField;
 
 class Matrix extends BlockField
@@ -68,9 +68,9 @@ class Matrix extends BlockField
             $blockUid = $block['uid'] ?? null;
 
             if ($blockUid) {
-                $existingBlock = MatrixBlock::find()->uid($blockUid)->status(null)->one() ?? new MatrixBlock();
+                $existingBlock = Entry::find()->uid($blockUid)->status(null)->one() ?? new Entry();
             } else {
-                $existingBlock = new MatrixBlock();
+                $existingBlock = new Entry();
             }
 
             // Ensure that we track the owner of any existing (or new) block for inner fields (see relation fields)
