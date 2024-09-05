@@ -117,7 +117,7 @@ export default {
 
             Craft.sendActionRequest('POST', 'zen/import/get-config-data', { data })
                 .then((response) => {
-                    this.data = responsse.data;
+                    this.data = response.data;
 
                     if (!this.isEmpty) {
                         this.$store().setSaveButton(this.$route);
