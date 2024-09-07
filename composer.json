@@ -2,7 +2,7 @@
     "name": "verbb/zen",
     "description": "Manage content across multiple environments with ease.",
     "type": "craft-plugin",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "keywords": [
         "craft",
         "cms",
