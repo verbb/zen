@@ -149,8 +149,8 @@ export default {
         },
 
         updateElements() {
-            const fromDate = new Date(`${this.fromDate} UTC`).toISOString().split('T')[0];
-            const toDate = new Date(`${this.toDate} UTC`).toISOString().split('T')[0];
+            const fromDate = this.fromDate.toISOString().split('T')[0];
+            const toDate = this.toDate.toISOString().split('T')[0];
 
             if (!fromDate || !toDate) {
                 return;

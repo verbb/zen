@@ -18,6 +18,17 @@
 - Fix an error when trying to preview an element with no parent.
 - Fix an error for non-English sites.
 
+## 1.0.5 - 2024-09-07
+
+### Added
+- Add configurable backup option to review step before importing.
+
+### Changed
+- Update English translations.
+
+### Fixed
+- Fix an error in Safari when viewing the export form interface.
+
 ## 1.0.4 - 2024-03-18
 
 ### Added
