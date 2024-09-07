@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.0.1 - 2024-09-07
+
+### Added
+- Add configurable backup option to review step before importing.
+- Add Craft Teams support for permissions.
+
+### Changed
+- Update English translations.
+- Update Product element handling for Commerce 5.x.
+- Improve error messaging.
+
+### Fixed
+- Fix an error in Safari when viewing the export form interface.
+- Fix Craft 5 visual issues.
+- Fix a Craft 5 compatibility error.
+- Fix an error when importing Matrix fields.
+- Fix error handling for Entries where the section/entry type/author could not be found due to missing project config settings (these objects not - on the destination install).
+
 ## 2.0.0 - 2024-05-18
 
 ### Added
