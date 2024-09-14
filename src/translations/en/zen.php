@@ -2,6 +2,7 @@
 
 return [
   'An unknown error occurred.' => 'An unknown error occurred.',
+  'Backup before import?' => 'Backup before import?',
   'Cancel' => 'Cancel',
   'Comparing content...' => 'Comparing content...',
   'Current Content' => 'Current Content',
