@@ -689,39 +689,39 @@
       "oAP" : "\/src\/web\/assets\/app\/dist\/assets\/success-large-9c1960a9.js.map.gz",
       "oF" : 0
     },
-    "\/src\/web\/assets\/app\/dist\/assets\/zen-8e98a6c7.js" : {
+    "\/src\/web\/assets\/app\/dist\/assets\/zen-5458f2bc.js" : {
       "bF" : 0,
       "ft" : 64,
       "ma" : 1,
       "mi" : 1,
       "oA" : 0,
-      "oAP" : "\/src\/web\/assets\/app\/dist\/js\/zen-8e98a6c7.js",
+      "oAP" : "\/src\/web\/assets\/app\/dist\/js\/zen-5458f2bc.js",
       "oF" : 0,
       "sC" : 0,
       "tS" : 0
     },
-    "\/src\/web\/assets\/app\/dist\/assets\/zen-8e98a6c7.js.gz" : {
+    "\/src\/web\/assets\/app\/dist\/assets\/zen-5458f2bc.js.gz" : {
       "cB" : 0,
       "ft" : 8192,
       "hM" : 0,
       "oA" : 2,
-      "oAP" : "\/src\/web\/assets\/app\/dist\/assets\/zen-8e98a6c7.js.gz",
+      "oAP" : "\/src\/web\/assets\/app\/dist\/assets\/zen-5458f2bc.js.gz",
       "oF" : 0
     },
-    "\/src\/web\/assets\/app\/dist\/assets\/zen-8e98a6c7.js.map" : {
+    "\/src\/web\/assets\/app\/dist\/assets\/zen-5458f2bc.js.map" : {
       "cB" : 0,
       "ft" : 8192,
       "hM" : 0,
       "oA" : 2,
-      "oAP" : "\/src\/web\/assets\/app\/dist\/assets\/zen-8e98a6c7.js.map",
+      "oAP" : "\/src\/web\/assets\/app\/dist\/assets\/zen-5458f2bc.js.map",
       "oF" : 0
     },
-    "\/src\/web\/assets\/app\/dist\/assets\/zen-8e98a6c7.js.map.gz" : {
+    "\/src\/web\/assets\/app\/dist\/assets\/zen-5458f2bc.js.map.gz" : {
       "cB" : 0,
       "ft" : 8192,
       "hM" : 0,
       "oA" : 2,
-      "oAP" : "\/src\/web\/assets\/app\/dist\/assets\/zen-8e98a6c7.js.map.gz",
+      "oAP" : "\/src\/web\/assets\/app\/dist\/assets\/zen-5458f2bc.js.map.gz",
       "oF" : 0
     },
     "\/src\/web\/assets\/app\/dist\/assets\/zen-d2f702f3.css" : {
@@ -862,6 +862,14 @@
       "hM" : 0,
       "oA" : 2,
       "oAP" : "\/src\/web\/assets\/app\/src\/js\/components\/import\/ImportRun.vue",
+      "oF" : 0
+    },
+    "\/src\/web\/assets\/app\/src\/js\/components\/Lightswitch.vue" : {
+      "cB" : 0,
+      "ft" : 8192,
+      "hM" : 0,
+      "oA" : 2,
+      "oAP" : "\/src\/web\/assets\/app\/src\/js\/components\/Lightswitch.vue",
       "oF" : 0
     },
     "\/src\/web\/assets\/app\/src\/js\/components\/Markdown.vue" : {

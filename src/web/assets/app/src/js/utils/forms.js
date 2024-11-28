@@ -1,5 +1,9 @@
 import { get } from 'lodash-es';
 
+const nl2br = (str) => {
+    return str.replace(/\n/g, '<br>');
+};
+
 export const getErrorMessage = function(error) {
     const content = {
         heading: '',
@@ -20,21 +24,21 @@ export const getErrorMessage = function(error) {
     const line1 = get(error, 'response.data.line', '');
 
     if (file1 && line1) {
-        content.trace = `${file1}:${line1}`;
+        content.trace = nl2br(`${file1}:${line1}`);
     }
 
     const file2 = get(error, 'response.data.trace.0.file', '');
     const line2 = get(error, 'response.data.trace.0.line', '');
 
     if (file2 && line2) {
-        content.trace += `<br>${file2}:${line2}`;
+        content.trace += nl2br(`<br>${file2}:${line2}`);
     }
 
-    // Check for JS-side stack trace
+    // Check for JS-side stack trace, only include if there's not existing trace data (server-side)
     const jsStack = get(error, 'stack', '');
 
-    if (jsStack) {
-        content.trace += jsStack;
+    if (jsStack && !content.trace.length) {
+        content.trace += nl2br(jsStack);
     }
 
     return content;
