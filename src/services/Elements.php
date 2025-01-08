@@ -238,7 +238,13 @@ class Elements extends Component
 
         foreach ($processed as $action) {
             if ($action['type'] === $type) {
-                $data[] = Json::decode($action['data']);
+                // parse potential stream-resources originating from the query
+                if (gettype($action['data']) === 'resource'
+                    && get_resource_type($action['data']) === 'stream') {
+                    $data[] = Json::decode(stream_get_contents($action['data']));
+                } else {
+                    $data[] = Json::decode($action['data']);
+                }
             }
         }
 
