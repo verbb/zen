@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.2 - 2025-01-10
+
+### Added
+- Add support for streams on delete and restore actions. (thanks @FabianRutishauser).
+
 ## 2.0.1 - 2024-09-07
 
 ### Added
