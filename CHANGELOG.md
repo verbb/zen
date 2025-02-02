@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.3 - 2025-02-02
+
+### Fixed
+- Update error messages from ajax responses.
+
 ## 2.0.2 - 2025-01-10
 
 ### Added
