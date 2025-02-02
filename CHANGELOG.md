@@ -41,6 +41,11 @@
 - Fix an error when trying to preview an element with no parent.
 - Fix an error for non-English sites.
 
+## 1.0.6 - 2025-02-02
+
+### Fixed
+- Update error messages from ajax responses.
+
 ## 1.0.5 - 2024-09-07
 
 ### Added
