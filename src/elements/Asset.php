@@ -179,7 +179,9 @@ class Asset extends ZenElement
                         'class' => array_filter([
                             'preview-thumb-container',
                             'button-fade',
-                            $element->hasCheckeredThumb() ? 'checkered' : null,
+
+                            // Broken due to https://github.com/craftcms/cms/commit/f0ab5955a84737bdb4150dc4ce394462e7831fea
+                            // $element->hasCheckeredThumb() ? 'checkered' : null,
                         ]),
                     ]) .
                     Html::tag('div', $element->getPreviewThumbImg(350, 190), [

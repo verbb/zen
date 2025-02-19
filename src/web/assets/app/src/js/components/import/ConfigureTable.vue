@@ -1,6 +1,6 @@
 <template>
     <div class="zui-import-table-wrap">
-        <div v-for="(item, index) in data" :id="item.value" :key="item.value" :class="{ 'hidden': !isFirst(index, data) }">
+        <div v-for="(item, index) in data" :id="item.value" :key="item.value" :data-id="item.value" :class="{ 'hidden': !isFirst(index, data) }">
             <table class="zui-import-table data fullwidth">
                 <thead>
                     <tr>

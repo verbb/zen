@@ -8,7 +8,7 @@
                     :key="item.value"
                     :href="'#' + item.value"
                     role="tab"
-                    :data-id="index"
+                    :data-id="item.value"
                     :aria-controls="index"
                     :tabindex="isFirst(index, data) ? '0' : '-1'"
                     :class="{ 'sel': isFirst(index, data) }"
@@ -25,12 +25,11 @@
                 class="btn menubtn hidden"
                 :title="t('app', 'List all tabs')"
                 :aria-label="t('app', 'List all tabs')"
-                role="combobox"
-                aria-haspopup="listbox"
-                aria-expanded="false"
+                aria-controls="tab-menu"
+                data-disclosure-trigger
             ></button>
 
-            <div class="menu">
+            <div id="tab-menu" class="menu menu--disclosure">
                 <ul class="padded" role="group">
                     <li
                         v-for="(item, index) in data"
@@ -42,7 +41,7 @@
                         <a
                             :id="'option-' + (index + 1)"
                             :href="'#' + item.value"
-                            :data-id="index"
+                            :data-id="item.value"
                             tabindex="-1"
                             :class="{ 'sel': isFirst(index, data) }"
                         >
