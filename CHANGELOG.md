@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.4 - 2025-03-05
+
+### Fixed
+- Fix some Craft 5+ compatibility issues for Import interface.
+
 ## 2.0.3 - 2025-02-02
 
 ### Fixed
