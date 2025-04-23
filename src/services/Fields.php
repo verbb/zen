@@ -289,9 +289,9 @@ class Fields extends Component
             if ($field instanceof SuperTableField) {
                 $keys[] = $prefix . $field->handle;
                 
-                foreach ($field->getBlockTypes() as $blocktype) {
-                    foreach ($blocktype->getCustomFields() as $subField) {
-                        $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.', $iteration);
+                foreach ($field->getEntryTypes() as $entryType) {
+                    foreach ($entryType->getCustomFields() as $subField) {
+                        $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.' . $entryType->handle . ':', $iteration);
 
                         if ($nestedKeys) {
                             $keys = array_merge($keys, $nestedKeys);
