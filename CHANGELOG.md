@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.7 - 2025-05-01
+
+### Fixed
+- Fix an error in Craft 4.15+.
+
 ## 1.0.6 - 2025-02-02
 
 ### Fixed
