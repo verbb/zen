@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.0.5 - 2025-05-01
+
+### Added
+- Add extra log info to failed element change state.
+
+### Changed
+- Update `ArrayHelper` class to use `verbb-base`.
+
+### Fixed
+- Fix an error when importing/exporting Hyper fields.
+- Fix Super Table exporting.
+
 ## 2.0.4 - 2025-03-05
 
 ### Fixed
