@@ -26,7 +26,8 @@ class Entry extends ZenElement
 
     public static function exportKeyForElement(ElementInterface $element): array
     {
-        return ['section' => $element->section->handle, 'type' => $element->type->handle];
+        // Don't forget that Matrix = Entries, so a section isn't guaranteed
+        return array_filter(['section' => $element->section->handle ?? null, 'type' => $element->type->handle]);
     }
 
     public static function getExportOptions(ElementQueryInterface $query): array|bool
@@ -66,8 +67,12 @@ class Entry extends ZenElement
         // Serialize any additional attributes. Be sure to switch out IDs for UIDs.
         $data['postDate'] = Db::prepareDateForDb($element->postDate);
         $data['expiryDate'] = Db::prepareDateForDb($element->expiryDate);
-        $data['sectionUid'] = Db::uidById(Table::SECTIONS, $element->sectionId);
         $data['typeUid'] = Db::uidById(Table::ENTRYTYPES, $element->typeId);
+
+        // Don't forget that Matrix = Entries, so a section isn't guaranteed
+        if ($element->sectionId) {
+            $data['sectionUid'] = Db::uidById(Table::SECTIONS, $element->sectionId);
+        }
 
         if ($element->authorId) {
             // Don't include author for Craft Solo
@@ -116,6 +121,12 @@ class Entry extends ZenElement
 
         if (!$element) {
             return [];
+        }
+
+        if (!$element->section) {
+            return [
+                'section' => $element->type->name,
+            ];
         }
 
         return [
