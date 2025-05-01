@@ -33,6 +33,9 @@ class Hyper extends ZenField
                     $linkSiteId = $link['linkSiteId'] ?? null;
                     $linkValue = $link['linkValue'] ?? null;
 
+                    // Normalize the linkValue, just in case
+                    $linkValue = is_array($linkValue) ? reset($linkValue) : $linkValue;
+
                     $value[$key]['linkSiteId'] = $linkSiteId ? Db::uidById(Table::SITES, $linkSiteId) : null;
                     $value[$key]['linkValue'] = $linkValue ? Db::uidById(Table::ELEMENTS, $linkValue) : null;
                 }
@@ -50,6 +53,9 @@ class Hyper extends ZenField
                     // Swap UIDs for IDs
                     $linkSiteId = $link['linkSiteId'] ?? null;
                     $linkValue = $link['linkValue'] ?? null;
+
+                    // Normalize the linkValue, just in case
+                    $linkValue = is_array($linkValue) ? reset($linkValue) : $linkValue;
 
                     $value[$key]['linkSiteId'] = $linkSiteId ? Db::idByUid(Table::SITES, $linkSiteId) : null;
                     $value[$key]['linkValue'] = $linkValue ? Db::idByUid(Table::ELEMENTS, $linkValue) : null;
