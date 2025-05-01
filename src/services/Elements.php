@@ -201,10 +201,11 @@ class Elements extends Component
 
             $record->save(false);
         } catch (Throwable $e) {
-            Zen::error('Unable to record element action: “{message}” {file}:{line}', [
+            Zen::error('Unable to record element action: “{message}” {file}:{line}. Trace: “{trace}”', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
             ]);
         }
     }
