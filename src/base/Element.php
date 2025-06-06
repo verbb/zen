@@ -195,7 +195,7 @@ abstract class Element implements ZenElementInterface
      * 
      * Element classes should use [[defineSerializedElement()]] to define their own data.
      */
-    public static function getSerializedElement(ElementInterface $element): array
+    public static function getSerializedElement(ElementInterface $element, bool $elementField = false): array
     {
         // Check if this element has already been serialized. Helpful for parent-resolution
         // which can happen multiple times for the same element.
@@ -218,7 +218,7 @@ abstract class Element implements ZenElementInterface
         if ($element->parentId) {
             if ($parent = $element->getParent()) {
                 $data['level'] = $element->level;
-                $data['parent'] = static::getSerializedElement($parent);
+                $data['parent'] = static::getSerializedElement($parent, $elementField);
             }
         }
 
@@ -235,7 +235,10 @@ abstract class Element implements ZenElementInterface
 
         // Swap some IDs to their UIDs
         $data['siteUid'] = $element->getSite()->uid;
-        $data['fields'] = static::getSerializedElementFields($element);
+
+        if (!$elementField) {
+            $data['fields'] = static::getSerializedElementFields($element, $elementField);
+        }
 
         // Allow element type classes to modify the data
         $data = static::defineSerializedElement($element, $data);

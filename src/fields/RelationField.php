@@ -28,7 +28,7 @@ class RelationField extends ZenField
 
         foreach ($value->all() as $el) {
             if ($registeredElement = Zen::$plugin->getElements()->getElementByType(get_class($el))) {
-                $elements[] = $registeredElement::getSerializedElement($el);
+                $elements[] = $registeredElement::getSerializedElement($el, true);
             }
         }
 
