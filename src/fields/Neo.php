@@ -60,6 +60,10 @@ class Neo extends BlockField
 
     public static function normalizeValue(FieldInterface $field, ElementInterface $element, mixed $value): mixed
     {
+        if (!is_array($value)) {
+            return $value;
+        }
+
         // Either find the existing block via UID, or set it as new
         $blocks = [];
         $new = 0;
