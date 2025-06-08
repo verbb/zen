@@ -8,6 +8,7 @@ use verbb\zen\models\ElementDiffer;
 
 use Craft;
 use craft\base\ElementInterface;
+use craft\base\ElementQueryInterface;
 use craft\base\FieldInterface;
 use craft\elements\Entry;
 use craft\fields\Matrix as MatrixField;
@@ -30,26 +31,18 @@ class Matrix extends BlockField
 
         $fieldsService = Zen::$plugin->getFields();
 
-        foreach ($value->all() as $block) {
-            $serializedFieldValues = [];
+        // Convert ElementCollection to ElementQuery
+        if (!($value instanceof ElementQueryInterface)) {
+            $value = Entry::find()
+                ->ownerId($element->id)
+                ->fieldId($field->id)
+                ->siteId($element->siteId);
+        }
 
-            // Serialize all nested fields properly through Zen
-            foreach ($fieldsService->getCustomFields($block->getType()) as $subField) {
-                // Use the field UID to maintain uniqueness, as handles can be the same in Matrix/etc fields. This helps with diffing resolution.
-                $fieldKey = $subField->handle . ':' . $subField->uid;
-
-                $subValue = $block->getFieldValue($subField->handle);
-
-                $serializedFieldValues[$fieldKey] = $fieldsService->serializeValue($subField, $block, $subValue);
+        foreach ($value->status(null)->all() as $block) {
+            if ($registeredElement = Zen::$plugin->getElements()->getElementByType(Entry::class)) {
+                $blocks[] = $registeredElement::getSerializedElement($block);
             }
-
-            $blocks[] = [
-                'type' => $block->getType()->uid,
-                'enabled' => $block->enabled,
-                'collapsed' => $block->collapsed,
-                'uid' => $block->uid,
-                'fields' => $serializedFieldValues,
-            ];
         }
 
         return $blocks;
@@ -85,7 +78,7 @@ class Matrix extends BlockField
 
             $normalizedFieldValues = [];
 
-            $entryTypeUid = $block['type'] ?? null;
+            $entryTypeUid = $block['typeUid'] ?? null;
             $entryType = $entryTypes[$entryTypeUid] ?? null;
 
             // Serialize all nested fields properly through Zen
@@ -100,6 +93,8 @@ class Matrix extends BlockField
                 }
             }
 
+            $block['title'] = $block['title'] ?? null;
+            $block['slug'] = $block['slug'] ?? null;
             $block['fields'] = $normalizedFieldValues;
 
             $blocks[$blockId] = $block;
