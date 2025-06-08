@@ -50,6 +50,12 @@ abstract class Element implements ZenElementInterface
     public const EVENT_AFTER_IMPORT = 'afterImport';
 
 
+    // Properties
+    // =========================================================================
+
+    private static array $processedElements = [];
+
+
     // Static Methods
     // =========================================================================
 
@@ -195,11 +201,23 @@ abstract class Element implements ZenElementInterface
      * 
      * Element classes should use [[defineSerializedElement()]] to define their own data.
      */
-    public static function getSerializedElement(ElementInterface $element, bool $elementField = false): array
+    public static function getSerializedElement(ElementInterface $element): array
     {
         // Check if this element has already been serialized. Helpful for parent-resolution
         // which can happen multiple times for the same element.
         $cacheKey = $element->uid . ':' . $element->getSite()->uid;
+        
+        // Check for in-memory cache to prevent recursion - even as cached
+        if (in_array($cacheKey, self::$processedElements)) {
+            // If there's a cache, we can return that, otherwise it'll be empty
+            if ($cachedSerializedElement = Zen::$plugin->getElements()->getCachedSerializedElement($cacheKey)) {
+                return $cachedSerializedElement;
+            }
+
+            return [];
+        }
+
+        self::$processedElements[] = $cacheKey;
 
         if ($cachedSerializedElement = Zen::$plugin->getElements()->getCachedSerializedElement($cacheKey)) {
             return $cachedSerializedElement;
@@ -218,7 +236,7 @@ abstract class Element implements ZenElementInterface
         if ($element->parentId) {
             if ($parent = $element->getParent()) {
                 $data['level'] = $element->level;
-                $data['parent'] = static::getSerializedElement($parent, $elementField);
+                $data['parent'] = static::getSerializedElement($parent);
             }
         }
 
@@ -236,9 +254,7 @@ abstract class Element implements ZenElementInterface
         // Swap some IDs to their UIDs
         $data['siteUid'] = $element->getSite()->uid;
 
-        if (!$elementField) {
-            $data['fields'] = static::getSerializedElementFields($element, $elementField);
-        }
+        $data['fields'] = static::getSerializedElementFields($element);
 
         // Allow element type classes to modify the data
         $data = static::defineSerializedElement($element, $data);
