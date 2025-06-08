@@ -645,6 +645,10 @@ abstract class Element implements ZenElementInterface
         // Fix dropdown fields (selectize) being hidden
         $crawler->filter('.selectize.select select')->removeAttribute('style');
 
+        // Fix Neo collapsed blocks
+        $crawler->filter('.ni_block_body')->setStyle('opacity', 1);
+        $crawler->filter('.ni_block_body')->setStyle('height', 'auto');
+
         return ['html' => $crawler->saveHTML(), 'js' => $js];
     }
 
