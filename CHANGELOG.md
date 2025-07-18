@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.6 - 2025-07-18
+
+### Fixed
+- Fix infinite nesting issues.
+- Fix Matrix field block handling.
+- Fix collapsed Neo block rendering.
+- Fix invalid data for Matrix/Neo/Super Table fields when normalizing.
+- Fix a recursion error when exporting elements with element select (relationship) fields.
+- Fix handling of Matrix fields and Entries.
+
 ## 2.0.5 - 2025-05-01
 
 ### Added
