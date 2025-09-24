@@ -2,7 +2,7 @@
     "name": "verbb/zen",
     "description": "Manage content across multiple environments with ease.",
     "type": "craft-plugin",
-    "version": "2.0.6",
+    "version": "3.0.0-alpha.1",
     "keywords": [
         "craft",
         "cms",
@@ -25,11 +25,11 @@
         }
     ],
     "require": {
-        "php": "^8.2",
-        "craftcms/cms": "^5.0.0",
+        "php": "^8.4",
+        "craftcms/cms": "6.x-dev",
         "mistralys/text-diff": "^2.0",
         "nystudio107/craft-plugin-vite": "^5.0.0",
-        "verbb/base": "^3.0.0",
+        "verbb/base": "dev-craft-6",
         "wa72/htmlpagedom": "^2.0 || ^3.0"
     },
     "require-dev": {
@@ -51,7 +51,9 @@
     "extra": {
         "name": "Zen",
         "handle": "zen",
-        "changelogUrl": "https://raw.githubusercontent.com/verbb/zen/craft-5/CHANGELOG.md",
+        "changelogUrl": "https://raw.githubusercontent.com/verbb/zen/craft-6/CHANGELOG.md",
         "class": "verbb\\zen\\Zen"
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
