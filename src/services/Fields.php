@@ -23,6 +23,8 @@ use craft\models\FieldLayout;
 use verbb\supertable\fields\SuperTableField;
 use benf\neo\Field as NeoField;
 
+use Throwable;
+
 class Fields extends Component
 {
     // Constants
@@ -138,12 +140,16 @@ class Fields extends Component
 
                 foreach ($fieldElements as $fieldElementKey => $fieldElement) {
                     if ($fieldElement instanceof CustomField) {
-                        $field = $fieldElement->getField();
+                        try {
+                            $field = $fieldElement->getField();
 
-                        $fieldType = $this->getFieldType($field);
+                            $fieldType = $this->getFieldType($field);
 
-                        if (!$fieldType::isSupported()) {
-                            unset($fieldElements[$fieldElementKey]);
+                            if (!$fieldType::isSupported()) {
+                                unset($fieldElements[$fieldElementKey]);
+                            }
+                        } catch (Throwable $e) {
+                            // Ignore for now
                         }
                     }
                 }
