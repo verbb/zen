@@ -103,12 +103,22 @@ class Matrix extends BlockField
         return $blocks;
     }
 
-
-
     public static function getFieldForPreview(FieldInterface $field, ElementInterface $element, string $type): void
     {
         // Force Matrix to show in Blocks Mode for preview, other modes don't work so well.
         $field->viewMode = 'blocks';
+    }
+
+    public static function handleValueForDiff(FieldInterface $field, mixed &$oldValue, mixed &$newValue): ?array
+    {
+        $diffs = parent::handleValueForDiff($field, $oldValue, $newValue);
+
+        // Remove some attributes that don't mean much to Matrix blocks, now they are Entries
+        foreach ($diffs as $key => $diff) {
+            unset($diffs[$key]['postDate'], $diffs[$key]['expiryDate'], $diffs[$key]['dateCreated'], $diffs[$key]['dateUpdated']);
+        }
+
+        return $diffs;
     }
 
 }
