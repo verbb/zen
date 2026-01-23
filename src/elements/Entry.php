@@ -11,6 +11,7 @@ use craft\db\Table;
 use craft\elements\Entry as EntryElement;
 use craft\elements\User;
 use craft\elements\db\ElementQueryInterface;
+use craft\fields\Matrix;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
 
@@ -79,6 +80,11 @@ class Entry extends ZenElement
             if (Craft::$app->getEdition() !== Craft::Solo) {
                 $data['authorEmail'] = Db::emailById($element->authorId);
             }
+        }
+
+        // With entries being Matrix Blocks, we want to exclude some information for them
+        if ($element->getField() instanceof Matrix) {
+            unset($data['postDate'], $data['expiryDate'], $data['dateUpdated'], $data['dateCreated'], $data['authorEmail']);
         }
 
         return $data;
