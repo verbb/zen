@@ -665,6 +665,9 @@ abstract class Element implements ZenElementInterface
         $crawler->filter('.ni_block_body')->setStyle('opacity', 1);
         $crawler->filter('.ni_block_body')->setStyle('height', 'auto');
 
+        // Fix Matrix fields and their field editing
+        $crawler->filter('.action-btn')->remove();
+
         return ['html' => $crawler->saveHTML(), 'js' => $js];
     }
 
