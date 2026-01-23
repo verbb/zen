@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.7 - 2026-01-23
+
+### Fixed
+- Fix an error when exporting and field layout fields cannot be found.
+- Fix Matrix field exports containing unnecessary data.
+- Fix diffs for Matrix blocks including unused attributes (Post Date, etc).
+- Fix Matrix fields showing field edit controls when using the preview.
+- Fix Matrix fields in non-blocks view mode showing incorrectly in the change preview.
+
 ## 2.0.6 - 2025-07-18
 
 ### Fixed
