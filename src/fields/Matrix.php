@@ -103,4 +103,12 @@ class Matrix extends BlockField
         return $blocks;
     }
 
+
+
+    public static function getFieldForPreview(FieldInterface $field, ElementInterface $element, string $type): void
+    {
+        // Force Matrix to show in Blocks Mode for preview, other modes don't work so well.
+        $field->viewMode = 'blocks';
+    }
+
 }
