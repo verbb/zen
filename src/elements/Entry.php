@@ -7,6 +7,7 @@ use verbb\zen\models\ImportFieldTab;
 
 use Craft;
 use craft\base\ElementInterface;
+use craft\db\Query;
 use craft\db\Table;
 use craft\elements\Entry as EntryElement;
 use craft\elements\User;
@@ -29,6 +30,40 @@ class Entry extends ZenElement
     {
         // Don't forget that Matrix = Entries, so a section isn't guaranteed
         return array_filter(['section' => $element->section->handle ?? null, 'type' => $element->type->handle]);
+    }
+
+    public static function preProcessImportItems(array $newItems): array
+    {
+        // Special-case for singles, they are auto-generated on environments, so their UIDs will never match
+        foreach ($newItems as $newItemKey => $newItem) {
+            $sectionUid = $newItem['sectionUid'] ?? null;
+
+            if ($sectionUid) {
+                $section = (new Query())
+                    ->select(['*'])
+                    ->from([Table::SECTIONS])
+                    ->where(['uid' => $sectionUid])
+                    ->one();
+
+                if ($section) {
+                    // Special-case for singles, they are auto-generated on environments, so their UIDs will never match
+                    if ($section['type'] === 'single') {
+                        $entry = (new Query())
+                            ->select(['*'])
+                            ->from(['en' => Table::ENTRIES])
+                            ->where(['sectionId' => $section['id'], 'canonicalId' => null, 'draftId' => null, 'revisionId' => null])
+                            ->innerJoin(['el' => Table::ELEMENTS], '[[el.id]] = [[en.id]]')
+                            ->one();
+
+                        if ($entry) {
+                            $newItems[$newItemKey]['uid'] = $entry['uid'];
+                        }
+                    }
+                }
+            }
+        }
+
+        return $newItems;
     }
 
     public static function getExportOptions(ElementQueryInterface $query): array|bool
@@ -164,7 +199,7 @@ class Entry extends ZenElement
                         'on' => $element->enabled,
                         'disabled' => true,
                     ]),
-                    'authorEmail' => (Craft::$app->getEdition() !== Craft::Solo) ? Cp::elementSelectFieldHtml([
+                    'authorEmail' => (Craft::$app->getEdition() !== Craft::Solo && $element->author) ? Cp::elementSelectFieldHtml([
                         'label' => Craft::t('app', 'Author'),
                         'id' => 'authorEmail',
                         'elementType' => User::class,

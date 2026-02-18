@@ -111,6 +111,11 @@ abstract class Element implements ZenElementInterface
         return $query->all();
     }
 
+    public static function preProcessImportItems(array $newItems): array
+    {
+        return $newItems;
+    }
+
     public static function getImportTableAttributes(): array
     {
         $prefixColumns = [

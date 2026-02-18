@@ -99,6 +99,9 @@ class Import extends Component
                 continue;
             }
 
+            // Give elements a chance to pre-process incoming data
+            $newItems = $elementType::preProcessImportItems($newItems);
+
             // Get all the UIDs in the provided import to query in one go for performance
             // But, not all elements use UID for their unique identifier (Users use email)
             $elementIdentifier = $elementType::elementUniqueIdentifier();
@@ -272,6 +275,8 @@ class Import extends Component
             $elementIdentifier = $type::elementUniqueIdentifier();
 
             foreach ($dataItems as $stateKey => $dataElements) {
+                $dataElements = $type::preProcessImportItems($dataElements);
+
                 foreach ($dataElements as $dataItem) {
                     $elementId = $dataItem[$elementIdentifier] . ':' . $dataItem['siteUid'];
 
