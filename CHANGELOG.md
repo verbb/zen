@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.8 - 2026-03-03
+
+### Added
+- Add support for Entry Singles.
+
 ## 2.0.7 - 2026-01-23
 
 ### Fixed
