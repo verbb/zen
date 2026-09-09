@@ -1,3 +1,10 @@
+> [!NOTE]
+> **Exciting things are coming to Zen.**
+>
+> We’re actively working on Zen 3 for Craft 5, a substantial new generation of the plugin focused on importing, exporting, and synchronising content between Craft and external systems.
+>
+> We’re targeting a **Q1 2027 release**. Read more about what’s coming in [our Zen 3 announcement⁠](https://github.com/verbb/zen/issues/27).
+
 <p align="center"><img src="https://assets.verbb.io/plugins/zen/zen-icon.svg" width="100" height="100" alt="Zen icon"></p>
 <h1 align="center">Zen for Craft CMS</h1>
 
