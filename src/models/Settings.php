@@ -11,4 +11,17 @@ class Settings extends Model
     public string $pluginName = 'Zen';
     public bool $stopOnError = true;
 
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+
+        $rules[] = [['pluginName'], 'trim'];
+        $rules[] = [['pluginName'], 'required'];
+
+        return $rules;
+    }
 }

@@ -4,35 +4,30 @@
 {% import 'verbb-base/_macros' as macros %}
 
 {% set fullPageForm = true %}
-{% set selectedNavItem = 'general' %}
+{% set selectedTab = 'general' %}
+{% set pageTitle = 'General Settings' | t('zen') %}
+{% set pageAction = 'plugins/save-plugin-settings' %}
+{% set pageUrl = 'zen/settings' %}
 
-{% block blockContent %}
+{% block settingsContent %}
+    {{ forms.textField({
+        label: 'Plugin Name' | t('app'),
+        instructions: 'Plugin name for the end user.' | t('zen'),
+        id: 'pluginName',
+        name: 'pluginName',
+        value: settings.pluginName,
+        autofocus: true,
+        required: true,
+        errors: settings.getErrors('pluginName'),
+        warning: macros.configWarning('pluginName', 'zen'),
+    }) }}
 
-<input type="hidden" name="action" value="plugins/save-plugin-settings">
-<input type="hidden" name="pluginHandle" value="zen">
-
-{% namespace 'settings' %}
-
-{{ forms.textField({
-    label: 'Plugin Name' | t('app'),
-    instructions: 'Plugin name for the end user.' | t('zen'),
-    id: 'pluginName',
-    name: 'pluginName',
-    value: settings.pluginName,
-    first: true,
-    autofocus: true,
-    warning: macros.configWarning('pluginName', 'zen'),
-}) }}
-
-{{ forms.lightswitchField({
-    label: 'Stop on Error' | t('zen'),
-    instructions: 'Whether an import should stop when an error is encountered, or continue with the rest of the import.' | t('zen'),
-    id: 'stopOnError',
-    name: 'stopOnError',
-    on: settings.stopOnError,
-    warning: macros.configWarning('stopOnError', 'zen'),
-}) }}
-
-{% endnamespace %}
-
+    {{ forms.lightswitchField({
+        label: 'Stop on Error' | t('zen'),
+        instructions: 'Whether an import should stop when an error is encountered, or continue with the rest of the import.' | t('zen'),
+        id: 'stopOnError',
+        name: 'stopOnError',
+        on: settings.stopOnError,
+        warning: macros.configWarning('stopOnError', 'zen'),
+    }) }}
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'zen/_layouts' %}
+{% extends 'verbb-base/_layouts/settings' %}
 
 {% import '_includes/forms' as forms %}
 {% import 'verbb-base/_macros' as macros %}
@@ -6,21 +6,20 @@
 {% requireAdmin %}
 
 {% set crumbs = [
-    { label: craft.zen.getPluginName() | t('zen'), url: url('zen') },
-    { label: 'Settings' | t('app'), url: url('zen/settings') },
-] %}
+    { label: 'Settings' | t('app'), url: url('settings') },
+    { label: 'Plugins' | t('app'), url: url('settings/plugins') },
+    { label: craft.zen.getPluginName() | t('zen'), url: url('zen/settings') },
+] | merge(crumbs ?? []) %}
 
-{% set navItems = {
-    general: { label: 'General Settings' | t('zen'), url: url('zen/settings') },
+{% set pageTabs = {
+    general: { title: 'General Settings' | t('zen'), url: url('zen/settings') },
 } %}
 
-{% set title = 'Settings' | t('zen') %}
-{% set docTitle = navItems[selectedNavItem].label ~ ' - ' ~ title %}
+{% set pageTitle = pageTitle ?? false %}
+{% if title is not defined and pageTitle %}
+    {% set title = pageTitle %}
+{% endif %}
 
-{% block sidebar %}
-    {% include '_includes/nav' with {
-        label: title,
-        items: navItems,
-        selectedItem: selectedNavItem,
-    } only %}
+{% block settingsMeta %}
+    {{ hiddenInput('pluginHandle', 'zen') }}
 {% endblock %}
