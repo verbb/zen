@@ -8,3 +8,9 @@ Most elements are grouped in some form. Entries have sections, Categories have g
 
 ## Date Range
 For particularly large installs, it might be helpful to select a date range of content to export, rather than export _everything_. Using the date range controls, this will select only elements whose `dateUpdated` value falls between the two dates.
+
+## Start with a Small Round Trip
+
+Use related installations of the same Craft project with matching project configuration. Zen identifies content and its related configuration using identifiers such as UIDs; it is not a field-layout migration tool for unrelated sites. Ensure the destination has the required sections, fields, sites and plugins before exporting content.
+
+For a first test, choose one recognisable entry and its related asset content. Export the ZIP, then [review the import](docs:feature-tour/import) on the destination. This makes it easier to check field values, relations and files before transferring a larger selection.

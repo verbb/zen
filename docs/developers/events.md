@@ -4,7 +4,7 @@ Zen provides a collection of events for extending its functionality. Modules and
 ## Element Events
 The below events are examples using the `Entry` class, but any class that inherits from the `verbb\zen\base\Element` class can use these events.
 
-### The `modifyImportFieldTabs` event
+### The `modifyImportFieldTabs` Event
 The event that is triggered to modify the tabs and fields shown as the preview for the import configure table.
 
 ```php
@@ -19,7 +19,7 @@ Event::on(Entry::class, Entry::EVENT_MODIFY_IMPORT_FIELD_TABS, function(ModifyEl
 });
 ```
 
-### The `modifyImportTableAttributes` event
+### The `modifyImportTableAttributes` Event
 The event that is triggered to modify the table attributes (the header columns) for the import configure table.
 
 ```php
@@ -34,7 +34,7 @@ Event::on(Entry::class, Entry::EVENT_MODIFY_IMPORT_TABLE_ATTRIBUTES, function(Mo
 });
 ```
 
-### The `modifyImportTableValues` event
+### The `modifyImportTableValues` Event
 The event that is triggered to modify the table values (the row columns) for the import configure table.
 
 ```php
@@ -49,7 +49,7 @@ Event::on(Entry::class, Entry::EVENT_MODIFY_IMPORT_TABLE_VALUES, function(Modify
 });
 ```
 
-### The `modifyNormalizedData` event
+### The `modifyNormalizedData` Event
 The event that is triggered when a serialized element is normalized for import.
 
 ```php
@@ -65,7 +65,7 @@ Event::on(Entry::class, Entry::EVENT_MODIFY_NORMALIZED_DATA, function(ModifyElem
 });
 ```
 
-### The `modifySerializedData` event
+### The `modifySerializedData` Event
 The event that is triggered when an element is serialized for export.
 
 ```php
@@ -81,7 +81,7 @@ Event::on(Entry::class, Entry::EVENT_MODIFY_SERIALIZED_DATA, function(ModifyElem
 });
 ```
 
-### The `beforeImport` event
+### The `beforeImport` Event
 The event that is triggered before an element is imported.
 
 ```php
@@ -95,7 +95,7 @@ Event::on(Entry::class, Entry::EVENT_BEFORE_IMPORT, function(ElementImportEvent 
 });
 ```
 
-### The `afterImport` event
+### The `afterImport` Event
 The event that is triggered after an element is imported.
 
 ```php
@@ -113,7 +113,7 @@ Event::on(Entry::class, Entry::EVENT_AFTER_IMPORT, function(ElementImportEvent $
 ## Field Events
 The below events are examples using the `Matrix` class, but any class that inherits from the `verbb\zen\base\Field` class can use these events.
 
-### The `beforeElementImport` event
+### The `beforeElementImport` Event
 The event that is triggered before an element is imported.
 
 ```php
@@ -128,7 +128,7 @@ Event::on(Matrix::class, Matrix::EVENT_BEFORE_ELEMENT_IMPORT, function(ElementFi
 });
 ```
 
-### The `afterElementImport` event
+### The `afterElementImport` Event
 The event that is triggered after an element is imported.
 
 ```php
