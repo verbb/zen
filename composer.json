@@ -1,6 +1,6 @@
 {
     "name": "verbb/zen",
-    "description": "Manage content across multiple environments with ease.",
+    "description": "A Craft CMS plugin for moving content between environments with mapping and review.",
     "type": "craft-plugin",
     "version": "2.0.10",
     "keywords": [
