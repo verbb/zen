@@ -2,7 +2,7 @@
     "name": "verbb/zen",
     "description": "A Craft CMS plugin for moving content between environments with mapping and review.",
     "type": "craft-plugin",
-    "version": "2.0.10",
+    "version": "2.0.11",
     "keywords": [
         "craft",
         "cms",
