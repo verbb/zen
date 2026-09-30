@@ -6,6 +6,8 @@ Once uploaded, you'll see a configuration screen where you can configure more ab
 
 Each element in the table will show what sort of state this element is, and a summary of the changeset. The state will be either an "Add", "Change", "Delete" or "Restore", depending on whether there is an existing element on the install.
 
+![Configuring a Zen import](../../screenshots/zen-configure.png)
+
 You can also see a preview of the changes for the element. Expand the "Preview" pane, and you'll see a side-by-side view of the existing element, and the soon-to-be imported element.
 
 ### Review Your Import

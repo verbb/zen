@@ -1,6 +1,8 @@
 # Export
 The first step with Zen is to visit the install where you want to export your content _from_. Here, you'll be able to pick the elements you want to export, and the date range to include modified elements from. Once selected, this data will be downloaded as a `.zip` for you to upload when importing on your destination install.
 
+![Selecting content to export with Zen](../../screenshots/zen-import-export.png)
+
 Exports will contain a `.json` file which is a serialized collection of your content for all elements. It'll also contain any local assets for any asset fields or asset elements. These are so that they can be uploaded along with the asset element itself.
 
 ## Elements

@@ -7,7 +7,7 @@ Manage content across Craft environments without the headache of copying and pas
 
 Generate an export on one environment and bring it into another through a guided configuration and review process. Choose the entries, categories and other supported elements that need to move instead of copying an entire database.
 
-![Zen’s import and export choices in Craft 5.](../screenshots/output/feature-tour/zen-import-export.png)
+![Zen’s import and export choices in Craft 5.](../screenshots/zen-import-export.png)
 
 <!-- feature-section-end -->
 
@@ -16,7 +16,7 @@ Generate an export on one environment and bring it into another through a guided
 
 Configure and review the content before starting the import. Map its destination and compare the existing and incoming element data, so there is a clear chance to resolve differences before anything is queued.
 
-![Zen reviewing incoming Craft content before import.](../screenshots/output/feature-tour/zen-configure.png)
+![Zen reviewing incoming Craft content before import.](../screenshots/zen-configure.png)
 
 <!-- feature-section-end -->
 
