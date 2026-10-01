@@ -17,5 +17,5 @@ class ZenVariable
     {
         return Zen::$plugin->getPluginName();
     }
-    
+
 }

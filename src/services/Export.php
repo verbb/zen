@@ -15,13 +15,13 @@ class Export extends Component
 {
     // Properties
     // =========================================================================
-    
+
     private array $_storedFiles = [];
 
 
     // Public Methods
     // =========================================================================
-    
+
     public function getExportOptions(DateTime $fromDate, DateTime $toDate): array
     {
         $options = [];
@@ -114,14 +114,14 @@ class Export extends Component
                 // Also need to do a separate call for deleted/restored elements and store separately
                 $currentDeletedElements = $json[$elementType]['deleted'] ?? [];
                 $newDeletedElements = $elementsService->getDeletedElementsForExport($elementType::elementType(), $dateRange, $elementCriteria);
-                    
+
                 if ($newDeletedElements) {
                     $json[$elementType]['deleted'] = array_merge($currentDeletedElements, $newDeletedElements);
                 }
-                
+
                 $currentRestoredElements = $json[$elementType]['restored'] ?? [];
                 $newRestoredElements = $elementsService->getRestoredElementsForExport($elementType::elementType(), $dateRange, $elementCriteria);
-                
+
                 if ($newRestoredElements) {
                     $json[$elementType]['restored'] = array_merge($currentRestoredElements, $newRestoredElements);
                 }

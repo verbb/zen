@@ -73,7 +73,7 @@ class Product extends ZenElement
     public static function defineNormalizedElement(array $data): array
     {
         $data['typeId'] = Db::idByUid('{{%commerce_producttypes}}', ArrayHelper::remove($data, 'typeUid'));
-        $data['defaultVariantId'] = Db::idByUid('{{%commerce_variants}}',  ArrayHelper::remove($data, 'defaultVariantUid'));
+        $data['defaultVariantId'] = Db::idByUid('{{%commerce_variants}}', ArrayHelper::remove($data, 'defaultVariantUid'));
 
         // Swap the handles of tax/shipping categories to IDs
         if ($taxCategoryHandle = ArrayHelper::remove($data, 'taxCategory')) {
@@ -124,7 +124,8 @@ class Product extends ZenElement
         return [
             new ImportFieldTab([
                 'name' => Craft::t('zen', 'Meta'),
-                'fields' => array_merge([
+                'fields' => array_merge(
+                    [
                     'uid' => Cp::textFieldHtml([
                         'label' => Craft::t('app', 'UID'),
                         'id' => 'uid',
@@ -162,7 +163,7 @@ class Product extends ZenElement
                         'disabled' => true,
                     ]),
                 ],
-                static::getRawDataHtml($element),
+                    static::getRawDataHtml($element),
                 ),
             ]),
         ];

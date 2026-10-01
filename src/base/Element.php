@@ -173,7 +173,7 @@ abstract class Element implements ZenElementInterface
                 'errorDetail' => nl2br($e->getTraceAsString()),
             ];
         }
-        
+
         $suffixColumns = array_filter([
             'state' => $state,
             'summary' => $diffCounts,
@@ -201,9 +201,9 @@ abstract class Element implements ZenElementInterface
      * so we can import it on another install. We're pretty restrictive about what content we do save, as we don't need
      * everything for an element. Importantly, any references to IDs should be swapped to UIDs or handles. This is because
      * on the destination install, the ID likely won't be the same (think `authorId`).
-     * 
+     *
      * This is also called when comparing on the destination install, to ensure there's consistency.
-     * 
+     *
      * Element classes should use [[defineSerializedElement()]] to define their own data.
      */
     public static function getSerializedElement(ElementInterface $element): array
@@ -211,7 +211,7 @@ abstract class Element implements ZenElementInterface
         // Check if this element has already been serialized. Helpful for parent-resolution
         // which can happen multiple times for the same element.
         $cacheKey = $element->uid . ':' . $element->getSite()->uid;
-        
+
         // Check for in-memory cache to prevent recursion - even as cached
         if (in_array($cacheKey, self::$processedElements)) {
             // If there's a cache, we can return that, otherwise it'll be empty
@@ -611,9 +611,9 @@ abstract class Element implements ZenElementInterface
 
             if ($diffType === 'add') {
                 $text = Craft::t('zen', 'This content has been added.');
-            } else if ($diffType === 'change') {
+            } elseif ($diffType === 'change') {
                 $text = Craft::t('zen', 'This content has been changed.');
-            } else if ($diffType === 'remove') {
+            } elseif ($diffType === 'remove') {
                 $text = Craft::t('zen', 'This content has been removed.');
             }
 
@@ -682,7 +682,7 @@ abstract class Element implements ZenElementInterface
 
     /**
      * Return the actual Element Type class used by Craft.
-     * 
+     *
      * @return class-string<ElementInterface> The Element class name
      */
     abstract public static function elementType(): string;
@@ -692,7 +692,7 @@ abstract class Element implements ZenElementInterface
      * The `value` of each item should reflect the corresponding ElementQueryInterface param for that element.
      * For example, providing `section:mySectionHandle` will be transformed into `['section': ['mySectionHandle']]`
      * which can then be used later in [[getExportData()]] to apply the query param.
-     * 
+     *
      * This should follow the format:
      * [
      *     'label' => 'My Section',

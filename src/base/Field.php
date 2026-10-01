@@ -39,7 +39,7 @@ abstract class Field implements ZenFieldInterface
 
     public static function getFieldForPreview(FieldInterface $field, ElementInterface $element, string $type): void
     {
-        
+
     }
 
     public static function handleValueForDiff(FieldInterface $field, mixed &$oldValue, mixed &$newValue): ?array

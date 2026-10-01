@@ -202,14 +202,14 @@ class Fields extends Component
     public function normalizeValue(FieldInterface $field, ElementInterface $element, mixed $value): mixed
     {
         $fieldType = $this->getFieldType($field);
-        
+
         return $fieldType::normalizeValue($field, $element, $value);
     }
 
     public function getFieldForPreview(FieldInterface $field, ElementInterface $element, string $type): void
     {
         $fieldType = $this->getFieldType($field);
-        
+
         $fieldType::getFieldForPreview($field, $element, $type);
     }
 
@@ -274,7 +274,7 @@ class Fields extends Component
             if ($iteration > 5) {
                 return [];
             }
-            
+
             $iteration++;
 
             // Because Matrix fiels can be infinitely nested, we need to short-circuit things to prevent infinite looping.
@@ -294,7 +294,7 @@ class Fields extends Component
         if (Plugin::isPluginInstalledAndEnabled('super-table')) {
             if ($field instanceof SuperTableField) {
                 $keys[] = $prefix . $field->handle;
-                
+
                 foreach ($field->getEntryTypes() as $entryType) {
                     foreach ($entryType->getCustomFields() as $subField) {
                         $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.' . $entryType->handle . ':', $iteration);
@@ -310,7 +310,7 @@ class Fields extends Component
         if (Plugin::isPluginInstalledAndEnabled('neo')) {
             if ($field instanceof NeoField) {
                 $keys[] = $prefix . $field->handle;
-                
+
                 foreach ($field->getBlockTypes() as $blocktype) {
                     foreach ($blocktype->getCustomFields() as $subField) {
                         $nestedKeys = $this->_getEagerLoadingMapForField($subField, $prefix . $field->handle . '.' . $blocktype->handle . ':', $iteration);

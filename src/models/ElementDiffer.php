@@ -66,9 +66,9 @@ class ElementDiffer extends Model
 
             if ($diff instanceof DiffAdd) {
                 $summary['add'] += 1;
-            } else if ($diff instanceof DiffChange) {
+            } elseif ($diff instanceof DiffChange) {
                 $summary['change'] += 1;
-            } else if ($diff instanceof DiffRemove) {
+            } elseif ($diff instanceof DiffRemove) {
                 $summary['remove'] += 1;
             }
         }
@@ -92,9 +92,9 @@ class ElementDiffer extends Model
 
             if ($diff instanceof DiffAdd) {
                 $summary[$index] = ['type' => 'add'];
-            } else if ($diff instanceof DiffChange) {
+            } elseif ($diff instanceof DiffChange) {
                 $summary[$index] = ['type' => 'change', 'diffHtml' => $diff->getDiffHtml()];
-            } else if ($diff instanceof DiffRemove) {
+            } elseif ($diff instanceof DiffRemove) {
                 $summary[$index] = ['type' => 'remove'];
             }
         }

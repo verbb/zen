@@ -57,7 +57,7 @@ class Import extends Component
 
     // Properties
     // =========================================================================
-    
+
     private array $_dependencies = [];
     private array $_storedFiles = [];
 
@@ -187,7 +187,7 @@ class Import extends Component
                 if ($itemState === 'modified') {
                     $elementToAction = $elementType::getNormalizedElement($newItem, $returnElementData);
                     $newElement = $elementToAction;
-                } else if ($itemState === 'deleted') {
+                } elseif ($itemState === 'deleted') {
                     $elementState = 'delete';
                     $elementActionState = 'delete';
 
@@ -199,7 +199,7 @@ class Import extends Component
 
                     $elementToAction = $currentElement;
                     $newElement = null;
-                } else if ($itemState === 'restored') {
+                } elseif ($itemState === 'restored') {
                     $elementState = 'restore';
                     $elementActionState = 'restore';
 
@@ -226,7 +226,7 @@ class Import extends Component
 
                     if ($tableData) {
                         $elementData[] = $tableData;
-                
+
                         // Increment our summary for a nice look. Added here to ensure there are no errors for the row
                         $summary[$elementState] += 1;
                     }
@@ -319,8 +319,8 @@ class Import extends Component
                     }
                 } else {
                     // This is just for show more than anything. Because this is all new info, there will be a bunch
-                    // of attributes to add, but not all are shown visually to the user. If we used the diff data, 
-                    // this would show more new items to apply that you can see, which is confusing. Instead, 
+                    // of attributes to add, but not all are shown visually to the user. If we used the diff data,
+                    // this would show more new items to apply that you can see, which is confusing. Instead,
                     // construct "fake" diffs (all add) just for the fields and meta fields for the element.
                     $elementToAction = $elementType::getNormalizedElement($newItem, true);
 
@@ -345,9 +345,9 @@ class Import extends Component
 
             if ($itemState === 'modified') {
                 $newElement = $elementType::getNormalizedElement($newItem, true);
-            } else if ($itemState === 'deleted') {
+            } elseif ($itemState === 'deleted') {
                 $newElement = null;
-            } else if ($itemState === 'restored') {
+            } elseif ($itemState === 'restored') {
                 $newElement = $elementType::getNormalizedElement($newItem, true);
             } else {
                 $newElement = null;
@@ -525,7 +525,7 @@ class Import extends Component
 
         return $elementImportActions;
     }
-    
+
     public function moveItemsInStructure(): void
     {
         $structuresService = Craft::$app->getStructures();
@@ -551,7 +551,7 @@ class Import extends Component
                     if ($prevSibling) {
                         $structuresService->moveAfter($element->structureId, $element, $prevSibling);
                     }
-                } else if ($nextSiblingUid) {
+                } elseif ($nextSiblingUid) {
                     $nextSibling = $elementsService->getElementByUid($nextSiblingUid, $elementType, $siteId);
 
                     if ($nextSibling) {

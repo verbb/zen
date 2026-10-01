@@ -12,7 +12,7 @@ class ArrayHelper extends BaseArrayHelper
     {
         // We only want to filter true empty values
         self::remove($array, $value);
-        
+
         foreach ($array as &$item) {
             if (is_array($item)) {
                 self::recursiveRemove($item, $value);

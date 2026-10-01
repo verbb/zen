@@ -44,7 +44,7 @@ class QueueController extends Controller
 
         if ($jobInfo = Zen::getQueueJobByTaskId($taskId)) {
             $jobInfo = $queue->getJobDetails($jobInfo['id']);
-                    
+
             // Using `toArray()` isn't good enough here, but we want to add our own attributes
             $zenJob = Json::decode(Json::encode($jobInfo));
 

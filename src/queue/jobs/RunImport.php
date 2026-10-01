@@ -22,7 +22,7 @@ class RunImport extends BaseJob
     public string $taskId = '';
     public string $filename = '';
     public array $elementsToExclude = [];
-   
+
 
     // Public Methods
     // =========================================================================

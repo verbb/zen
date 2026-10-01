@@ -60,7 +60,7 @@ class SuperTable extends BlockField
         if (!is_array($value)) {
             return $value;
         }
-        
+
         // Either find the existing block via UID, or set it as new
         $blocks = [];
         $new = 0;
