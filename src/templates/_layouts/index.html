@@ -1,6 +1,6 @@
 {% extends parentLayout ?? '_layouts/cp' %}
 
-{% do view.registerAssetBundle('verbb\\zen\\assetbundles\\ZenAsset') %}
+{% do view.registerAssetBundle('verbb\\zen\\web\\assets\\cp\\ZenAsset') %}
 
 {% if title is not defined %}
     {% set title = craft.zen.getPluginName() | t('zen') %}
