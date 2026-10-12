@@ -12,6 +12,7 @@ use craft\base\ElementInterface;
 use craft\db\Table;
 use craft\elements\Asset as AssetElement;
 use craft\elements\db\ElementQueryInterface;
+use craft\enums\CmsEdition;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
 use craft\helpers\DateTimeHelper;
@@ -75,7 +76,7 @@ class Asset extends ZenElement
         $data['volumeUid'] = Db::uidById(Table::VOLUMES, $element->volumeId);
 
         if ($element->uploaderId) {
-            if (Craft::$app->getEdition() === Craft::Pro) {
+            if (Craft::$app->edition === CmsEdition::Pro) {
                 $data['uploader'] = Db::emailById($element->uploaderId);
             }
         }

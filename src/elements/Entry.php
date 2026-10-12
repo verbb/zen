@@ -12,6 +12,7 @@ use craft\db\Table;
 use craft\elements\Entry as EntryElement;
 use craft\elements\User;
 use craft\elements\db\ElementQueryInterface;
+use craft\enums\CmsEdition;
 use craft\fields\Matrix;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
@@ -112,7 +113,7 @@ class Entry extends ZenElement
 
         if ($element->authorId) {
             // Don't include author for Craft Solo
-            if (Craft::$app->getEdition() !== Craft::Solo) {
+            if (Craft::$app->edition !== CmsEdition::Solo) {
                 $data['authorEmail'] = Db::emailById($element->authorId);
             }
         }
@@ -200,7 +201,7 @@ class Entry extends ZenElement
                         'on' => $element->enabled,
                         'disabled' => true,
                     ]),
-                    'authorEmail' => (Craft::$app->getEdition() !== Craft::Solo && $element->author) ? Cp::elementSelectFieldHtml([
+                    'authorEmail' => (Craft::$app->edition !== CmsEdition::Solo && $element->author) ? Cp::elementSelectFieldHtml([
                         'label' => Craft::t('app', 'Author'),
                         'id' => 'authorEmail',
                         'elementType' => User::class,
