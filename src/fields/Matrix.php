@@ -8,7 +8,7 @@ use verbb\zen\models\ElementDiffer;
 
 use Craft;
 use craft\base\ElementInterface;
-use craft\base\ElementQueryInterface;
+use craft\elements\db\ElementQueryInterface;
 use craft\base\FieldInterface;
 use craft\elements\Entry;
 use craft\fields\Matrix as MatrixField;

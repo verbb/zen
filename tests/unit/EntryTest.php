@@ -77,7 +77,7 @@ class EntryTest extends Unit
 
     public function testImportWithFields()
     {
-        Craft::$app->setEdition(Craft::Pro);
+        Craft::$app->setEdition(\craft\enums\CmsEdition::Pro);
 
         // Fields need to be indexed with their handle+uid.
         $fields = [];
@@ -91,7 +91,7 @@ class EntryTest extends Unit
         $matrixField = Craft::$app->getFields()->getFieldByHandle('testMatrixField1');
         $blockTypeUid = null;
 
-        foreach ($matrixField->getBlockTypes() as $blockType) {
+        foreach ($matrixField->getEntryTypes() as $blockType) {
             $blockTypeUid = $blockType->uid;
 
             foreach ($blockType->getCustomFields() as $field) {
@@ -153,12 +153,13 @@ class EntryTest extends Unit
                 ($uidMap['testLightswitchField1'] ?? null) => true,
                 ($uidMap['testMatrixField1'] ?? null) => [
                     [
-                        'type' => $blockTypeUid,
+                        'type' => Entry::class,
+                        'typeUid' => $blockTypeUid,
                         'enabled' => true,
                         'collapsed' => false,
                         'uid' => 'matrix-block-1001----------------uid',
                         'fields' => [
-                            ($uidMap['testMatrixField1:testCategoriesField1'] ?? null) => [
+                            'testCategoriesField1' => [
                                 [
                                     'type' => 'craft\\elements\\Category',
                                     'title' => 'New Category',
@@ -173,23 +174,24 @@ class EntryTest extends Unit
                                     'groupUid' => 'category-group-1001--------------uid',
                                 ],
                             ],
-                            ($uidMap['testMatrixField1:testCheckboxesField1'] ?? null) => [
+                            'testCheckboxesField1' => [
                                 'option1',
                                 'option2',
                             ],
-                            ($uidMap['testMatrixField1:testColorField1'] ?? null) => '#530edd',
-                            ($uidMap['testMatrixField1:testDateField1'] ?? null) => '2023-04-04 07:00:00',
+                            'testColorField1' => '#530edd',
+                            'testDateField1' => '2023-04-04 07:00:00',
                         ],
                     ],
                     [
-                        'type' => $blockTypeUid,
+                        'type' => Entry::class,
+                        'typeUid' => $blockTypeUid,
                         'enabled' => true,
                         'collapsed' => false,
                         'uid' => 'matrix-block-1002----------------uid',
                         'fields' => [
-                            ($uidMap['testMatrixField1:testDropdownField1'] ?? null) => 'option2',
-                            ($uidMap['testMatrixField1:testEmailField1'] ?? null) => 'test@test.com',
-                            ($uidMap['testMatrixField1:testEntriesField1'] ?? null) => [
+                            'testDropdownField1' => 'option2',
+                            'testEmailField1' => 'test@test.com',
+                            'testEntriesField1' => [
                                 [
                                     'type' => 'craft\\elements\\Entry',
                                     'title' => 'New Entry',
@@ -207,7 +209,7 @@ class EntryTest extends Unit
                                     'typeUid' => 'entry-type-1001------------------uid',
                                 ],
                             ],
-                            ($uidMap['testMatrixField1:testLightswitchField1'] ?? null) => true,
+                            'testLightswitchField1' => true,
                         ],
                     ],
                 ],
@@ -301,7 +303,7 @@ class EntryTest extends Unit
             foreach ($data['rows'] as $elementIndex => $elementImportAction) {
                 $success = Zen::$plugin->getImport()->runElementAction($elementImportAction);
 
-                self::assertTrue($success, 'Entry element was imported successfully.');
+                self::assertTrue($success, 'Entry element was imported successfully: ' . json_encode($elementImportAction->element->getErrors()));
             }
         }
 
@@ -333,105 +335,56 @@ class EntryTest extends Unit
             if ($field) {
                 $fieldValue = $field->serializeValue($entry->getFieldValue($field->handle), $entry);
 
-                // Special handling for relation fields, which won't be the same as their serialized version
-                if ($field->handle === 'testCategoriesField1') {
-                    $value = ['2'];
-                } else if ($field->handle === 'testEntriesField1') {
-                    $value = ['3'];
-                } else if ($field->handle === 'testTagsField1') {
-                    $value = ['5'];
-                } else if ($field->handle === 'testUsersField1') {
-                    $value = ['6'];
+                if ($field instanceof \craft\fields\BaseRelationField) {
+                    self::assertSame(array_column($value, 'uid'), array_map(static fn($element) => $element->uid, $entry->getFieldValue($field->handle)->all()), $field->handle);
+                    continue;
+                }
+                if ($field instanceof \craft\fields\Time) {
+                    self::assertSame($value, $entry->getFieldValue($field->handle)->format('H:i:s'), $field->handle);
+                    continue;
+                }
+                if ($entry->getFieldValue($field->handle) instanceof \DateTimeInterface) {
+                    self::assertSame((new DateTime($value, new \DateTimeZone('UTC')))->getTimestamp(), $entry->getFieldValue($field->handle)->getTimestamp(), $field->handle);
+                    continue;
                 }
 
                 if ($field->handle === 'testMatrixField1') {
-                    $value = [
-                        8 => [
-                            'type' => 'testBlock',
-                            'enabled' => true,
-                            'collapsed' => false,
-                            'fields' => [
-                                'testAssetsField1' => [],
-                                'testCategoriesField1' => [],
-                                'testCheckboxesField1' => ['option1', 'option2'],
-                                'testColorField1' => '#530edd',
-                                'testDateField1' => '2023-04-04 07:00:00',
-                                'testDropdownField1' => null,
-                                'testEmailField1' => null,
-                                'testEntriesField1' => [],
-                                'testLightswitchField1' => false,
-                                'testMoneyField1' => null,
-                                'testMultiSelectField1' => [],
-                                'testNumberField1' => null,
-                                'testPlainTextField1' => null,
-                                'testRadioButtonsField1' => null,
-                                'testTableField1' => [
-                                    [
-                                        'col1' => null,
-                                        'col2' => null,
-                                        'col3' => null,
-                                        'col4' => null,
-                                        'col5' => null,
-                                        'col6' => null,
-                                        'col7' => null,
-                                        'col8' => null,
-                                        'col10' => null,
-                                        'col11' => null,
-                                        'col12' => null,
-                                    ],
-                                ],
-                                'testTagsField1' => [],
-                                'testTimeField1' => null,
-                                'testUrlField1' => null,
-                                'testUsersField1' => [],
-                            ],
-                        ],
-                        9 => [
-                            'type' => 'testBlock',
-                            'enabled' => true,
-                            'collapsed' => false,
-                            'fields' => [
-                                'testAssetsField1' => [],
-                                'testCategoriesField1' => [],
-                                'testCheckboxesField1' => [],
-                                'testColorField1' => null,
-                                'testDateField1' => null,
-                                'testDropdownField1' => 'option2',
-                                'testEmailField1' => 'test@test.com',
-                                'testEntriesField1' => [],
-                                'testLightswitchField1' => true,
-                                'testMoneyField1' => null,
-                                'testMultiSelectField1' => [],
-                                'testNumberField1' => null,
-                                'testPlainTextField1' => null,
-                                'testRadioButtonsField1' => null,
-                                'testTableField1' => [
-                                    [
-                                        'col1' => null,
-                                        'col2' => null,
-                                        'col3' => null,
-                                        'col4' => null,
-                                        'col5' => null,
-                                        'col6' => null,
-                                        'col7' => null,
-                                        'col8' => null,
-                                        'col10' => null,
-                                        'col11' => null,
-                                        'col12' => null,
-                                    ],
-                                ],
-                                'testTagsField1' => [],
-                                'testTimeField1' => null,
-                                'testUrlField1' => null,
-                                'testUsersField1' => [],
-                            ],
-                        ],
-                    ];
+                    $blocks = $entry->getFieldValue($field->handle)->all();
+                    self::assertCount(2, $blocks);
+                    foreach ($blocks as $index => $block) {
+                        self::assertSame($blockTypeUid, $block->getType()->uid);
+                        foreach ($entryData['fields'][$fieldHandleUid][$index]['fields'] as $handle => $expected) {
+                            $nestedField = $block->getFieldLayout()->getFieldByHandle($handle);
+                            $actual = $block->getFieldValue($handle);
+                            if ($nestedField instanceof \craft\fields\BaseRelationField) {
+                                self::assertSame(array_column($expected, 'uid'), array_map(static fn($element) => $element->uid, $actual->all()), $handle);
+                            } elseif ($actual instanceof \DateTimeInterface) {
+                                self::assertSame((new DateTime($expected, new \DateTimeZone('UTC')))->getTimestamp(), $actual->getTimestamp(), $handle);
+                            } else {
+                                self::assertSame($expected, $nestedField->serializeValue($actual, $block), $handle);
+                            }
+                        }
+                    }
+                    continue;
+                }
+
+                if ($field instanceof \craft\fields\Link) {
+                    self::assertSame(['value' => $value, 'type' => 'url'], $fieldValue, $field->handle);
+                    continue;
                 }
 
                 // codecept_debug([$field->handle, $fieldValue]);
 
-                self::assertSame($value, $fieldValue);
+                $normalizeDates = static function($value) use (&$normalizeDates) {
+                    if (is_array($value)) {
+                        return array_map($normalizeDates, $value);
+                    }
+                    if (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2}|Z)?$/D', $value)) {
+                        return (new \DateTimeImmutable($value, new \DateTimeZone('UTC')))->getTimestamp();
+                    }
+                    return $value;
+                };
+                self::assertSame($normalizeDates($value), $normalizeDates($fieldValue), $field->handle);
             }
         }
     }

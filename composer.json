@@ -33,10 +33,10 @@
         "wa72/htmlpagedom": "^2.0 || ^3.0"
     },
     "require-dev": {
-        "codeception/codeception": "^4.0.0",
-        "vlucas/phpdotenv": "^3.0",
-        "codeception/module-asserts": "^1.0.0",
-        "codeception/module-yii2": "^1.0.0"
+        "codeception/codeception": "^5.0.8",
+        "vlucas/phpdotenv": "^5.0",
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-yii2": "^1.1.8"
     },
     "autoload": {
         "psr-4": {

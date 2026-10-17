@@ -3,7 +3,7 @@ namespace verbb\zentests\fixtures;
 
 use Craft;
 use craft\records\Section;
-use craft\services\Sections;
+use craft\services\Entries;
 use craft\test\ActiveFixture;
 
 class SectionsFixture extends ActiveFixture
@@ -16,6 +16,6 @@ class SectionsFixture extends ActiveFixture
     {
         parent::load();
 
-        Craft::$app->set('sections', new Sections());
+        Craft::$app->set('entries', new Entries());
     }
 }

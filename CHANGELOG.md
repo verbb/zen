@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fixed element queries being incorrectly identified when serializing Matrix fields.
+
 ## 2.0.14 - 2026-10-15
 
 ### Changed

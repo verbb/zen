@@ -3,6 +3,7 @@ use craft\test\TestSetup;
 
 ini_set('date.timezone', 'UTC');
 
+define('CRAFT_ROOT_PATH', dirname(__DIR__));
 define('CRAFT_TESTS_PATH', __DIR__);
 define('CRAFT_STORAGE_PATH', __DIR__ . '/_craft/storage');
 define('CRAFT_TEMPLATES_PATH', __DIR__ . '/_craft/templates');
@@ -10,7 +11,6 @@ define('CRAFT_CONFIG_PATH', __DIR__ . '/_craft/config');
 define('CRAFT_MIGRATIONS_PATH', __DIR__ . '/_craft/migrations');
 define('CRAFT_TRANSLATIONS_PATH', __DIR__ . '/_craft/translations');
 
-// Plugin directory is a symlink, find the real path
-define('CRAFT_VENDOR_PATH', dirname(__DIR__).'/../../zen.test/vendor');
+define('CRAFT_VENDOR_PATH', getenv('VERBB_TEST_VENDOR') ?: dirname(__DIR__) . '/vendor');
 
 TestSetup::configureCraft();

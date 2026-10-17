@@ -296,8 +296,9 @@ class DiffTest extends Unit
 
         // We can't set the UID of inner Matrix fields in tests
         $matrixField = Craft::$app->getFields()->getFieldByHandle('matrixForDiff');
-        $subFields = $matrixField->getBlockTypeFields();
+        $subFields = array_values($matrixField->getEntryTypes())[0]->getCustomFields();
         $subField = ArrayHelper::firstWhere($subFields, 'handle', 'assetsSubfield');
+        $subField = Craft::$app->getFields()->getFieldByUid($subField->uid);
 
         $old = [
             'fields' => [
@@ -305,7 +306,7 @@ class DiffTest extends Unit
                     [
                         'type' => 'aBlock',
                         'fields' => [
-                            ('assetsSubfield:' . $subField->uid) => [
+                            ($subField->handle . ':' . $subField->uid) => [
                                 ['id' => 1234, 'fields' => ['plainText' => 'b']],
                             ],
                         ],
@@ -320,7 +321,7 @@ class DiffTest extends Unit
                     [
                         'type' => 'aBlock',
                         'fields' => [
-                            ('assetsSubfield:' . $subField->uid) => [
+                            ($subField->handle . ':' . $subField->uid) => [
                                 ['id' => 4321, 'fields' => ['plainText' => 'c']],
                             ],
                         ],
@@ -334,7 +335,7 @@ class DiffTest extends Unit
                 'matrixForDiff:matrix-field---------------------uid' => [
                     [
                         'fields' => [
-                            ('assetsSubfield:' . $subField->uid) => new DiffChange([
+                            ($subField->handle . ':' . $subField->uid) => new DiffChange([
                                 'oldValue' => [['id' => 1234]],
                                 'newValue' => [['id' => 4321]],
                             ]),
