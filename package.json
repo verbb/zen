@@ -20,7 +20,7 @@
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-vue": "^9.8.0",
         "lodash-es": "^4.17.21",
-        "markdown-it": "^13.0.1",
+        "markdown-it": "^14.3.3",
         "postcss": "^8.4.20",
         "postcss-color-function": "^4.1.0",
         "resolve-url-loader": "^5.0.0",
