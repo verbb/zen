@@ -296,11 +296,13 @@ class Import extends Component
             $elementIdentifiers = $newItem[$elementIdentifier] ?? null;
 
             // Fetch the element on this site
+            $site = Craft::$app->getSites()->getSiteByUid($newItem['siteUid'] ?? '', true);
+
             $currentElement = $elementType::find()
                 ->$elementIdentifier($elementIdentifiers)
                 ->status(null)
                 ->trashed(null)
-                ->siteId('*')
+                ->siteId($site->id ?? '*')
                 ->one();
 
             // Create a serialized version to compare with
