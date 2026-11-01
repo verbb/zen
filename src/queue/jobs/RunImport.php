@@ -22,7 +22,8 @@ class RunImport extends BaseJob
     public string $taskId = '';
     public string $filename = '';
     public array $elementsToExclude = [];
-   
+    public bool $allowUserPrivileges = false;
+
 
     // Public Methods
     // =========================================================================
@@ -36,6 +37,8 @@ class RunImport extends BaseJob
         $settings = Zen::$plugin->getSettings();
 
         $importService = Zen::$plugin->getImport();
+        $importService->setAllowUserPrivileges($this->allowUserPrivileges);
+
         $elementsToImport = $importService->getElementsToImport($filename, $elementsToExclude);
 
         $total = count($elementsToImport);

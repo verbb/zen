@@ -120,6 +120,9 @@ class Asset extends ZenElement
         // Not needed yet, but removed for validation as it won't populate the model
         ArrayHelper::remove($data, 'folder');
 
+        // Only ever use a file from our payload, never a path set in the import data
+        unset($data['tempFilePath']);
+
         // Assign any asset in our payload matching this filename
         foreach (Zen::$plugin->getImport()->getStoredImportFiles() as $tempAsset) {
             if ($tempAsset['filename'] === $data['filename']) {
@@ -190,7 +193,8 @@ class Asset extends ZenElement
             ]),
             new ImportFieldTab([
                 'name' => Craft::t('zen', 'Meta'),
-                'fields' => array_merge([
+                'fields' => array_merge(
+                    [
                     'uid' => Cp::textFieldHtml([
                         'label' => Craft::t('app', 'UID'),
                         'id' => 'uid',
@@ -240,7 +244,7 @@ class Asset extends ZenElement
                         'disabled' => true,
                     ]),
                 ],
-                static::getRawDataHtml($element),
+                    static::getRawDataHtml($element),
                 ),
             ]),
         ];
@@ -269,7 +273,7 @@ class Asset extends ZenElement
     public static function afterImport(ElementImportAction $importAction): void
     {
         if (in_array($importAction->action, [ElementImportAction::ACTION_SAVE, ElementImportAction::ACTION_RESTORE])) {
-            // In `Asset::_relocateFile()`, the `dateModified` value will be altered when the temp file has been moved. 
+            // In `Asset::_relocateFile()`, the `dateModified` value will be altered when the temp file has been moved.
             // We don't want that, so reset it back.
             $currentDateModified = DateTimeHelper::toDateTime($importAction->element->dateModified);
             $originalDateModified = DateTimeHelper::toDateTime(($importAction->data['dateModified'] ?? null));

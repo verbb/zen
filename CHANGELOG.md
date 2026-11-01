@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- Importing and exporting now requires a control panel request and permission to access Zen.
+
+### Fixed
+- Fixed an access control vulnerability.
+
 ## 1.0.7 - 2025-05-01
 
 ### Fixed

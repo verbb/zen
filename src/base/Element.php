@@ -33,6 +33,7 @@ use craft\web\View;
 use Throwable;
 
 use yii\base\Event;
+use yii\db\Query;
 
 use Wa72\HtmlPageDom\HtmlPageCrawler;
 
@@ -100,6 +101,11 @@ abstract class Element implements ZenElementInterface
 
     public static function getExportData(ElementQueryInterface $query, array $params): array
     {
+        // Criteria only ever narrow down elements by their own params, never set behaviors, events or raw query parts
+        $params = array_filter($params, function($key) {
+            return !str_starts_with($key, 'on ') && !str_starts_with($key, 'as ') && !property_exists(Query::class, $key);
+        }, ARRAY_FILTER_USE_KEY);
+
         Craft::configure($query, $params);
 
         return $query->all();
@@ -162,7 +168,7 @@ abstract class Element implements ZenElementInterface
                 'errorDetail' => nl2br($e->getTraceAsString()),
             ];
         }
-        
+
         $suffixColumns = array_filter([
             'state' => $state,
             'summary' => $diffCounts,
@@ -190,9 +196,9 @@ abstract class Element implements ZenElementInterface
      * so we can import it on another install. We're pretty restrictive about what content we do save, as we don't need
      * everything for an element. Importantly, any references to IDs should be swapped to UIDs or handles. This is because
      * on the destination install, the ID likely won't be the same (think `authorId`).
-     * 
+     *
      * This is also called when comparing on the destination install, to ensure there's consistency.
-     * 
+     *
      * Element classes should use [[defineSerializedElement()]] to define their own data.
      */
     public static function getSerializedElement(ElementInterface $element): array
@@ -300,8 +306,27 @@ abstract class Element implements ZenElementInterface
             return $cachedNormalizedElement;
         }
 
-        ArrayHelper::rename($data, 'type', 'class');
+        // The element class is always ours to decide, and an import can't set up anything but element attributes
+        foreach (array_keys($data) as $key) {
+            if (in_array($key, ['type', '__class', '__construct()']) || str_starts_with($key, 'on ') || str_starts_with($key, 'as ')) {
+                unset($data[$key]);
+            }
+        }
+
+        $data['class'] = static::elementType();
         $fields = ArrayHelper::remove($data, 'fields', []);
+
+        // An ID must belong to the element this data identifies, so that an import can't overwrite a different element
+        if (isset($data['id'])) {
+            $elementIdentifier = static::elementUniqueIdentifier();
+            $existingElement = static::elementType()::find()->id($data['id'])->status(null)->trashed(null)->siteId('*')->one();
+
+            if ($existingElement && $existingElement->$elementIdentifier === ($data[$elementIdentifier] ?? null)) {
+                $data['id'] = $existingElement->id;
+            } else {
+                unset($data['id']);
+            }
+        }
 
         // Normalize UIDs back to IDs
         $data['siteId'] = Db::idByUid(Table::SITES, ArrayHelper::remove($data, 'siteUid'));
@@ -587,9 +612,9 @@ abstract class Element implements ZenElementInterface
 
             if ($diffType === 'add') {
                 $text = Craft::t('zen', 'This content has been added.');
-            } else if ($diffType === 'change') {
+            } elseif ($diffType === 'change') {
                 $text = Craft::t('zen', 'This content has been changed.');
-            } else if ($diffType === 'remove') {
+            } elseif ($diffType === 'remove') {
                 $text = Craft::t('zen', 'This content has been removed.');
             }
 
@@ -651,7 +676,7 @@ abstract class Element implements ZenElementInterface
 
     /**
      * Return the actual Element Type class used by Craft.
-     * 
+     *
      * @return class-string<ElementInterface> The Element class name
      */
     abstract public static function elementType(): string;
@@ -661,7 +686,7 @@ abstract class Element implements ZenElementInterface
      * The `value` of each item should reflect the corresponding ElementQueryInterface param for that element.
      * For example, providing `section:mySectionHandle` will be transformed into `['section': ['mySectionHandle']]`
      * which can then be used later in [[getExportData()]] to apply the query param.
-     * 
+     *
      * This should follow the format:
      * [
      *     'label' => 'My Section',
@@ -703,7 +728,7 @@ abstract class Element implements ZenElementInterface
         $elementIdentifier = static::elementUniqueIdentifier();
 
         return static::find()
-            ->$elementIdentifier($element->$elementIdentifier)
+            ->$elementIdentifier(Db::escapeParam((string)$element->$elementIdentifier))
             ->siteId($element->siteId)
             ->status(null)
             ->trashed(null)
@@ -776,6 +801,7 @@ abstract class Element implements ZenElementInterface
         foreach (explode('.', $selector) as $item) {
             if (is_numeric($item)) {
                 $equalCommand = 'eq:' . $item;
+
                 continue;
             }
 

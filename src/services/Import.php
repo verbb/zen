@@ -15,6 +15,8 @@ use craft\helpers\FileHelper;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
 
+use yii\web\BadRequestHttpException;
+
 use Closure;
 use Exception;
 
@@ -57,13 +59,31 @@ class Import extends Component
 
     // Properties
     // =========================================================================
-    
+
     private array $_dependencies = [];
     private array $_storedFiles = [];
+    private ?bool $_allowUserPrivileges = null;
 
 
     // Public Methods
     // =========================================================================
+
+    public function getAllowUserPrivileges(): bool
+    {
+        return $this->_allowUserPrivileges ?? (bool)Craft::$app->getUser()->getIdentity()?->admin;
+    }
+
+    public function setAllowUserPrivileges(bool $allowUserPrivileges): void
+    {
+        // Queue jobs can run in any user's request (or none), so they carry this over from whoever started the import
+        $this->_allowUserPrivileges = $allowUserPrivileges;
+    }
+
+    public function isValidImportFilename(string $filename): bool
+    {
+        // Must match the name given to uploads, so that a request can't point at any other file or directory
+        return (bool)preg_match('/^zen-import-\d{6}_\d{6}\.zip$/D', $filename);
+    }
 
     public function getImportConfiguration(array $data, bool $returnElementData = false): array
     {
@@ -184,7 +204,7 @@ class Import extends Component
                 if ($itemState === 'modified') {
                     $elementToAction = $elementType::getNormalizedElement($newItem, $returnElementData);
                     $newElement = $elementToAction;
-                } else if ($itemState === 'deleted') {
+                } elseif ($itemState === 'deleted') {
                     $elementState = 'delete';
                     $elementActionState = 'delete';
 
@@ -196,7 +216,7 @@ class Import extends Component
 
                     $elementToAction = $currentElement;
                     $newElement = null;
-                } else if ($itemState === 'restored') {
+                } elseif ($itemState === 'restored') {
                     $elementState = 'restore';
                     $elementActionState = 'restore';
 
@@ -223,7 +243,7 @@ class Import extends Component
 
                     if ($tableData) {
                         $elementData[] = $tableData;
-                
+
                         // Increment our summary for a nice look. Added here to ensure there are no errors for the row
                         $summary[$elementState] += 1;
                     }
@@ -314,8 +334,8 @@ class Import extends Component
                     }
                 } else {
                     // This is just for show more than anything. Because this is all new info, there will be a bunch
-                    // of attributes to add, but not all are shown visually to the user. If we used the diff data, 
-                    // this would show more new items to apply that you can see, which is confusing. Instead, 
+                    // of attributes to add, but not all are shown visually to the user. If we used the diff data,
+                    // this would show more new items to apply that you can see, which is confusing. Instead,
                     // construct "fake" diffs (all add) just for the fields and meta fields for the element.
                     $elementToAction = $elementType::getNormalizedElement($newItem, true);
 
@@ -340,9 +360,9 @@ class Import extends Component
 
             if ($itemState === 'modified') {
                 $newElement = $elementType::getNormalizedElement($newItem, true);
-            } else if ($itemState === 'deleted') {
+            } elseif ($itemState === 'deleted') {
                 $newElement = null;
-            } else if ($itemState === 'restored') {
+            } elseif ($itemState === 'restored') {
                 $newElement = $elementType::getNormalizedElement($newItem, true);
             } else {
                 $newElement = null;
@@ -390,6 +410,10 @@ class Import extends Component
 
     public function getImportPayload(string $filename): array
     {
+        if (!$this->isValidImportFilename($filename)) {
+            throw new BadRequestHttpException(Craft::t('zen', 'Invalid file.'));
+        }
+
         $payloadPath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . basename($filename, '.zip');
         $content = [];
 
@@ -414,6 +438,15 @@ class Import extends Component
                     'path' => $file,
                     'content' => file_get_contents($file),
                 ]);
+            }
+        }
+
+        // Keys are used as class names when importing, so only accept the element types registered with Zen
+        $elementTypes = Zen::$plugin->getElements()->getAllElementTypes();
+
+        foreach (array_keys($content) as $elementType) {
+            if (!in_array($elementType, $elementTypes, true)) {
+                throw new BadRequestHttpException(Craft::t('zen', 'Invalid file.'));
             }
         }
 
@@ -520,7 +553,7 @@ class Import extends Component
 
         return $elementImportActions;
     }
-    
+
     public function moveItemsInStructure(): void
     {
         $structuresService = Craft::$app->getStructures();
@@ -546,7 +579,7 @@ class Import extends Component
                     if ($prevSibling) {
                         $structuresService->moveAfter($element->structureId, $element, $prevSibling);
                     }
-                } else if ($nextSiblingUid) {
+                } elseif ($nextSiblingUid) {
                     $nextSibling = $elementsService->getElementByUid($nextSiblingUid, $elementType, $siteId);
 
                     if ($nextSibling) {
