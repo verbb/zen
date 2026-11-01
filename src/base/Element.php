@@ -33,6 +33,7 @@ use craft\web\View;
 use Throwable;
 
 use yii\base\Event;
+use yii\db\Query;
 
 use Wa72\HtmlPageDom\HtmlPageCrawler;
 
@@ -106,6 +107,11 @@ abstract class Element implements ZenElementInterface
 
     public static function getExportData(ElementQueryInterface $query, array $params): array
     {
+        // Criteria only ever narrow down elements by their own params, never set behaviors, events or raw query parts
+        $params = array_filter($params, function($key) {
+            return !str_starts_with($key, 'on ') && !str_starts_with($key, 'as ') && !property_exists(Query::class, $key);
+        }, ARRAY_FILTER_USE_KEY);
+
         Craft::configure($query, $params);
 
         return $query->all();
@@ -324,8 +330,27 @@ abstract class Element implements ZenElementInterface
             return $cachedNormalizedElement;
         }
 
-        ArrayHelper::rename($data, 'type', 'class');
+        // The element class is always ours to decide, and an import can't set up anything but element attributes
+        foreach (array_keys($data) as $key) {
+            if (in_array($key, ['type', '__class', '__construct()']) || str_starts_with($key, 'on ') || str_starts_with($key, 'as ')) {
+                unset($data[$key]);
+            }
+        }
+
+        $data['class'] = static::elementType();
         $fields = ArrayHelper::remove($data, 'fields', []);
+
+        // An ID must belong to the element this data identifies, so that an import can't overwrite a different element
+        if (isset($data['id'])) {
+            $elementIdentifier = static::elementUniqueIdentifier();
+            $existingElement = static::elementType()::find()->id($data['id'])->status(null)->trashed(null)->siteId('*')->one();
+
+            if ($existingElement && $existingElement->$elementIdentifier === ($data[$elementIdentifier] ?? null)) {
+                $data['id'] = $existingElement->id;
+            } else {
+                unset($data['id']);
+            }
+        }
 
         // Normalize UIDs back to IDs
         $data['siteId'] = Db::idByUid(Table::SITES, ArrayHelper::remove($data, 'siteUid'));
@@ -734,7 +759,7 @@ abstract class Element implements ZenElementInterface
         $elementIdentifier = static::elementUniqueIdentifier();
 
         return static::find()
-            ->$elementIdentifier($element->$elementIdentifier)
+            ->$elementIdentifier(Db::escapeParam((string)$element->$elementIdentifier))
             ->siteId($element->siteId)
             ->status(null)
             ->trashed(null)
@@ -807,6 +832,7 @@ abstract class Element implements ZenElementInterface
         foreach (explode('.', $selector) as $item) {
             if (is_numeric($item)) {
                 $equalCommand = 'eq:' . $item;
+
                 continue;
             }
 

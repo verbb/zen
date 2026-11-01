@@ -20,6 +20,19 @@ class ExportController extends Controller
     // Public Methods
     // =========================================================================
 
+    public function beforeAction($action): bool
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        $this->requireCpRequest();
+        $this->requirePermission('accessPlugin-zen');
+        $this->requirePostRequest();
+
+        return true;
+    }
+
     public function actionIndex(): ?Response
     {
         $fromDate = DateTimeHelper::toDateTime($this->request->getParam('fromDate'));

@@ -121,6 +121,9 @@ class Asset extends ZenElement
         // Not needed yet, but removed for validation as it won't populate the model
         ArrayHelper::remove($data, 'folder');
 
+        // Only ever use a file from our payload, never a path set in the import data
+        unset($data['tempFilePath']);
+
         // Assign any asset in our payload matching this filename
         foreach (Zen::$plugin->getImport()->getStoredImportFiles() as $tempAsset) {
             if ($tempAsset['filename'] === $data['filename']) {

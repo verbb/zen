@@ -20,6 +20,19 @@ class ImportController extends Controller
     // Public Methods
     // =========================================================================
 
+    public function beforeAction($action): bool
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        $this->requireCpRequest();
+        $this->requirePermission('accessPlugin-zen');
+        $this->requirePostRequest();
+
+        return true;
+    }
+
     public function actionIndex(): ?Response
     {
         $uploadedFile = UploadedFile::getInstanceByName('file');
@@ -43,7 +56,7 @@ class ImportController extends Controller
         $filename = $this->request->getRequiredParam('filename');
         $path = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . $filename;
 
-        if (!file_exists($path)) {
+        if (!Zen::$plugin->getImport()->isValidImportFilename($filename) || !file_exists($path)) {
             return $this->asFailure(Craft::t('zen', 'Invalid file.'));
         }
 
@@ -114,6 +127,10 @@ class ImportController extends Controller
         $direct = $this->request->getParam('direct');
         $backup = $this->request->getParam('backup');
 
+        if (!Zen::$plugin->getImport()->isValidImportFilename($filename)) {
+            return $this->asFailure(Craft::t('zen', 'Invalid file.'));
+        }
+
         $elementsToExclude = Json::decode(base64_decode($elementsToExclude));
 
         if (!is_array($elementsToExclude)) {
@@ -131,6 +148,7 @@ class ImportController extends Controller
                 'filename' => $filename,
                 'elementsToExclude' => $elementsToExclude,
                 'taskId' => $taskId,
+                'allowUserPrivileges' => Craft::$app->getUser()->getIsAdmin(),
             ]);
         }
 

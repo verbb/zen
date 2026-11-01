@@ -1,6 +1,7 @@
 <?php
 namespace verbb\zen\elements;
 
+use verbb\zen\Zen;
 use verbb\zen\base\Element as ZenElement;
 use verbb\zen\helpers\Db;
 use verbb\zen\models\ElementImportAction;
@@ -15,12 +16,15 @@ use craft\elements\db\ElementQueryInterface;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
 
+use Exception;
+
 class User extends ZenElement
 {
     // Properties
     // =========================================================================
 
     private static array $_permissions = [];
+    private static array $_privilegedAttributes = ['admin', 'active', 'pending', 'locked', 'suspended', 'passwordResetRequired', 'unverifiedEmail'];
 
 
     // Static Methods
@@ -95,7 +99,27 @@ class User extends ZenElement
 
     public static function defineNormalizedElement(array $data): array
     {
-        $groupUids = ArrayHelper::remove($data, 'groupUids');
+        // Exports never include credentials, so ignore them no matter who runs the import
+        foreach (['password', 'newPassword', 'currentPassword', 'verificationCode'] as $attribute) {
+            unset($data[$attribute]);
+        }
+
+        // Only admins can bring across account access. For anyone else, ignore it and keep what's already on the user.
+        if (!Zen::$plugin->getImport()->getAllowUserPrivileges()) {
+            foreach (['groupUids', 'groups', 'permissions', ...self::$_privilegedAttributes] as $attribute) {
+                unset($data[$attribute]);
+            }
+
+            if (isset($data['id'])) {
+                $existingUser = UserElement::find()->id($data['id'])->status(null)->trashed(null)->one();
+
+                foreach (self::$_privilegedAttributes as $attribute) {
+                    $data[$attribute] = $existingUser->$attribute;
+                }
+            }
+        }
+
+        $groupUids = ArrayHelper::remove($data, 'groupUids') ?? [];
 
         foreach ($groupUids as $groupUid) {
             $data['groups'][] = Db::idByUid(Table::USERGROUPS, $groupUid);
@@ -236,14 +260,31 @@ class User extends ZenElement
         ];
     }
 
+    public static function checkExistingImportedElement(ElementImportAction $importAction): void
+    {
+        parent::checkExistingImportedElement($importAction);
+
+        // Without admin rights, an import can't change or remove an admin account. This has to follow the
+        // lookup above, as that's what finds the existing account when the import didn't provide an ID.
+        if (!Zen::$plugin->getImport()->getAllowUserPrivileges() && $importAction->element->id) {
+            $isAdminUser = UserElement::find()->id($importAction->element->id)->admin(true)->status(null)->trashed(null)->exists();
+
+            if ($isAdminUser) {
+                throw new Exception(Craft::t('zen', 'Only admins can import changes to admin accounts.'));
+            }
+        }
+    }
+
     public static function afterImport(ElementImportAction $importAction): void
     {
         if (in_array($importAction->action, [ElementImportAction::ACTION_SAVE, ElementImportAction::ACTION_RESTORE])) {
-            // Assign user groups and permissions
-            $permissions = self::$_permissions[$importAction->element->email] ?? [];
+            if (Zen::$plugin->getImport()->getAllowUserPrivileges()) {
+                // Assign user groups and permissions
+                $permissions = self::$_permissions[$importAction->element->email] ?? [];
 
-            Craft::$app->getUserPermissions()->saveUserPermissions($importAction->element->id, $permissions);
-            Craft::$app->getUsers()->assignUserToGroups($importAction->element->id, $importAction->element->groups);
+                Craft::$app->getUserPermissions()->saveUserPermissions($importAction->element->id, $permissions);
+                Craft::$app->getUsers()->assignUserToGroups($importAction->element->id, $importAction->element->groups);
+            }
 
             if ($photo = $importAction->element->photo) {
                 // Because the photo might've already been taken care of (included in the payload as an asset) we need to check if already

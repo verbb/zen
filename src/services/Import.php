@@ -15,6 +15,8 @@ use craft\helpers\FileHelper;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
 
+use yii\web\BadRequestHttpException;
+
 use Closure;
 use Exception;
 
@@ -60,10 +62,28 @@ class Import extends Component
 
     private array $_dependencies = [];
     private array $_storedFiles = [];
+    private ?bool $_allowUserPrivileges = null;
 
 
     // Public Methods
     // =========================================================================
+
+    public function getAllowUserPrivileges(): bool
+    {
+        return $this->_allowUserPrivileges ?? (bool)Craft::$app->getUser()->getIdentity()?->admin;
+    }
+
+    public function setAllowUserPrivileges(bool $allowUserPrivileges): void
+    {
+        // Queue jobs can run in any user's request (or none), so they carry this over from whoever started the import
+        $this->_allowUserPrivileges = $allowUserPrivileges;
+    }
+
+    public function isValidImportFilename(string $filename): bool
+    {
+        // Must match the name given to uploads, so that a request can't point at any other file or directory
+        return (bool)preg_match('/^zen-import-\d{6}_\d{6}\.zip$/D', $filename);
+    }
 
     public function getImportConfiguration(array $data, bool $returnElementData = false): array
     {
@@ -397,6 +417,10 @@ class Import extends Component
 
     public function getImportPayload(string $filename): array
     {
+        if (!$this->isValidImportFilename($filename)) {
+            throw new BadRequestHttpException(Craft::t('zen', 'Invalid file.'));
+        }
+
         $payloadPath = Craft::$app->getPath()->getTempPath() . DIRECTORY_SEPARATOR . basename($filename, '.zip');
         $content = [];
 
@@ -421,6 +445,15 @@ class Import extends Component
                     'path' => $file,
                     'content' => file_get_contents($file),
                 ]);
+            }
+        }
+
+        // Keys are used as class names when importing, so only accept the element types registered with Zen
+        $elementTypes = Zen::$plugin->getElements()->getAllElementTypes();
+
+        foreach (array_keys($content) as $elementType) {
+            if (!in_array($elementType, $elementTypes, true)) {
+                throw new BadRequestHttpException(Craft::t('zen', 'Invalid file.'));
             }
         }
 
