@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fixed excluded elements still being imported when an import runs directly instead of through the queue.
+
 ## 2.0.15 - 2026-10-17
 
 ### Fixed

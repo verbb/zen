@@ -427,7 +427,7 @@ class Import extends Component
 
     public function runImport(string $filename, array $elementsToExclude = []): void
     {
-        foreach ($this->getElementsToImport($filename) as $elementImportAction) {
+        foreach ($this->getElementsToImport($filename, $elementsToExclude) as $elementImportAction) {
             $success = $this->runElementAction($elementImportAction);
 
             if (!$success) {
