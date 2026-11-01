@@ -5,6 +5,7 @@
 ### Fixed
 - Fixed excluded elements still being imported when an import runs directly instead of through the queue.
 - Fixed the import preview comparing a multi-site element against another site’s content.
+- Fixed failed import jobs reporting the full stack trace as their error message.
 
 ## 2.0.15 - 2026-10-17
 

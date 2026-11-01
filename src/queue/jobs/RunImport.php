@@ -91,7 +91,7 @@ class RunImport extends BaseJob
                 ]);
 
                 if ($settings->stopOnError) {
-                    throw new Exception($e);
+                    throw $e;
                 }
             }
         }
