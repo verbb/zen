@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.16 - 2026-11-05
 
 ### Changed
 - Importing and exporting now requires a control panel request and permission to access Zen.
