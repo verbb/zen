@@ -10,6 +10,7 @@
 - Fixed excluded elements still being imported when an import runs directly instead of through the queue.
 - Fixed the import preview comparing a multi-site element against another site’s content.
 - Fixed failed import jobs reporting the full stack trace as their error message.
+- Fixed export counts including entries from other sections when an entry type is shared between sections.
 
 ## 2.0.15 - 2026-10-17
 

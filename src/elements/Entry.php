@@ -78,7 +78,7 @@ class Entry extends ZenElement
                 $entryTypes[] = [
                     'label' => $entryType->name,
                     'criteria' => ['section' => $section->handle, 'type' => $entryType->handle],
-                    'count' => $query->type($entryType)->count(),
+                    'count' => $query->section($section)->type($entryType)->count(),
                 ];
             }
 
