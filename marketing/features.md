@@ -3,7 +3,7 @@ Manage content across Craft environments without the headache of copying and pas
 <!-- feature-intro-end -->
 
 <!-- feature-section media-size="large" -->
-## Import and export, sorted
+## Move selected content between environments
 
 Generate an export on one environment and bring it into another through a guided configuration and review process. Choose the entries, categories and other supported elements that need to move instead of copying an entire database.
 
@@ -12,7 +12,7 @@ Generate an export on one environment and bring it into another through a guided
 <!-- feature-section-end -->
 
 <!-- feature-section media-size="large" -->
-## Fine-grained control
+## Review each import before it runs
 
 Configure and review the content before starting the import. Map its destination and compare the existing and incoming element data, so there is a clear chance to resolve differences before anything is queued.
 
