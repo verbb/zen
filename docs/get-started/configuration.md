@@ -12,7 +12,7 @@ return [
 ];
 ```
 
-All other settings keep their defaults. Add any further settings you want to change to the same array. The options below explain the available settings and their defaults.
+All other settings keep their defaults. Add any further settings you want to change to the same array. The options below explain the available settings and their defaults. You can also manage these settings in the control panel under **Zen → Settings**.
 
 ## Configuration Options
 
@@ -23,7 +23,3 @@ All other settings keep their defaults. Add any further settings you want to cha
 
 The name displayed for the plugin in the control panel.
 :::
-
-
-## Control Panel
-You can also manage configuration settings through the Control Panel by visiting Settings → Zen.
