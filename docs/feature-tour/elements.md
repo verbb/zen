@@ -22,5 +22,5 @@ Zen supports all native Craft elements, along with a few other common ones.
 - Commerce Variant
 
 :::tip
-Looking to add support for other elements? Consult the [Element Type](docs:developers/element-type) docs.
+Looking to add support for other elements? See [Custom Element Types](docs:developers/custom-element-types).
 :::

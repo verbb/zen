@@ -1,11 +1,14 @@
 # Events
-Zen provides a collection of events for extending its functionality. Modules and plugins can register event listeners, typically in their `init()` methods, to modify Zen’s behavior.
+
+Zen provides events for extending its functionality. Modules and plugins can register event listeners, typically in their `init()` methods, to change Zen’s behaviour.
 
 ## Element Events
-The below events are examples using the `Entry` class, but any class that inherits from the `verbb\zen\base\Element` class can use these events.
+
+These examples use Zen's `Entry` class, so they only run for entries. Listen on another of Zen's element type classes, such as `verbb\zen\elements\Category`, for that element, or on `verbb\zen\base\Element` for every element type.
 
 ### The `modifyImportFieldTabs` Event
-The event that is triggered to modify the tabs and fields shown as the preview for the import configure table.
+
+The event that is triggered when Zen builds the extra tabs shown in the import preview for an element. Change `$event->tabs` to add, remove or reorder tabs.
 
 ```php
 use verbb\zen\elements\Entry;
@@ -20,7 +23,8 @@ Event::on(Entry::class, Entry::EVENT_MODIFY_IMPORT_FIELD_TABS, function(ModifyEl
 ```
 
 ### The `modifyImportTableAttributes` Event
-The event that is triggered to modify the table attributes (the header columns) for the import configure table.
+
+The event that is triggered when Zen builds the columns of the import configuration table. Change `$event->attributes`, an array of column keys and labels, to add or remove columns.
 
 ```php
 use verbb\zen\elements\Entry;
@@ -35,11 +39,12 @@ Event::on(Entry::class, Entry::EVENT_MODIFY_IMPORT_TABLE_ATTRIBUTES, function(Mo
 ```
 
 ### The `modifyImportTableValues` Event
-The event that is triggered to modify the table values (the row columns) for the import configure table.
+
+The event that is triggered when Zen builds a row of the import configuration table. Change `$event->values`, keyed by column, to set the values for any columns you've added.
 
 ```php
 use verbb\zen\elements\Entry;
-use verbb\zen\events\ModifyElementImportTableAttributesEvent;
+use verbb\zen\events\ModifyElementImportTableValuesEvent;
 use yii\base\Event;
 
 Event::on(Entry::class, Entry::EVENT_MODIFY_IMPORT_TABLE_VALUES, function(ModifyElementImportTableValuesEvent $event) {
@@ -50,7 +55,8 @@ Event::on(Entry::class, Entry::EVENT_MODIFY_IMPORT_TABLE_VALUES, function(Modify
 ```
 
 ### The `modifyNormalizedData` Event
-The event that is triggered when a serialized element is normalized for import.
+
+The event that is triggered when Zen turns an element's exported data back into an element for import. Change `$event->values` to change the element's attributes, or `$event->fields` to change its custom field values, before Zen creates the element.
 
 ```php
 use verbb\zen\elements\Entry;
@@ -66,7 +72,8 @@ Event::on(Entry::class, Entry::EVENT_MODIFY_NORMALIZED_DATA, function(ModifyElem
 ```
 
 ### The `modifySerializedData` Event
-The event that is triggered when an element is serialized for export.
+
+The event that is triggered when Zen serializes an element for export. Change `$event->values` to change the exported data. Zen also serializes elements on the destination install to compare them, so make the same change on both installs.
 
 ```php
 use verbb\zen\elements\Entry;
@@ -82,7 +89,8 @@ Event::on(Entry::class, Entry::EVENT_MODIFY_SERIALIZED_DATA, function(ModifyElem
 ```
 
 ### The `beforeImport` Event
-The event that is triggered before an element is imported.
+
+The event that is triggered before an element is imported. Set `$event->isValid` to `false` to stop the element being imported. The import then fails with an error at that element, and the elements after it aren't imported.
 
 ```php
 use verbb\zen\elements\Entry;
@@ -96,7 +104,8 @@ Event::on(Entry::class, Entry::EVENT_BEFORE_IMPORT, function(ElementImportEvent 
 ```
 
 ### The `afterImport` Event
-The event that is triggered after an element is imported.
+
+The event that is triggered after an element is imported successfully.
 
 ```php
 use verbb\zen\elements\Entry;
@@ -109,12 +118,13 @@ Event::on(Entry::class, Entry::EVENT_AFTER_IMPORT, function(ElementImportEvent $
 });
 ```
 
-
 ## Field Events
-The below events are examples using the `Matrix` class, but any class that inherits from the `verbb\zen\base\Field` class can use these events.
+
+These examples use Zen's `Matrix` class, so they only run for Matrix fields. Listen on another of Zen's field type classes for that field, or on `verbb\zen\base\Field` for every field, including fields Zen handles without a class of their own.
 
 ### The `beforeElementImport` Event
-The event that is triggered before an element is imported.
+
+The event that is triggered for each field in an element's field layout, before the element is imported. Set `$event->isValid` to `false` to stop the element being imported. The import then fails with an error at that element, and the elements after it aren't imported.
 
 ```php
 use verbb\zen\events\ElementFieldImportEvent;
@@ -129,7 +139,8 @@ Event::on(Matrix::class, Matrix::EVENT_BEFORE_ELEMENT_IMPORT, function(ElementFi
 ```
 
 ### The `afterElementImport` Event
-The event that is triggered after an element is imported.
+
+The event that is triggered for each field in an element's field layout, after the element is imported successfully.
 
 ```php
 use verbb\zen\events\ElementFieldImportEvent;
@@ -140,5 +151,35 @@ Event::on(Matrix::class, Matrix::EVENT_AFTER_ELEMENT_IMPORT, function(ElementFie
     $field = $event->field;
     $element = $event->element;
     // ...
+});
+```
+
+## Registration Events
+
+### The `registerElementTypes` Event
+
+The event that is triggered when Zen collects the element types it can export and import. See [Custom Element Types](custom-element-types.md).
+
+```php
+use craft\events\RegisterComponentTypesEvent;
+use verbb\zen\services\Elements;
+use yii\base\Event;
+
+Event::on(Elements::class, Elements::EVENT_REGISTER_ELEMENT_TYPES, function(RegisterComponentTypesEvent $event) {
+    $event->types[] = CategoryElementType::class;
+});
+```
+
+### The `registerFieldTypes` Event
+
+The event that is triggered when Zen collects the field types it handles values for. See [Custom Field Types](custom-field-types.md).
+
+```php
+use craft\events\RegisterComponentTypesEvent;
+use verbb\zen\services\Fields;
+use yii\base\Event;
+
+Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function(RegisterComponentTypesEvent $event) {
+    $event->types[] = FeaturedEntryFieldType::class;
 });
 ```

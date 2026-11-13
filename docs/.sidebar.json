@@ -22,8 +22,8 @@
         "collapsable": false,
         "children": [
             "developers/events",
-            "developers/element-type",
-            "developers/field-type"
+            "developers/custom-element-types",
+            "developers/custom-field-types"
         ]
     }
 ]
