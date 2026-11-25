@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- Updated Vue to 3.5.42 in the control panel.
+
 ## 2.0.16 - 2026-11-05
 
 ### Changed
