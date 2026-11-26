@@ -19,7 +19,7 @@
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-vue": "^9.8.0",
         "lodash-es": "^4.17.21",
-        "markdown-it": "^13.0.1",
+        "markdown-it": "^15.0.3",
         "postcss": "^8.4.20",
         "resolve-url-loader": "^5.0.0",
         "rollup-plugin-analyzer": "^4.0.0",
